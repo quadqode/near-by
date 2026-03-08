@@ -88,7 +88,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
           {/* Time */}
           <div>
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">When</label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {TIME_SLOTS.map(t => (
                 <button
                   key={t.value}
