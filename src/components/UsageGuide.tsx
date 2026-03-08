@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MapPin, Filter, List, Navigation, MousePointer2, Clock } from 'lucide-react';
+import { MapPin, Filter, List, Navigation, MousePointer2, Clock, SlidersHorizontal } from 'lucide-react';
 
 interface Props {
   open: boolean;
@@ -8,6 +8,11 @@ interface Props {
 }
 
 const steps = [
+  {
+    icon: <SlidersHorizontal className="h-5 w-5" />,
+    title: 'Choose your intent',
+    items: ['Pick what you are looking for: Food, Cafes, or People', 'The map & list adapt to show only what matters to you', 'Change anytime with the sliders button at the bottom'],
+  },
   {
     icon: <Navigation className="h-5 w-5" />,
     title: 'Map navigation',
@@ -26,7 +31,7 @@ const steps = [
   {
     icon: <List className="h-5 w-5" />,
     title: 'List view',
-    items: ['Toggle between Map and List views', 'List is sorted by nearest location first', 'Click any card to see details'],
+    items: ['Toggle between Map and List views', 'List adapts filters based on your selected intents', 'Click any card to see details'],
   },
   {
     icon: <Clock className="h-5 w-5" />,

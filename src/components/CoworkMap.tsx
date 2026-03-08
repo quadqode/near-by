@@ -259,7 +259,7 @@ export default function CoworkMap() {
         {view === 'list' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
             <div className="h-full pt-16">
-              <PinListView pins={filtered} places={filteredPlaces} userPos={userPos} onPinSelect={handlePinSelect} onPlaceSelect={(place) => setSelectedPlace(place)} />
+              <PinListView pins={filtered} places={filteredPlaces} userPos={userPos} intents={userIntents} onPinSelect={handlePinSelect} onPlaceSelect={(place) => setSelectedPlace(place)} />
             </div>
           </motion.div>
         )}
