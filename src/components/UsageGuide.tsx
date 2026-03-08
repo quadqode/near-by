@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MapPin, Filter, List, Navigation, MousePointer2, Clock } from 'lucide-react';
+import { MapPin, Filter, List, Navigation, MousePointer2, Clock, SlidersHorizontal } from 'lucide-react';
 
 interface Props {
   open: boolean;
