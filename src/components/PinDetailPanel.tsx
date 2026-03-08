@@ -34,9 +34,11 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
     }
   };
 
+  // Use fuzzy location until connected
+  const [fuzzyLat, fuzzyLng] = fuzzyLocation(pin.lat, pin.lng, pin.id);
+
   const handleGetDirections = () => {
-    const destination = `${pin.lat},${pin.lng}`;
-    // Google Maps URL works on both Android and iOS — opens native app if installed
+    const destination = hiSent ? `${pin.lat},${pin.lng}` : `${fuzzyLat},${fuzzyLng}`;
     const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
     window.open(url, '_blank');
   };
