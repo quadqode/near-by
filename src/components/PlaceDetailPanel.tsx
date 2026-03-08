@@ -16,6 +16,7 @@ interface Props {
 
 export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
   const [photoIdx, setPhotoIdx] = useState(0);
+  const [registerOpen, setRegisterOpen] = useState(false);
   const meta = PLACE_TYPE_META[place.type];
   const dist = getDistance(userPos[0], userPos[1], place.lat, place.lng);
   const distLabel = dist < 1 ? `${Math.round(dist * 1000)}m away` : `${dist.toFixed(1)}km away`;
