@@ -3,9 +3,11 @@ import { CoworkPin, ROLES } from '@/lib/types';
 import { WorkPlace, PLACE_TYPE_META } from '@/lib/placeTypes';
 import { getDistance } from '@/lib/pinStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clock, MapPin, Wifi, Plug, Volume2, Coffee, Tag } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Clock, MapPin, Wifi, Plug, Volume2, Coffee, Tag, Store } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { UserIntent } from './LocationPicker';
+import RegisterPlaceDialog from './RegisterPlaceDialog';
 
 type ViewFilter = 'all' | 'people' | 'places';
 type PlaceSubFilter = 'all' | 'cafe' | 'food';
