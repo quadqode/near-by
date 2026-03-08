@@ -62,8 +62,7 @@ function offsetDeg(kmRange: number): number {
  * Called with the user's geolocation so pins always appear nearby.
  */
 export function generateDemoPins(centerLat = 40.7128, centerLng = -74.006): CoworkPin[] {
-  return NAMES.map((data, i) => {
-    // Spread pins across varying distances: some close (1-2km), some mid (3-5km), some far (6-10km)
+  const mainPins = NAMES.map((data, i) => {
     const distanceBucket = i % 3;
     const range = distanceBucket === 0 ? 1.5 : distanceBucket === 1 ? 4 : 8;
     return {
@@ -75,4 +74,16 @@ export function generateDemoPins(centerLat = 40.7128, centerLng = -74.006): Cowo
       expiresAt: new Date(Date.now() + (2 + Math.random() * 6) * 3600000),
     };
   });
+
+  // Nehru Place cluster (28.5491, 77.2533) — tight 1.5km spread
+  const nehruPins = NEHRU_PLACE_PEOPLE.map((data, i) => ({
+    ...data,
+    id: `demo-np-${i}`,
+    lat: 28.5491 + offsetDeg(1.5),
+    lng: 77.2533 + offsetDeg(1.5) / Math.cos(28.5491 * Math.PI / 180),
+    createdAt: new Date(Date.now() - Math.random() * 3600000),
+    expiresAt: new Date(Date.now() + (2 + Math.random() * 6) * 3600000),
+  }));
+
+  return [...mainPins, ...nehruPins];
 }
