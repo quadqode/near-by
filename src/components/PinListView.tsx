@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import type { UserIntent } from './LocationPicker';
 
 type ViewFilter = 'all' | 'people' | 'places';
+type PlaceSubFilter = 'all' | 'cafe' | 'food';
 
 interface Props {
   pins: CoworkPin[];
@@ -32,7 +33,6 @@ function PinCard({ pin, dist, onClick }: { pin: CoworkPin; dist: number; onClick
 
   return (
     <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
-      {/* Circular marker for people */}
       <div
         className="w-11 h-11 rounded-full flex items-center justify-center text-lg shrink-0 shadow-sm"
         style={{ background: `hsl(var(--pin-${pin.role}) / 0.15)`, border: `2px solid hsl(var(--pin-${pin.role}) / 0.3)` }}
@@ -76,7 +76,6 @@ function PlaceCard({ place, dist, onClick }: { place: WorkPlace; dist: number; o
 
   return (
     <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
-      {/* Square marker for places */}
       <div
         className="w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm bg-accent/40 border-2 border-accent-foreground/15"
       >
@@ -107,11 +106,16 @@ function PlaceCard({ place, dist, onClick }: { place: WorkPlace; dist: number; o
 
 export default function PinListView({ pins, places, userPos, intents, onPinSelect, onPlaceSelect }: Props) {
   const [viewFilter, setViewFilter] = useState<ViewFilter>('all');
+  const [placeSubFilter, setPlaceSubFilter] = useState<PlaceSubFilter>('all');
 
   // Determine which categories are available based on intents
   const hasPeople = intents.includes('people');
-  const hasPlaces = intents.includes('food') || intents.includes('cowork');
+  const hasFood = intents.includes('food');
+  const hasCowork = intents.includes('cowork');
+  const hasPlaces = hasFood || hasCowork;
   const multipleCategories = hasPeople && hasPlaces;
+  // Show place sub-filters when both food and cowork intents are active (or when viewing places in multi-category mode)
+  const showPlaceSubFilter = hasFood && hasCowork;
 
   const items: ListItem[] = [];
 
@@ -124,30 +128,61 @@ export default function PinListView({ pins, places, userPos, intents, onPinSelec
   if (hasPlaces && viewFilter !== 'people') {
     places.forEach(p => {
       const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
-      if (dist <= 4) items.push({ kind: 'place', data: p, dist });
+      if (dist <= 4) {
+        // Apply place sub-filter
+        if (placeSubFilter === 'cafe' && p.type === 'other') return;
+        if (placeSubFilter === 'food' && p.type !== 'other') return;
+        items.push({ kind: 'place', data: p, dist });
+      }
     });
   }
 
   items.sort((a, b) => a.dist - b.dist);
 
-  const filters: { value: ViewFilter; label: string; emoji: string }[] = [
+  const mainFilters: { value: ViewFilter; label: string; emoji: string }[] = [
     { value: 'all', label: 'All', emoji: '🔍' },
     { value: 'people', label: 'People', emoji: '👤' },
     { value: 'places', label: 'Places', emoji: '📍' },
   ];
 
+  const placeFilters: { value: PlaceSubFilter; label: string; emoji: string }[] = [
+    { value: 'all', label: 'All Places', emoji: '📍' },
+    { value: 'cafe', label: 'Cafés & Cowork', emoji: '☕' },
+    { value: 'food', label: 'Food Places', emoji: '🍽️' },
+  ];
+
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Only show filter tabs when multiple categories are active */}
+      {/* Main category filter tabs */}
       {multipleCategories && (
         <div className="px-4 pt-3 pb-2 flex gap-1.5 border-b border-border/50">
-          {filters.map(f => (
+          {mainFilters.map(f => (
             <button
               key={f.value}
               onClick={() => setViewFilter(f.value)}
               className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
                 viewFilter === f.value
                   ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
+              }`}
+            >
+              <span>{f.emoji}</span>
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Place sub-filter (cafés vs food) — show when places are visible and both intents active */}
+      {showPlaceSubFilter && viewFilter !== 'people' && (
+        <div className="px-4 pt-2 pb-2 flex gap-1.5 border-b border-border/50">
+          {placeFilters.map(f => (
+            <button
+              key={f.value}
+              onClick={() => setPlaceSubFilter(f.value)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${
+                placeSubFilter === f.value
+                  ? 'bg-accent text-accent-foreground border-primary/40 shadow-sm'
                   : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
               }`}
             >
@@ -166,7 +201,7 @@ export default function PinListView({ pins, places, userPos, intents, onPinSelec
         </div>
       ) : (
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-2.5">
+          <div className="p-4 space-y-2.5 pb-24">
             {items.map((item, idx) => (
               <motion.div
                 key={item.kind === 'pin' ? `pin-${item.data.id}` : `place-${item.data.id}`}
