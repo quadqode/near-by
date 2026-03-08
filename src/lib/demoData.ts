@@ -35,6 +35,22 @@ const NAMES: Array<{ role: Role; timeSlot: TimeSlot; interests: string[]; messag
   { role: 'writer', timeSlot: 'evening', interests: ['Accountability', 'Coffee chat'], message: 'Novelist on chapter 12, need company' },
 ];
 
+// Extra cluster of people near Nehru Place, New Delhi
+const NEHRU_PLACE_PEOPLE: Array<{ role: Role; timeSlot: TimeSlot; interests: string[]; message: string }> = [
+  { role: 'developer', timeSlot: 'now', interests: ['Pair programming', 'Coffee chat'], message: 'Building SaaS dashboards at Nehru Place ☕' },
+  { role: 'developer', timeSlot: 'now', interests: ['Learning', 'Side projects'], message: 'Flutter dev, working from a cafe here' },
+  { role: 'designer', timeSlot: 'morning', interests: ['Design review', 'Networking'], message: 'UI designer freelancing in South Delhi' },
+  { role: 'marketer', timeSlot: 'now', interests: ['Brainstorming', 'Coffee chat'], message: 'Running ads for D2C brands, let us chat!' },
+  { role: 'developer', timeSlot: 'afternoon', interests: ['Pair programming', 'Learning'], message: 'Python dev exploring ML, open to collab' },
+  { role: 'writer', timeSlot: 'now', interests: ['Accountability', 'Coffee chat'], message: 'Tech blogger writing about Indian startups' },
+  { role: 'other', timeSlot: 'now', interests: ['Networking', 'Brainstorming'], message: 'Startup founder, building fintech product' },
+  { role: 'developer', timeSlot: 'evening', interests: ['Side projects', 'Pair programming'], message: 'React Native dev, shipping a health app' },
+  { role: 'designer', timeSlot: 'now', interests: ['Brainstorming', 'Side projects'], message: 'Graphic designer working on brand kits' },
+  { role: 'developer', timeSlot: 'now', interests: ['Coffee chat', 'Learning'], message: 'DevOps eng at a Nehru Place coworking space' },
+  { role: 'marketer', timeSlot: 'morning', interests: ['Networking', 'Side projects'], message: 'Content creator shooting reels nearby 🎥' },
+  { role: 'writer', timeSlot: 'now', interests: ['Coffee chat', 'Accountability'], message: 'Freelance copywriter, need a focus buddy' },
+];
+
 /** Generate a random offset in km converted to degrees */
 function offsetDeg(kmRange: number): number {
   const km = (Math.random() - 0.5) * 2 * kmRange;
