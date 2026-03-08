@@ -47,6 +47,8 @@ export async function getPins(): Promise<CoworkPin[]> {
 }
 
 export async function addPin(pin: Omit<CoworkPin, 'id' | 'createdAt' | 'expiresAt'>): Promise<CoworkPin | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { console.error('Not authenticated'); return null; }
   const { data, error } = await supabase
     .from('pins')
     .insert({
@@ -56,6 +58,7 @@ export async function addPin(pin: Omit<CoworkPin, 'id' | 'createdAt' | 'expiresA
       time_slot: pin.timeSlot,
       interests: pin.interests,
       message: pin.message,
+      user_id: user.id,
     })
     .select()
     .single();
