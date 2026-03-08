@@ -184,7 +184,7 @@ export default function CoworkMap() {
         </div>
       </motion.div>
 
-      <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
+      <div className="absolute bottom-4 left-4 z-[1000] flex items-center gap-2">
         <div className="bg-card rounded-xl shadow-lg border border-border p-1 flex">
           <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('map')}>
             <Map className="h-4 w-4" />
