@@ -26,6 +26,7 @@ const ROLE_HEX: Record<Role, string> = {
 const DEFAULT_POS: [number, number] = [40.7128, -74.006];
 
 export default function CoworkMap() {
+  const { signOut } = useAuth();
   const [userPos, setUserPos] = useState<[number, number]>(DEFAULT_POS);
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
