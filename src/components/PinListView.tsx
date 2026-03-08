@@ -120,6 +120,7 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
 export default function PinListView({ pins, places, userPos, intents, offersOnly, onOffersOnlyChange, onPinSelect, onPlaceSelect }: Props) {
   const [viewFilter, setViewFilter] = useState<ViewFilter>('all');
   const [placeSubFilter, setPlaceSubFilter] = useState<PlaceSubFilter>('all');
+  const [registerOpen, setRegisterOpen] = useState(false);
 
   // Determine which categories are available based on intents
   const hasPeople = intents.includes('people');
