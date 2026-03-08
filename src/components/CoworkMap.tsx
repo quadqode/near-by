@@ -187,6 +187,11 @@ export default function CoworkMap() {
           <Radar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`}</span>
         </div>
+        <div className="ml-auto">
+          <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-9 w-9 rounded-xl" onClick={() => signOut()}>
+            <LogOut className="h-3.5 w-3.5" />
+          </Button>
+        </div>
       </motion.div>
 
       <div className="absolute bottom-20 sm:bottom-4 left-4 z-[1000] flex items-center gap-2">
