@@ -20,7 +20,7 @@ import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
