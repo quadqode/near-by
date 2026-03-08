@@ -125,8 +125,8 @@ export default function CoworkMap() {
         type: 'fill',
         source: 'radius-circle',
         paint: {
-          'fill-color': 'hsl(210, 70%, 55%)',
-          'fill-opacity': 0.06,
+          'fill-color': 'hsl(243, 75%, 58%)',
+          'fill-opacity': 0.12,
         },
       });
       map.addLayer({
@@ -134,9 +134,9 @@ export default function CoworkMap() {
         type: 'line',
         source: 'radius-circle',
         paint: {
-          'line-color': 'hsl(210, 70%, 55%)',
-          'line-opacity': 0.25,
-          'line-width': 1.5,
+          'line-color': 'hsl(243, 75%, 50%)',
+          'line-opacity': 0.4,
+          'line-width': 2,
           'line-dasharray': [4, 3],
         },
       });

@@ -137,8 +137,14 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
               <MapPin className="h-4 w-4 text-primary" />
             </div>
             <div className="text-left flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Get Directions</p>
-              <p className="text-xs font-medium text-foreground truncate">{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                {hiSent ? 'Exact Location' : 'Approximate Area'}
+              </p>
+              {hiSent ? (
+                <p className="text-xs font-medium text-foreground truncate">{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</p>
+              ) : (
+                <p className="text-xs font-medium text-muted-foreground truncate">Say Hi to reveal exact location</p>
+              )}
             </div>
             <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
           </button>

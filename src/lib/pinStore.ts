@@ -90,6 +90,21 @@ export function filterPins(
   });
 }
 
+// Fuzzy a pin's location by ~200-400m for privacy
+export function fuzzyLocation(lat: number, lng: number, seed: string): [number, number] {
+  // Deterministic hash from seed so same pin always gets same offset
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+    hash |= 0;
+  }
+  const angle = (Math.abs(hash) % 360) * (Math.PI / 180);
+  const offsetKm = 0.2 + (Math.abs(hash >> 8) % 200) / 1000; // 0.2–0.4 km
+  const dLat = (offsetKm / 110.574) * Math.cos(angle);
+  const dLng = (offsetKm / (111.32 * Math.cos(lat * Math.PI / 180))) * Math.sin(angle);
+  return [lat + dLat, lng + dLng];
+}
+
 export function getDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
