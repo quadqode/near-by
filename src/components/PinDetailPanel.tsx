@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CoworkPin, ROLES, TIME_SLOTS } from '@/lib/types';
-import { getDistance, sayHi } from '@/lib/pinStore';
+import { getDistance, sayHi, fuzzyLocation } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X, Clock, MapPin, Navigation, MessageCircle, Check, ExternalLink } from 'lucide-react';
