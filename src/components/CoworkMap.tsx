@@ -103,7 +103,7 @@ export default function CoworkMap() {
     const handler = (e: Event) => {
       if (!dropping) return;
       const { lat, lng } = (e as CustomEvent).detail;
-      if (getDistance(userPos[0], userPos[1], lat, lng) > RADIUS_KM_EXTENDED) return;
+      if (getDistance(userPos[0], userPos[1], lat, lng) > visibleRadius) return;
       setDropDialog({ lat, lng });
       setDropping(false);
     };
