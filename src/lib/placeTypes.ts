@@ -19,6 +19,7 @@ export interface WorkPlace {
   hours: string; // e.g. "7am – 10pm"
   rating: number; // 1-5
   description: string;
+  offer?: string; // active offer text, e.g. "20% off coffee"
 }
 
 export const PLACE_TYPE_META: Record<WorkPlace['type'], { label: string; emoji: string; color: string }> = {

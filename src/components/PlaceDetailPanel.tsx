@@ -3,7 +3,7 @@ import { WorkPlace, PLACE_TYPE_META } from '@/lib/placeTypes';
 import { getDistance } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Navigation, ExternalLink, Wifi, WifiOff, Plug, Volume2, Star, Clock, Armchair, Sun, Coffee, UtensilsCrossed, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Navigation, ExternalLink, Wifi, WifiOff, Plug, Volume2, Star, Clock, Armchair, Sun, Coffee, UtensilsCrossed, ChevronLeft, ChevronRight, Tag } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Props {
@@ -100,6 +100,14 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
             </div>
           </div>
         </div>
+
+        {/* Offer banner */}
+        {place.offer && (
+          <div className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl bg-[hsl(35_90%_55%_/_0.08)] border border-[hsl(35_90%_55%_/_0.2)]">
+            <Tag className="h-4 w-4 text-[hsl(35_90%_50%)] shrink-0" />
+            <span className="text-xs font-semibold text-[hsl(35_80%_35%)]">{place.offer}</span>
+          </div>
+        )}
 
         {/* Description */}
         <p className="text-sm text-muted-foreground leading-relaxed">{place.description}</p>
