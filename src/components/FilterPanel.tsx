@@ -34,7 +34,7 @@ export default function FilterPanel({
       >
         <Filter className="h-4 w-4" />
         {activeCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+          <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
             {activeCount}
           </span>
         )}
@@ -49,20 +49,24 @@ export default function FilterPanel({
             className="fixed bottom-32 left-4 right-4 sm:absolute sm:bottom-14 sm:left-0 sm:right-auto sm:w-80 bg-card rounded-2xl shadow-xl border border-border p-5 space-y-5 z-[1000]"
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-heading font-bold text-sm">Filters</h3>
+              <h3 className="font-heading font-bold text-sm text-foreground">Filters</h3>
               <Button size="icon" variant="ghost" onClick={onToggle} className="h-7 w-7 rounded-lg">
                 <X className="h-3.5 w-3.5" />
               </Button>
             </div>
 
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">Role</p>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Role</p>
               <div className="flex flex-wrap gap-1.5">
                 {ROLES.map(r => (
                   <Badge
                     key={r.value}
                     variant={roles.includes(r.value) ? 'default' : 'outline'}
-                    className="cursor-pointer text-xs rounded-lg px-3 py-1"
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                      roles.includes(r.value)
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
+                    }`}
                     onClick={() => onRolesChange(toggle(roles, r.value))}
                   >
                     {r.emoji} {r.label}
@@ -72,13 +76,17 @@ export default function FilterPanel({
             </div>
 
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">Time</p>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Time</p>
               <div className="flex flex-wrap gap-1.5">
                 {TIME_SLOTS.map(t => (
                   <Badge
                     key={t.value}
                     variant={timeSlots.includes(t.value) ? 'default' : 'outline'}
-                    className="cursor-pointer text-xs rounded-lg px-3 py-1"
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                      timeSlots.includes(t.value)
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
+                    }`}
                     onClick={() => onTimeSlotsChange(toggle(timeSlots, t.value))}
                   >
                     {t.label}
@@ -88,13 +96,17 @@ export default function FilterPanel({
             </div>
 
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">Interests</p>
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Interests</p>
               <div className="flex flex-wrap gap-1.5">
                 {INTERESTS.map(i => (
                   <Badge
                     key={i}
                     variant={interests.includes(i) ? 'default' : 'outline'}
-                    className="cursor-pointer text-xs rounded-lg px-3 py-1"
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                      interests.includes(i)
+                        ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                        : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
+                    }`}
                     onClick={() => onInterestsChange(toggle(interests, i))}
                   >
                     {i}
@@ -107,7 +119,7 @@ export default function FilterPanel({
               <Button
                 size="sm"
                 variant="ghost"
-                className="w-full text-xs text-destructive hover:text-destructive"
+                className="w-full text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={() => { onRolesChange([]); onTimeSlotsChange([]); onInterestsChange([]); }}
               >
                 ✕ Clear all filters

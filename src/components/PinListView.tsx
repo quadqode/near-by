@@ -11,20 +11,14 @@ interface Props {
   onPinSelect: (pin: CoworkPin) => void;
 }
 
-const ROLE_BG: Record<string, string> = {
-  designer: 'bg-pin-designer',
-  developer: 'bg-pin-developer',
-  writer: 'bg-pin-writer',
-  marketer: 'bg-pin-marketer',
-  other: 'bg-pin-other',
-};
-
 export default function PinListView({ pins, userPos, onPinSelect }: Props) {
-  const sorted = [...pins].sort((a, b) => {
-    const da = getDistance(userPos[0], userPos[1], a.lat, a.lng);
-    const db = getDistance(userPos[0], userPos[1], b.lat, b.lng);
-    return da - db;
-  });
+  const sorted = [...pins]
+    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= 10)
+    .sort((a, b) => {
+      const da = getDistance(userPos[0], userPos[1], a.lat, a.lng);
+      const db = getDistance(userPos[0], userPos[1], b.lat, b.lng);
+      return da - db;
+    });
 
   if (sorted.length === 0) {
     return (
@@ -38,7 +32,7 @@ export default function PinListView({ pins, userPos, onPinSelect }: Props) {
 
   return (
     <ScrollArea className="h-full">
-      <div className="p-4 space-y-3">
+      <div className="p-4 space-y-2.5">
         {sorted.map((pin, idx) => {
           const role = ROLES.find(r => r.value === pin.role);
           const dist = getDistance(userPos[0], userPos[1], pin.lat, pin.lng);
@@ -51,45 +45,48 @@ export default function PinListView({ pins, userPos, onPinSelect }: Props) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04 }}
-              className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer"
+              className="bg-card border border-border rounded-xl p-4 hover:border-primary/30 hover:shadow-md transition-all cursor-pointer group"
               onClick={() => onPinSelect(pin)}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full ${ROLE_BG[pin.role]} flex items-center justify-center text-lg shrink-0`}>
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center text-lg shrink-0"
+                    style={{ background: `hsl(var(--pin-${pin.role}) / 0.15)` }}
+                  >
                     {role?.emoji}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-heading font-semibold text-sm text-foreground capitalize">{pin.role}</span>
+                      <span className="font-heading font-semibold text-sm text-foreground capitalize group-hover:text-primary transition-colors">{pin.role}</span>
                       {isNow && (
                         <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))]">
                           <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--success-foreground))] animate-pulse" />
-                          HERE NOW
+                          NOW
                         </span>
                       )}
                     </div>
                     {pin.message && (
-                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">"{pin.message}"</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 italic">"{pin.message}"</p>
                     )}
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-xs font-medium text-muted-foreground">{distLabel}</span>
+                  <span className="text-xs font-semibold text-primary">{distLabel}</span>
                 </div>
               </div>
 
               {pin.interests.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 mt-3">
                   {pin.interests.map(i => (
-                    <Badge key={i} variant="secondary" className="text-[10px] font-normal">
+                    <Badge key={i} variant="outline" className="text-[10px] font-normal border-border/60">
                       {i}
                     </Badge>
                   ))}
                 </div>
               )}
 
-              <div className="flex items-center gap-1 mt-3 text-[10px] text-muted-foreground/60">
+              <div className="flex items-center gap-1 mt-3 text-[10px] text-muted-foreground/50">
                 <Clock className="h-3 w-3" />
                 Expires {new Date(pin.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
