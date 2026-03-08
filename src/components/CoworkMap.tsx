@@ -51,8 +51,10 @@ export default function CoworkMap() {
   const [filterInterests, setFilterInterests] = useState<string[]>([]);
   const [view, setView] = useState<'map' | 'list'>('map');
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<WorkPlace | null>(null);
   const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
   const [visibleRadius, setVisibleRadius] = useState(2);
+  const [places, setPlaces] = useState<WorkPlace[]>([]);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
