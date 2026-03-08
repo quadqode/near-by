@@ -53,7 +53,7 @@ export default function CoworkMap() {
   const [view, setView] = useState<'map' | 'list'>('map');
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<WorkPlace | null>(null);
-  const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
+  const [guideOpen, setGuideOpen] = useState(false);
   const [userIntents, setUserIntents] = useState<UserIntent[]>(() => {
     const stored = localStorage.getItem('cowork-user-intents');
     return stored ? JSON.parse(stored) : ['food', 'cowork', 'people'];
