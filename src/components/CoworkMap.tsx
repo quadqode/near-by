@@ -299,24 +299,24 @@ export default function CoworkMap() {
 
       <div className="absolute bottom-4 left-4 z-[1000] flex items-center gap-2">
         <div className="bg-card rounded-xl shadow-lg border border-border p-1 flex">
-          <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('map')}>
+          <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-9 w-9 rounded-lg" onClick={() => setView('map')}>
             <Map className="h-4 w-4" />
           </Button>
-          <Button size="icon" variant={view === 'list' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('list')}>
+          <Button size="icon" variant={view === 'list' ? 'default' : 'ghost'} className="h-9 w-9 rounded-lg" onClick={() => setView('list')}>
             <List className="h-4 w-4" />
           </Button>
         </div>
-        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setGuideOpen(true)}>
+        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-11 w-11 rounded-xl" onClick={() => setGuideOpen(true)}>
           <HelpCircle className="h-4 w-4" />
         </Button>
-        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setIntentPickerOpen(true)}>
+        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-11 w-11 rounded-xl" onClick={() => setIntentPickerOpen(true)}>
           <SlidersHorizontal className="h-4 w-4" />
         </Button>
         <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 right-4 sm:left-0 sm:right-0 z-[1000] flex justify-end sm:justify-center pointer-events-none">
-        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-12 w-12 sm:h-14 sm:w-auto px-0 sm:px-7 rounded-lg shadow-xl font-heading font-semibold text-sm sm:text-base gap-0 sm:gap-2.5">
+        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-11 w-11 sm:h-14 sm:w-auto px-0 sm:px-7 rounded-xl shadow-xl font-heading font-semibold text-sm sm:text-base gap-0 sm:gap-2.5">
           <Plus className="h-5 w-5" />
           <span className="hidden sm:inline">Drop a pin</span>
         </Button>
