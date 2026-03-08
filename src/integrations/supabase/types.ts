@@ -14,10 +14,43 @@ export type Database = {
   }
   public: {
     Tables: {
+      greetings: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          pin_id: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string
+          pin_id: string
+          sender_id?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          pin_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "greetings_pin_id_fkey"
+            columns: ["pin_id"]
+            isOneToOne: false
+            referencedRelation: "pins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pins: {
         Row: {
           created_at: string
           expires_at: string
+          hi_count: number
           id: string
           interests: string[]
           lat: number
@@ -29,6 +62,7 @@ export type Database = {
         Insert: {
           created_at?: string
           expires_at?: string
+          hi_count?: number
           id?: string
           interests?: string[]
           lat: number
@@ -40,6 +74,7 @@ export type Database = {
         Update: {
           created_at?: string
           expires_at?: string
+          hi_count?: number
           id?: string
           interests?: string[]
           lat?: number
