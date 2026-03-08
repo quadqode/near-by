@@ -173,22 +173,22 @@ export default function CoworkMap() {
         }
       </AnimatePresence>
 
-      <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 z-[1000] flex items-center gap-2">
-        <div className="bg-card rounded-xl shadow-lg border border-border px-4 py-2.5 flex items-center gap-2.5">
-          <span className="text-lg">🗺️</span>
-          <h1 className="font-heading font-bold text-foreground text-base">CoWork Drop</h1>
+      <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 right-4 z-[1000] flex flex-wrap items-center gap-2">
+        <div className="bg-card rounded-xl shadow-lg border border-border px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2">
+          <span className="text-base sm:text-lg">🗺️</span>
+          <h1 className="font-heading font-bold text-foreground text-sm sm:text-base">CoWork Drop</h1>
         </div>
-        <div className="bg-card rounded-xl shadow-lg border border-border px-3 py-2.5 flex items-center gap-3">
+        <div className="bg-card rounded-xl shadow-lg border border-border px-2.5 sm:px-3 py-2 sm:py-2.5 flex items-center gap-2 sm:gap-3">
           <span className="flex items-center gap-1.5">
             <Users className="h-3.5 w-3.5 text-muted-foreground" />
-            <span className="text-xs font-medium text-muted-foreground">{filtered.length} nearby</span>
+            <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{filtered.length} nearby</span>
           </span>
           <span className="text-border">|</span>
-          <span className="text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`} radius</span>
+          <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`} radius</span>
         </div>
       </motion.div>
 
-      <div className="absolute bottom-4 left-4 z-[1000] flex items-center gap-2">
+      <div className="absolute bottom-20 sm:bottom-4 left-4 z-[1000] flex items-center gap-2">
         <div className="bg-card rounded-xl shadow-lg border border-border p-1 flex">
           <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('map')}>
             <Map className="h-4 w-4" />
@@ -203,8 +203,8 @@ export default function CoworkMap() {
         <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1000]">
-        <Button onClick={() => setDropping(!dropping)} size="lg" className={`h-14 px-7 rounded-lg shadow-xl font-heading font-semibold text-base gap-2.5 transition-all ${dropping ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' : ''}`}>
+      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 left-0 right-0 z-[1000] flex justify-center pointer-events-none">
+        <Button onClick={() => setDropping(!dropping)} size="lg" className={`pointer-events-auto h-12 sm:h-14 px-6 sm:px-7 rounded-lg shadow-xl font-heading font-semibold text-sm sm:text-base gap-2 sm:gap-2.5 transition-all ${dropping ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' : ''}`}>
           <Plus className={`h-5 w-5 transition-transform ${dropping ? 'rotate-45' : ''}`} />
           {dropping ? 'Tap the map' : 'Drop a pin'}
         </Button>
