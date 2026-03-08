@@ -52,7 +52,7 @@ export default function FilterPanel({
         size="icon"
         variant="outline"
         onClick={onToggle}
-        className="relative bg-card shadow-lg border-border h-10 w-10 rounded-xl"
+        className="relative bg-card shadow-lg border-border h-11 w-11 rounded-xl"
       >
         <Filter className="h-4 w-4" />
         {activeCount > 0 && (
