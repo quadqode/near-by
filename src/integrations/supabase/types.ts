@@ -88,6 +88,51 @@ export type Database = {
         }
         Relationships: []
       }
+      place_registrations: {
+        Row: {
+          address: string
+          contact_email: string
+          contact_phone: string
+          created_at: string
+          description: string
+          has_power: boolean
+          has_wifi: boolean
+          hours: string
+          id: string
+          name: string
+          status: string
+          type: string
+        }
+        Insert: {
+          address: string
+          contact_email: string
+          contact_phone?: string
+          created_at?: string
+          description?: string
+          has_power?: boolean
+          has_wifi?: boolean
+          hours?: string
+          id?: string
+          name: string
+          status?: string
+          type: string
+        }
+        Update: {
+          address?: string
+          contact_email?: string
+          contact_phone?: string
+          created_at?: string
+          description?: string
+          has_power?: boolean
+          has_wifi?: boolean
+          hours?: string
+          id?: string
+          name?: string
+          status?: string
+          type?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
