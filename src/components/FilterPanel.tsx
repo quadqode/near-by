@@ -46,7 +46,7 @@ export default function FilterPanel({
             initial={{ opacity: 0, y: -8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            className="absolute bottom-14 left-0 w-80 bg-card rounded-2xl shadow-xl border border-border p-5 space-y-5 z-[1000]"
+            className="fixed bottom-32 left-4 right-4 sm:absolute sm:bottom-14 sm:left-0 sm:right-auto sm:w-80 bg-card rounded-2xl shadow-xl border border-border p-5 space-y-5 z-[1000]"
           >
             <div className="flex items-center justify-between">
               <h3 className="font-heading font-bold text-sm">Filters</h3>
