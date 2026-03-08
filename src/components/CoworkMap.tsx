@@ -158,7 +158,10 @@ export default function CoworkMap() {
     if (userPos && mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
   }, [userPos]);
 
-  const filtered = userPos
+  const showPeople = userIntents.includes('people');
+  const showPlaces = userIntents.includes('food') || userIntents.includes('cowork');
+
+  const filtered = userPos && showPeople
     ? filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
         .filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4))
     : [];
