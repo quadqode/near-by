@@ -7,7 +7,7 @@ import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
 import { generateDemoPlaces } from '@/lib/demoPlaces';
-import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins } from '@/lib/pinStore';
+import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
@@ -125,8 +125,8 @@ export default function CoworkMap() {
         type: 'fill',
         source: 'radius-circle',
         paint: {
-          'fill-color': 'hsl(210, 70%, 55%)',
-          'fill-opacity': 0.06,
+          'fill-color': 'hsl(243, 75%, 58%)',
+          'fill-opacity': 0.12,
         },
       });
       map.addLayer({
@@ -134,9 +134,9 @@ export default function CoworkMap() {
         type: 'line',
         source: 'radius-circle',
         paint: {
-          'line-color': 'hsl(210, 70%, 55%)',
-          'line-opacity': 0.25,
-          'line-width': 1.5,
+          'line-color': 'hsl(243, 75%, 50%)',
+          'line-opacity': 0.4,
+          'line-width': 2,
           'line-dasharray': [4, 3],
         },
       });
@@ -174,8 +174,10 @@ export default function CoworkMap() {
         e.stopPropagation();
         setSelectedPin(pin);
       });
+      // Use fuzzy location on map for privacy
+      const [fLat, fLng] = fuzzyLocation(pin.lat, pin.lng, pin.id);
       const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat([pin.lng, pin.lat])
+        .setLngLat([fLng, fLat])
         .addTo(map);
       markersRef.current.push(marker);
     });

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { CoworkPin, ROLES, TIME_SLOTS } from '@/lib/types';
-import { getDistance, sayHi } from '@/lib/pinStore';
+import { getDistance, sayHi, fuzzyLocation } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { X, Clock, MapPin, Navigation, MessageCircle, Check, ExternalLink } from 'lucide-react';
@@ -34,9 +34,11 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
     }
   };
 
+  // Use fuzzy location until connected
+  const [fuzzyLat, fuzzyLng] = fuzzyLocation(pin.lat, pin.lng, pin.id);
+
   const handleGetDirections = () => {
-    const destination = `${pin.lat},${pin.lng}`;
-    // Google Maps URL works on both Android and iOS — opens native app if installed
+    const destination = hiSent ? `${pin.lat},${pin.lng}` : `${fuzzyLat},${fuzzyLng}`;
     const url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
     window.open(url, '_blank');
   };
@@ -135,8 +137,14 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
               <MapPin className="h-4 w-4 text-primary" />
             </div>
             <div className="text-left flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Get Directions</p>
-              <p className="text-xs font-medium text-foreground truncate">{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                {hiSent ? 'Exact Location' : 'Approximate Area'}
+              </p>
+              {hiSent ? (
+                <p className="text-xs font-medium text-foreground truncate">{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</p>
+              ) : (
+                <p className="text-xs font-medium text-muted-foreground truncate">Say Hi to reveal exact location</p>
+              )}
             </div>
             <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
           </button>
