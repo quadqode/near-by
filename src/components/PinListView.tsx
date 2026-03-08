@@ -206,6 +206,21 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
         </div>
       }
 
+      {/* Offers toggle */}
+      {hasPlacesVisible && (
+        <div className="px-4 py-2.5 border-b border-border/50 flex items-center justify-between">
+          <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
+            <Tag className="h-3 w-3" /> Offers only
+          </span>
+          <button
+            onClick={() => onOffersOnlyChange(!offersOnly)}
+            className={`w-9 h-5 rounded-full transition-colors relative ${offersOnly ? 'bg-primary' : 'bg-border'}`}
+          >
+            <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-card shadow-sm transition-transform ${offersOnly ? 'left-[18px]' : 'left-0.5'}`} />
+          </button>
+        </div>
+      )}
+
       {items.length === 0 ?
       <div className="flex flex-col items-center justify-center flex-1 text-center px-6 py-20">
           <MapPin className="h-10 w-10 text-muted-foreground/30 mb-3" />

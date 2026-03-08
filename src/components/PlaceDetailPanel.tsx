@@ -151,12 +151,21 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
         </button>
       </div>
 
-      {/* Bottom action */}
-      <div className="px-5 py-4 border-t border-border">
+      {/* Bottom actions */}
+      <div className="px-5 py-4 border-t border-border space-y-2">
         <Button className="w-full font-heading font-semibold h-11 rounded-xl gap-2" onClick={handleGetDirections}>
           <Navigation className="h-4 w-4" /> Get Directions
         </Button>
+        <Button
+          variant="outline"
+          className="w-full font-heading font-semibold h-10 rounded-xl gap-2 text-xs"
+          onClick={() => setRegisterOpen(true)}
+        >
+          <Store className="h-4 w-4" /> Own a place? Register here
+        </Button>
       </div>
+
+      <RegisterPlaceDialog open={registerOpen} onClose={() => setRegisterOpen(false)} />
     </motion.div>
   );
 }
