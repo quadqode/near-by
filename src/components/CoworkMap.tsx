@@ -92,17 +92,6 @@ export default function CoworkMap() {
     if (userPos && mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
   }, [userPos]);
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      if (!dropping || !userPos) return;
-      const { lat, lng } = (e as CustomEvent).detail;
-      if (getDistance(userPos[0], userPos[1], lat, lng) > visibleRadius) return;
-      setDropDialog({ lat, lng });
-      setDropping(false);
-    };
-    window.addEventListener('map-click', handler);
-    return () => window.removeEventListener('map-click', handler);
-  }, [dropping, userPos, visibleRadius]);
 
   const filtered = userPos
     ? filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
