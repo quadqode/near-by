@@ -113,7 +113,7 @@ export default function CoworkMap() {
   }, [dropping, userPos]);
 
   const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests }).
-  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 10));
+  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4));
 
   // Update markers
   useEffect(() => {

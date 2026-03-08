@@ -13,7 +13,7 @@ interface Props {
 
 export default function PinListView({ pins, userPos, onPinSelect }: Props) {
   const sorted = [...pins]
-    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= 10)
+    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= 4)
     .sort((a, b) => {
       const da = getDistance(userPos[0], userPos[1], a.lat, a.lng);
       const db = getDistance(userPos[0], userPos[1], b.lat, b.lng);
