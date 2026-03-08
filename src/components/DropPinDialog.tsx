@@ -93,7 +93,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
                 <button
                   key={t.value}
                   onClick={() => setTimeSlot(t.value)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border active:scale-[0.95] ${
                     timeSlot === t.value
                       ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                       : 'bg-background border-border text-foreground hover:border-primary/30 hover:bg-accent/30'
