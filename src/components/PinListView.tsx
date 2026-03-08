@@ -115,7 +115,7 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
 
 }
 
-export default function PinListView({ pins, places, userPos, intents, onPinSelect, onPlaceSelect }: Props) {
+export default function PinListView({ pins, places, userPos, intents, offersOnly, onOffersOnlyChange, onPinSelect, onPlaceSelect }: Props) {
   const [viewFilter, setViewFilter] = useState<ViewFilter>('all');
   const [placeSubFilter, setPlaceSubFilter] = useState<PlaceSubFilter>('all');
 
