@@ -210,7 +210,7 @@ export default function CoworkMap() {
         <div className="bg-card/90 backdrop-blur-sm rounded-lg border border-border px-3 py-1.5 flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5"><Users className="h-3 w-3" /> {filtered.length} people</span>
           <span className="text-border">|</span>
-          <span>{activeRadius}km radius</span>
+          <span>{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`} radius</span>
         </div>
       </motion.div>
 
