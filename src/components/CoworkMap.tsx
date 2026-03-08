@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw';
-import { CoworkPin, Role, TimeSlot, ROLES, RADIUS_KM } from '@/lib/types';
+import { CoworkPin, Role, TimeSlot, ROLES, RADIUS_KM, RADIUS_KM_EXTENDED } from '@/lib/types';
 import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins } from '@/lib/pinStore';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
@@ -87,7 +87,7 @@ export default function CoworkMap() {
     const handler = (e: Event) => {
       if (!dropping) return;
       const { lat, lng } = (e as CustomEvent).detail;
-      if (getDistance(userPos[0], userPos[1], lat, lng) > RADIUS_KM) return;
+      if (getDistance(userPos[0], userPos[1], lat, lng) > RADIUS_KM_EXTENDED) return;
       setDropDialog({ lat, lng });
       setDropping(false);
     };
@@ -95,8 +95,12 @@ export default function CoworkMap() {
     return () => window.removeEventListener('map-click', handler);
   }, [dropping, userPos]);
 
-  const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
+  const nearbyPins = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
     .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM);
+  const extendedPins = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
+    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM_EXTENDED);
+  const filtered = nearbyPins.length > 0 ? nearbyPins : extendedPins;
+  const activeRadius = nearbyPins.length > 0 ? RADIUS_KM : RADIUS_KM_EXTENDED;
 
   // Update markers
   useEffect(() => {
@@ -194,7 +198,7 @@ export default function CoworkMap() {
         <div className="bg-card/90 backdrop-blur-sm rounded-lg border border-border px-3 py-1.5 flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5"><Users className="h-3 w-3" /> {filtered.length} people</span>
           <span className="text-border">|</span>
-          <span>{RADIUS_KM}km radius</span>
+          <span>{activeRadius}km radius</span>
         </div>
       </motion.div>
 

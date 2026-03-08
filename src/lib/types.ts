@@ -42,4 +42,5 @@ export const ROLE_COLORS: Record<Role, string> = {
   other: 'var(--pin-other)',
 };
 
-export const RADIUS_KM = 15;
+export const RADIUS_KM = 4;
+export const RADIUS_KM_EXTENDED = 10;
