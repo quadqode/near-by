@@ -1,6 +1,8 @@
 import { CoworkPin, Role, TimeSlot } from './types';
+import { generateDemoPins } from './demoData';
 
 const STORAGE_KEY = 'cowork-pins';
+const DEMO_LOADED_KEY = 'cowork-demo-loaded';
 
 function loadPins(): CoworkPin[] {
   try {
@@ -10,7 +12,6 @@ function loadPins(): CoworkPin[] {
       if (key === 'createdAt' || key === 'expiresAt') return new Date(val);
       return val;
     });
-    // Filter expired
     return pins.filter(p => new Date(p.expiresAt) > new Date());
   } catch { return []; }
 }
@@ -20,6 +21,13 @@ function savePins(pins: CoworkPin[]) {
 }
 
 export function getPins(): CoworkPin[] {
+  // Load demo pins on first visit
+  if (!localStorage.getItem(DEMO_LOADED_KEY)) {
+    const demos = generateDemoPins();
+    const existing = loadPins();
+    savePins([...existing, ...demos]);
+    localStorage.setItem(DEMO_LOADED_KEY, 'true');
+  }
   return loadPins();
 }
 
@@ -29,7 +37,7 @@ export function addPin(pin: Omit<CoworkPin, 'id' | 'createdAt' | 'expiresAt'>): 
     ...pin,
     id: crypto.randomUUID(),
     createdAt: new Date(),
-    expiresAt: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours
+    expiresAt: new Date(Date.now() + 4 * 60 * 60 * 1000),
   };
   pins.push(newPin);
   savePins(pins);
