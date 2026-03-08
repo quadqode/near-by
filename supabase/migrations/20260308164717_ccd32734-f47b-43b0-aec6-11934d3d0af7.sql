@@ -1,0 +1,1 @@
+CREATE POLICY "Anyone can update pins" ON public.pins FOR UPDATE USING (true) WITH CHECK (true);
