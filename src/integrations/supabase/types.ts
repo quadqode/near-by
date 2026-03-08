@@ -14,7 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      pins: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          interests: string[]
+          lat: number
+          lng: number
+          message: string
+          role: string
+          time_slot: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          interests?: string[]
+          lat: number
+          lng: number
+          message?: string
+          role: string
+          time_slot: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          interests?: string[]
+          lat?: number
+          lng?: number
+          message?: string
+          role?: string
+          time_slot?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
