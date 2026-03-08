@@ -348,11 +348,6 @@ export default function CoworkMap() {
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
-      <IntentPicker
-        open={intentPickerOpen}
-        intents={userIntents}
-        onSave={(intents) => {setUserIntents(intents);localStorage.setItem('cowork-user-intents', JSON.stringify(intents));}}
-        onClose={() => setIntentPickerOpen(false)} />
       
       <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
     </div>);
