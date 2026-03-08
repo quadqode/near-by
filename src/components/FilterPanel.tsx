@@ -25,16 +25,16 @@ export default function FilterPanel({
   const activeCount = roles.length + timeSlots.length + interests.length;
 
   return (
-    <>
+    <div className="relative">
       <Button
         size="icon"
         variant="outline"
         onClick={onToggle}
-        className="relative bg-card shadow-lg border-border"
+        className="relative bg-card shadow-lg border-border h-10 w-10 rounded-xl"
       >
         <Filter className="h-4 w-4" />
         {activeCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+          <span className="absolute -top-1.5 -right-1.5 bg-foreground text-background text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
             {activeCount}
           </span>
         )}
@@ -43,26 +43,26 @@ export default function FilterPanel({
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            className="absolute top-14 right-0 w-72 bg-card rounded-lg shadow-xl border border-border p-4 space-y-4 z-[1000]"
+            initial={{ opacity: 0, y: -8, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.95 }}
+            className="absolute top-14 right-0 w-80 bg-card rounded-2xl shadow-xl border border-border p-5 space-y-5 z-[1000]"
           >
             <div className="flex items-center justify-between">
-              <h3 className="font-heading font-semibold text-sm">Filters</h3>
-              <Button size="icon" variant="ghost" onClick={onToggle} className="h-6 w-6">
-                <X className="h-3 w-3" />
+              <h3 className="font-heading font-bold text-sm">Filters</h3>
+              <Button size="icon" variant="ghost" onClick={onToggle} className="h-7 w-7 rounded-lg">
+                <X className="h-3.5 w-3.5" />
               </Button>
             </div>
 
             <div>
-              <p className="text-xs text-muted-foreground mb-2">Role</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">Role</p>
               <div className="flex flex-wrap gap-1.5">
                 {ROLES.map(r => (
                   <Badge
                     key={r.value}
                     variant={roles.includes(r.value) ? 'default' : 'outline'}
-                    className="cursor-pointer text-xs"
+                    className="cursor-pointer text-xs rounded-lg px-3 py-1"
                     onClick={() => onRolesChange(toggle(roles, r.value))}
                   >
                     {r.emoji} {r.label}
@@ -72,13 +72,13 @@ export default function FilterPanel({
             </div>
 
             <div>
-              <p className="text-xs text-muted-foreground mb-2">Time</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">Time</p>
               <div className="flex flex-wrap gap-1.5">
                 {TIME_SLOTS.map(t => (
                   <Badge
                     key={t.value}
                     variant={timeSlots.includes(t.value) ? 'default' : 'outline'}
-                    className="cursor-pointer text-xs"
+                    className="cursor-pointer text-xs rounded-lg px-3 py-1"
                     onClick={() => onTimeSlotsChange(toggle(timeSlots, t.value))}
                   >
                     {t.label}
@@ -88,13 +88,13 @@ export default function FilterPanel({
             </div>
 
             <div>
-              <p className="text-xs text-muted-foreground mb-2">Interests</p>
+              <p className="text-xs font-medium text-muted-foreground mb-2">Interests</p>
               <div className="flex flex-wrap gap-1.5">
                 {INTERESTS.map(i => (
                   <Badge
                     key={i}
                     variant={interests.includes(i) ? 'default' : 'outline'}
-                    className="cursor-pointer text-xs"
+                    className="cursor-pointer text-xs rounded-lg px-3 py-1"
                     onClick={() => onInterestsChange(toggle(interests, i))}
                   >
                     {i}
@@ -107,15 +107,15 @@ export default function FilterPanel({
               <Button
                 size="sm"
                 variant="ghost"
-                className="w-full text-xs"
+                className="w-full text-xs text-destructive hover:text-destructive"
                 onClick={() => { onRolesChange([]); onTimeSlotsChange([]); onInterestsChange([]); }}
               >
-                Clear all filters
+                ✕ Clear all filters
               </Button>
             )}
           </motion.div>
         )}
       </AnimatePresence>
-    </>
+    </div>
   );
 }
