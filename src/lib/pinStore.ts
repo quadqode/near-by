@@ -21,9 +21,9 @@ function mapRow(row: {
   };
 }
 
-export async function seedDemoPins() {
+export async function seedDemoPins(centerLat = 40.7128, centerLng = -74.006) {
   if (localStorage.getItem(DEMO_SEEDED_KEY)) return;
-  const demos = generateDemoPins();
+  const demos = generateDemoPins(centerLat, centerLng);
   const rows = demos.map(d => ({
     lat: d.lat,
     lng: d.lng,
