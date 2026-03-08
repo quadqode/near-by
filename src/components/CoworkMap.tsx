@@ -70,7 +70,7 @@ export default function CoworkMap() {
     if (!mapContainerRef.current || mapRef.current) return;
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'mapbox://styles/mapbox/light-v11',
+      style: 'mapbox://styles/mapbox/streets-v12',
       center: [userPos[1], userPos[0]],
       zoom: 13,
       attributionControl: false
