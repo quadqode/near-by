@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { CoworkPin, ROLES, TIME_SLOTS } from '@/lib/types';
-import { getDistance } from '@/lib/pinStore';
+import { getDistance, sayHi } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Clock, MapPin, Navigation, MessageCircle } from 'lucide-react';
+import { X, Clock, MapPin, Navigation, MessageCircle, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from '@/hooks/use-toast';
 
 const ROLE_HEX: Record<string, string> = {
   designer: '#7c3aed',
