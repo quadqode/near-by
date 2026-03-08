@@ -28,7 +28,7 @@ export default function CoworkMap() {
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number; lng: number} | null>(null);
-  const [dropping, setDropping] = useState(false);
+  
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterRoles, setFilterRoles] = useState<Role[]>([]);
   const [filterTimes, setFilterTimes] = useState<TimeSlot[]>([]);
@@ -74,8 +74,7 @@ export default function CoworkMap() {
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
     map.on('click', (e) => {
-      const event = new CustomEvent('map-click', { detail: { lat: e.lngLat.lat, lng: e.lngLat.lng } });
-      window.dispatchEvent(event);
+      setDropDialog({ lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
     const updateRadius = () => {
       const zoom = map.getZoom();
@@ -93,17 +92,6 @@ export default function CoworkMap() {
     if (userPos && mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
   }, [userPos]);
 
-  useEffect(() => {
-    const handler = (e: Event) => {
-      if (!dropping || !userPos) return;
-      const { lat, lng } = (e as CustomEvent).detail;
-      if (getDistance(userPos[0], userPos[1], lat, lng) > visibleRadius) return;
-      setDropDialog({ lat, lng });
-      setDropping(false);
-    };
-    window.addEventListener('map-click', handler);
-    return () => window.removeEventListener('map-click', handler);
-  }, [dropping, userPos, visibleRadius]);
 
   const filtered = userPos
     ? filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
@@ -209,9 +197,9 @@ export default function CoworkMap() {
       </div>
 
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 left-0 right-0 z-[1000] flex justify-center pointer-events-none">
-        <Button onClick={() => setDropping(!dropping)} size="lg" className={`pointer-events-auto h-12 sm:h-14 px-6 sm:px-7 rounded-lg shadow-xl font-heading font-semibold text-sm sm:text-base gap-2 sm:gap-2.5 transition-all ${dropping ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' : ''}`}>
-          <Plus className={`h-5 w-5 transition-transform ${dropping ? 'rotate-45' : ''}`} />
-          {dropping ? 'Tap the map' : 'Drop a pin'}
+        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-12 sm:h-14 px-6 sm:px-7 rounded-lg shadow-xl font-heading font-semibold text-sm sm:text-base gap-2 sm:gap-2.5">
+          <Plus className="h-5 w-5" />
+          Drop a pin
         </Button>
       </motion.div>
 
