@@ -3,8 +3,9 @@ import { WorkPlace, PLACE_TYPE_META } from '@/lib/placeTypes';
 import { getDistance } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Navigation, ExternalLink, Wifi, WifiOff, Plug, Volume2, Star, Clock, Armchair, Sun, Coffee, UtensilsCrossed, ChevronLeft, ChevronRight, Tag } from 'lucide-react';
+import { X, Navigation, ExternalLink, Wifi, WifiOff, Plug, Volume2, Star, Clock, Armchair, Sun, Coffee, UtensilsCrossed, ChevronLeft, ChevronRight, Tag, Store } from 'lucide-react';
 import { motion } from 'framer-motion';
+import RegisterPlaceDialog from './RegisterPlaceDialog';
 
 interface Props {
   place: WorkPlace;
@@ -14,6 +15,7 @@ interface Props {
 
 export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
   const [photoIdx, setPhotoIdx] = useState(0);
+  const [registerOpen, setRegisterOpen] = useState(false);
   const meta = PLACE_TYPE_META[place.type];
   const dist = getDistance(userPos[0], userPos[1], place.lat, place.lng);
   const distLabel = dist < 1 ? `${Math.round(dist * 1000)}m away` : `${dist.toFixed(1)}km away`;
@@ -148,12 +150,21 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
         </button>
       </div>
 
-      {/* Bottom action */}
-      <div className="px-5 py-4 border-t border-border">
+      {/* Bottom actions */}
+      <div className="px-5 py-4 border-t border-border space-y-2">
         <Button className="w-full font-heading font-semibold h-11 rounded-xl gap-2" onClick={handleGetDirections}>
           <Navigation className="h-4 w-4" /> Get Directions
         </Button>
+        <Button
+          variant="outline"
+          className="w-full font-heading font-semibold h-10 rounded-xl gap-2 text-xs"
+          onClick={() => setRegisterOpen(true)}
+        >
+          <Store className="h-4 w-4" /> Own a place? Register here
+        </Button>
       </div>
+
+      <RegisterPlaceDialog open={registerOpen} onClose={() => setRegisterOpen(false)} />
     </motion.div>
   );
 }

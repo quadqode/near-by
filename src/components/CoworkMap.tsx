@@ -64,6 +64,7 @@ export default function CoworkMap() {
   });
   const [visibleRadius, setVisibleRadius] = useState(2);
   const [places, setPlaces] = useState<WorkPlace[]>([]);
+  const [offersOnly, setOffersOnly] = useState(false);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -199,7 +200,7 @@ export default function CoworkMap() {
   places.filter((p) => {
     const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
     if (dist > Math.min(visibleRadius, 4)) return false;
-    // Filter by intent: 'food' shows restaurants (type 'other'), 'cowork' shows cafes/coworking/libraries
+    if (offersOnly && !p.offer) return false;
     const isFoodPlace = p.type === 'other';
     const isWorkPlace = p.type === 'cafe' || p.type === 'coworking' || p.type === 'library';
     if (userIntents.includes('food') && isFoodPlace) return true;
@@ -270,7 +271,7 @@ export default function CoworkMap() {
         {view === 'list' &&
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
             <div className="h-full pt-16 py-[76px]">
-              <PinListView pins={filtered} places={filteredPlaces} userPos={userPos} intents={userIntents} onPinSelect={handlePinSelect} onPlaceSelect={(place) => setSelectedPlace(place)} />
+              <PinListView pins={filtered} places={filteredPlaces} userPos={userPos} intents={userIntents} offersOnly={offersOnly} onOffersOnlyChange={setOffersOnly} onPinSelect={handlePinSelect} onPlaceSelect={(place) => setSelectedPlace(place)} />
             </div>
           </motion.div>
         }
