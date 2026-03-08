@@ -45,7 +45,7 @@ export default function RegisterPlaceDialog({ open, onClose }: Props) {
 
     setLoading(true);
     try {
-      const { error } = await supabase.from('place_registrations').insert({
+      const { error } = await (supabase as any).from('place_registrations').insert({
         name: form.name.trim().slice(0, 100),
         type: form.type,
         address: form.address.trim().slice(0, 200),
