@@ -61,15 +61,15 @@ export default function CoworkMap() {
   // Init map
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
-    const map = new maplibregl.Map({
+    const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+      style: 'mapbox://styles/mapbox/light-v11',
       center: [userPos[1], userPos[0]],
       zoom: 13,
       attributionControl: false,
     });
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-    map.addControl(new maplibregl.GeolocateControl({ trackUserLocation: true }), 'top-right');
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+    map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
     map.on('click', (e) => {
       const event = new CustomEvent('map-click', { detail: { lat: e.lngLat.lat, lng: e.lngLat.lng } });
       window.dispatchEvent(event);
