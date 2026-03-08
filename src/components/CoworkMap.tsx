@@ -15,10 +15,11 @@ import PinListView from './PinListView';
 import PinDetailPanel from './PinDetailPanel';
 import PlaceDetailPanel from './PlaceDetailPanel';
 import UsageGuide from './UsageGuide';
+import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
@@ -54,6 +55,7 @@ export default function CoworkMap() {
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<WorkPlace | null>(null);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [intentPickerOpen, setIntentPickerOpen] = useState(false);
   const [userIntents, setUserIntents] = useState<UserIntent[]>(() => {
     const stored = localStorage.getItem('cowork-user-intents');
     return stored ? JSON.parse(stored) : ['food', 'cowork', 'people'];
@@ -132,7 +134,7 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'fill-color': 'hsl(243, 75%, 58%)',
-          'fill-opacity': 0.12,
+          'fill-opacity': 0.07,
         },
       });
       map.addLayer({
@@ -141,7 +143,7 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'line-color': 'hsl(243, 75%, 50%)',
-          'line-opacity': 0.4,
+          'line-opacity': 0.24,
           'line-width': 2,
           'line-dasharray': [4, 3],
         },
@@ -158,7 +160,10 @@ export default function CoworkMap() {
     if (userPos && mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
   }, [userPos]);
 
-  const filtered = userPos
+  const showPeople = userIntents.includes('people');
+  const showPlaces = userIntents.includes('food') || userIntents.includes('cowork');
+
+  const filtered = userPos && showPeople
     ? filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
         .filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4))
     : [];
@@ -190,8 +195,17 @@ export default function CoworkMap() {
   }, [filtered]);
 
   // Update place markers
-  const filteredPlaces = userPos
-    ? places.filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4))
+  const filteredPlaces = userPos && showPlaces
+    ? places.filter(p => {
+        const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
+        if (dist > Math.min(visibleRadius, 4)) return false;
+        // Filter by intent: 'food' shows restaurants (type 'other'), 'cowork' shows cafes/coworking/libraries
+        const isFoodPlace = p.type === 'other';
+        const isWorkPlace = p.type === 'cafe' || p.type === 'coworking' || p.type === 'library';
+        if (userIntents.includes('food') && isFoodPlace) return true;
+        if (userIntents.includes('cowork') && isWorkPlace) return true;
+        return false;
+      })
     : [];
 
   useEffect(() => {
@@ -295,6 +309,9 @@ export default function CoworkMap() {
         <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setGuideOpen(true)}>
           <HelpCircle className="h-4 w-4" />
         </Button>
+        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setIntentPickerOpen(true)}>
+          <SlidersHorizontal className="h-4 w-4" />
+        </Button>
         <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
@@ -307,6 +324,12 @@ export default function CoworkMap() {
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
+      <IntentPicker
+        open={intentPickerOpen}
+        intents={userIntents}
+        onSave={(intents) => { setUserIntents(intents); localStorage.setItem('cowork-user-intents', JSON.stringify(intents)); }}
+        onClose={() => setIntentPickerOpen(false)}
+      />
       <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
     </div>
   );
