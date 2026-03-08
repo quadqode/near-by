@@ -20,7 +20,7 @@ import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
@@ -112,9 +112,7 @@ export default function CoworkMap() {
     });
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
-    map.on('click', (e) => {
-      setDropDialog({ lat: e.lngLat.lat, lng: e.lngLat.lng });
-    });
+    // Map click no longer opens drop pin dialog
 
     const updateRadius = () => {
       const zoom = map.getZoom();
@@ -296,8 +294,19 @@ export default function CoworkMap() {
           <h1 className="font-heading font-bold text-foreground text-sm sm:text-base">CoWork Drop</h1>
         </div>
         <div className="bg-card rounded-xl shadow-lg border border-border px-2 sm:px-3 py-2 sm:py-2.5 flex items-center gap-1.5 sm:gap-2">
-          <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-          <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{filtered.length}</span>
+          {showPeople && (
+            <>
+              <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{filtered.length}</span>
+            </>
+          )}
+          {showPeople && showPlaces && <span className="text-border">|</span>}
+          {showPlaces && (
+            <>
+              <Store className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+              <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{filteredPlaces.length}</span>
+            </>
+          )}
           <span className="text-border">|</span>
           <Radar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`}</span>
