@@ -4,6 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw';
 import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
+import type { UserIntent } from './UsageGuide';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
 import { generateDemoPlaces } from '@/lib/demoPlaces';
@@ -53,6 +54,10 @@ export default function CoworkMap() {
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<WorkPlace | null>(null);
   const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
+  const [userIntents, setUserIntents] = useState<UserIntent[]>(() => {
+    const stored = localStorage.getItem('cowork-user-intents');
+    return stored ? JSON.parse(stored) : ['food', 'cowork', 'people'];
+  });
   const [visibleRadius, setVisibleRadius] = useState(2);
   const [places, setPlaces] = useState<WorkPlace[]>([]);
 
@@ -210,9 +215,11 @@ export default function CoworkMap() {
     });
   }, [filteredPlaces]);
 
-  const handleGuideClose = () => {
+  const handleGuideClose = (intents: UserIntent[]) => {
     setGuideOpen(false);
+    setUserIntents(intents);
     localStorage.setItem('cowork-guide-seen', 'true');
+    localStorage.setItem('cowork-user-intents', JSON.stringify(intents));
   };
 
   const handlePinSelect = (pin: CoworkPin) => {

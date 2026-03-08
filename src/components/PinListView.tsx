@@ -3,7 +3,6 @@ import { CoworkPin, ROLES } from '@/lib/types';
 import { WorkPlace, PLACE_TYPE_META } from '@/lib/placeTypes';
 import { getDistance } from '@/lib/pinStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
 import { Clock, MapPin, Wifi, Plug, Volume2, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -30,11 +29,11 @@ function PinCard({ pin, dist, onClick }: { pin: CoworkPin; dist: number; onClick
   const isNow = pin.timeSlot === 'now';
 
   return (
-    <div className="flex items-start gap-3 cursor-pointer group" onClick={onClick}>
+    <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
       {/* Circular marker for people */}
       <div
-        className="w-10 h-10 rounded-full flex items-center justify-center text-lg shrink-0 border-2 border-primary/30"
-        style={{ background: `hsl(var(--pin-${pin.role}) / 0.18)` }}
+        className="w-11 h-11 rounded-full flex items-center justify-center text-lg shrink-0 shadow-sm"
+        style={{ background: `hsl(var(--pin-${pin.role}) / 0.15)`, border: `2px solid hsl(var(--pin-${pin.role}) / 0.3)` }}
       >
         {role?.emoji}
       </div>
@@ -55,13 +54,13 @@ function PinCard({ pin, dist, onClick }: { pin: CoworkPin; dist: number; onClick
           <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 italic">"{pin.message}"</p>
         )}
         {pin.interests.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-1.5">
+          <div className="flex flex-wrap gap-1.5 mt-2">
             {pin.interests.map(i => (
-              <Badge key={i} variant="outline" className="text-[10px] font-normal border-border/60">{i}</Badge>
+              <span key={i} className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-accent/50 text-accent-foreground border border-border/50">{i}</span>
             ))}
           </div>
         )}
-        <div className="flex items-center gap-1 mt-1.5 text-[10px] text-muted-foreground/50">
+        <div className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground">
           <Clock className="h-3 w-3" />
           Expires {new Date(pin.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
@@ -74,9 +73,11 @@ function PlaceCard({ place, dist, onClick }: { place: WorkPlace; dist: number; o
   const meta = PLACE_TYPE_META[place.type];
 
   return (
-    <div className="flex items-start gap-3 cursor-pointer group" onClick={onClick}>
+    <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
       {/* Square marker for places */}
-      <div className="w-10 h-10 rounded-lg flex items-center justify-center text-lg shrink-0 border-2 border-accent/40 bg-muted/60">
+      <div
+        className="w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm bg-accent/40 border-2 border-accent-foreground/15"
+      >
         {meta.emoji}
       </div>
       <div className="flex-1 min-w-0">
@@ -85,16 +86,16 @@ function PlaceCard({ place, dist, onClick }: { place: WorkPlace; dist: number; o
           <span className="text-xs font-semibold text-primary shrink-0">{distLabel(dist)}</span>
         </div>
         <div className="flex items-center gap-2 mt-0.5">
-          <Badge variant="outline" className="text-[10px] font-normal border-border/60 px-1.5 py-0">{meta.label}</Badge>
+          <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-accent/50 text-accent-foreground border border-border/50">{meta.label}</span>
           <span className="text-[10px] text-muted-foreground">⭐ {place.rating}</span>
         </div>
-        <div className="flex items-center gap-3 mt-1.5 text-[10px] text-muted-foreground">
+        <div className="flex items-center gap-3 mt-2 text-[10px] text-muted-foreground">
           {place.amenities.wifi && <span className="flex items-center gap-0.5"><Wifi className="h-3 w-3" /> WiFi</span>}
           {place.amenities.powerSockets && <span className="flex items-center gap-0.5"><Plug className="h-3 w-3" /> Power</span>}
           {place.amenities.coffee && <span className="flex items-center gap-0.5"><Coffee className="h-3 w-3" /> Coffee</span>}
           <span className="flex items-center gap-0.5"><Volume2 className="h-3 w-3" /> {place.amenities.quietLevel}</span>
         </div>
-        <div className="flex items-center gap-1 mt-1.5 text-[10px] text-muted-foreground/50">
+        <div className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground">
           <Clock className="h-3 w-3" />{place.hours}
         </div>
       </div>
@@ -105,7 +106,6 @@ function PlaceCard({ place, dist, onClick }: { place: WorkPlace; dist: number; o
 export default function PinListView({ pins, places, userPos, onPinSelect, onPlaceSelect }: Props) {
   const [viewFilter, setViewFilter] = useState<ViewFilter>('all');
 
-  // Build combined list
   const items: ListItem[] = [];
 
   if (viewFilter !== 'places') {
@@ -130,16 +130,17 @@ export default function PinListView({ pins, places, userPos, onPinSelect, onPlac
   ];
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-4 pt-3 pb-2 flex gap-1.5">
+    <div className="h-full flex flex-col bg-background">
+      {/* Filter tabs */}
+      <div className="px-4 pt-3 pb-2 flex gap-1.5 border-b border-border/50">
         {filters.map(f => (
           <button
             key={f.value}
             onClick={() => setViewFilter(f.value)}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
               viewFilter === f.value
-                ? 'bg-primary text-primary-foreground shadow-sm'
-                : 'bg-muted/50 text-muted-foreground hover:bg-muted hover:text-foreground'
+                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
             }`}
           >
             <span>{f.emoji}</span>
@@ -151,12 +152,12 @@ export default function PinListView({ pins, places, userPos, onPinSelect, onPlac
       {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-1 text-center px-6 py-20">
           <MapPin className="h-10 w-10 text-muted-foreground/30 mb-3" />
-          <p className="text-sm font-medium text-muted-foreground">Nothing nearby</p>
-          <p className="text-xs text-muted-foreground/60 mt-1">Try a different filter or drop a pin!</p>
+          <p className="text-sm font-heading font-semibold text-muted-foreground">Nothing nearby</p>
+          <p className="text-xs text-muted-foreground mt-1">Try a different filter or drop a pin!</p>
         </div>
       ) : (
         <ScrollArea className="flex-1">
-          <div className="p-4 space-y-2">
+          <div className="p-4 space-y-2.5">
             {items.map((item, idx) => (
               <motion.div
                 key={item.kind === 'pin' ? `pin-${item.data.id}` : `place-${item.data.id}`}
