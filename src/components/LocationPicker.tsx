@@ -111,10 +111,10 @@ export default function LocationPicker({ onLocationSet }: Props) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.15 + idx * 0.08 }}
                     onClick={() => toggleIntent(opt.value)}
-                    className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left ${
+                    className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left active:scale-[0.98] ${
                       selected
                         ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-border bg-card hover:border-primary/30'
+                        : 'border-border bg-card hover:border-primary/30 hover:shadow-sm'
                     }`}
                   >
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 border transition-colors ${

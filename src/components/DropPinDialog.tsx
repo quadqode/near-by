@@ -142,7 +142,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
                 <button
                   key={i}
                   onClick={() => toggleInterest(i)}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border active:scale-[0.95] ${
                     interests.includes(i)
                       ? 'bg-primary/10 border-primary/30 text-primary'
                       : 'bg-background border-border text-muted-foreground hover:border-primary/20'
