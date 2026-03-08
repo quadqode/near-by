@@ -3,9 +3,11 @@ import { CoworkPin, ROLES } from '@/lib/types';
 import { WorkPlace, PLACE_TYPE_META } from '@/lib/placeTypes';
 import { getDistance } from '@/lib/pinStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Clock, MapPin, Wifi, Plug, Volume2, Coffee, Tag } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Clock, MapPin, Wifi, Plug, Volume2, Coffee, Tag, Store } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { UserIntent } from './LocationPicker';
+import RegisterPlaceDialog from './RegisterPlaceDialog';
 
 type ViewFilter = 'all' | 'people' | 'places';
 type PlaceSubFilter = 'all' | 'cafe' | 'food';
@@ -118,6 +120,7 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
 export default function PinListView({ pins, places, userPos, intents, offersOnly, onOffersOnlyChange, onPinSelect, onPlaceSelect }: Props) {
   const [viewFilter, setViewFilter] = useState<ViewFilter>('all');
   const [placeSubFilter, setPlaceSubFilter] = useState<PlaceSubFilter>('all');
+  const [registerOpen, setRegisterOpen] = useState(false);
 
   // Determine which categories are available based on intents
   const hasPeople = intents.includes('people');
@@ -245,9 +248,36 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
             }
               </motion.div>
           )}
+            {/* Register place card — show when only places intents are active */}
+            {!hasPeople && hasPlaces && (
+              <motion.div
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: items.length * 0.03 }}
+                className="bg-card border border-dashed border-primary/30 rounded-xl p-5 flex flex-col items-center justify-center text-center gap-3 hover:border-primary/50 hover:shadow-md transition-all"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Store className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="font-heading font-semibold text-sm text-foreground">Own a place?</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Get your café or restaurant listed on CoWork Drop</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-xl font-heading font-semibold text-xs gap-1.5 h-9"
+                  onClick={() => setRegisterOpen(true)}
+                >
+                  <Store className="h-3.5 w-3.5" /> Register Your Place
+                </Button>
+              </motion.div>
+            )}
           </div>
         </ScrollArea>
       }
+
+      <RegisterPlaceDialog open={registerOpen} onClose={() => setRegisterOpen(false)} />
     </div>);
 
 }
