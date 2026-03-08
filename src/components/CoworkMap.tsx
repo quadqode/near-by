@@ -11,8 +11,7 @@ import PinListView from './PinListView';
 import PinDetailPanel from './PinDetailPanel';
 import UsageGuide from './UsageGuide';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, LogOut } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { Plus, Users, Map, List, HelpCircle, Radar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
@@ -26,7 +25,6 @@ const ROLE_HEX: Record<Role, string> = {
 const DEFAULT_POS: [number, number] = [40.7128, -74.006];
 
 export default function CoworkMap() {
-  const { signOut } = useAuth();
   const [userPos, setUserPos] = useState<[number, number]>(DEFAULT_POS);
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
@@ -187,11 +185,6 @@ export default function CoworkMap() {
           <span className="text-border">|</span>
           <Radar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`}</span>
-        </div>
-        <div className="ml-auto">
-          <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-9 w-9 rounded-xl" onClick={() => signOut()}>
-            <LogOut className="h-3.5 w-3.5" />
-          </Button>
         </div>
       </motion.div>
 
