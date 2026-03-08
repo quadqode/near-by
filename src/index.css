@@ -186,6 +186,26 @@
   animation: pulse-marker 2s ease-in-out infinite;
 }
 
+/* Place (square) markers */
+.place-marker {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 3px solid white;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  background: hsl(30 80% 55%);
+}
+
+.place-marker:hover {
+  transform: scale(1.15);
+}
+
 @keyframes pulse-marker {
   0%, 100% { box-shadow: 0 2px 12px rgba(0,0,0,0.2); }
   50% { box-shadow: 0 2px 20px rgba(0,0,0,0.3), 0 0 0 8px rgba(26,154,122,0.15); }
