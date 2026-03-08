@@ -14,6 +14,7 @@ import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
 import PinDetailPanel from './PinDetailPanel';
 import PlaceDetailPanel from './PlaceDetailPanel';
+import SplashScreen from './SplashScreen';
 import UsageGuide from './UsageGuide';
 import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
