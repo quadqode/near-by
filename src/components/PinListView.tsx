@@ -254,23 +254,29 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: items.length * 0.03 }}
-                className="bg-card border border-dashed border-primary/30 rounded-xl p-5 flex flex-col items-center justify-center text-center gap-3 hover:border-primary/50 hover:shadow-md transition-all"
+                className="bg-card border border-dashed border-primary/30 rounded-xl p-4 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
+                onClick={() => setRegisterOpen(true)}
               >
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Store className="h-5 w-5 text-primary" />
+                <div className="flex items-start gap-3.5">
+                  <div className="w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm border-2 bg-primary/10 border-primary/30">
+                    <Store className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-heading font-semibold text-sm text-foreground">Your Place Here</span>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                        BE NEXT
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">Get your café or restaurant listed on CoWork Drop</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-accent/50 text-accent-foreground border border-border/50">Register</span>
+                    </div>
+                    <div className="flex items-center gap-1 mt-2 text-[10px] text-primary font-semibold">
+                      <Send className="h-3 w-3" /> Tap to submit your place →
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-heading font-semibold text-sm text-foreground">Own a place?</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">Get your café or restaurant listed on CoWork Drop</p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="rounded-xl font-heading font-semibold text-xs gap-1.5 h-9"
-                  onClick={() => setRegisterOpen(true)}
-                >
-                  <Store className="h-3.5 w-3.5" /> Register Your Place
-                </Button>
               </motion.div>
             )}
           </div>
