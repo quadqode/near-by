@@ -162,6 +162,14 @@ const PLACE_TEMPLATES: (Omit<WorkPlace, 'id'> & { offsetLat: number; offsetLng: 
   },
 ];
 
+const DEMO_OFFERS: Record<number, string> = {
+  0: '☕ Buy 1 Get 1 Free on cold brews',
+  2: '🍰 Free dessert with any main course',
+  5: '🎉 20% off all gelato today',
+  7: '🍕 Flat ₹100 off on sourdough pizzas',
+  10: '🥐 Free coffee with any pastry order',
+};
+
 export function generateDemoPlaces(centerLat = 28.55, centerLng = 77.22): WorkPlace[] {
   return PLACE_TEMPLATES.map((tpl, i) => ({
     id: `place-${i}`,
@@ -174,5 +182,6 @@ export function generateDemoPlaces(centerLat = 28.55, centerLng = 77.22): WorkPl
     description: tpl.description,
     lat: centerLat + tpl.offsetLat + (Math.random() - 0.5) * 0.002,
     lng: centerLng + tpl.offsetLng + (Math.random() - 0.5) * 0.002,
+    ...(DEMO_OFFERS[i] ? { offer: DEMO_OFFERS[i] } : {}),
   }));
 }

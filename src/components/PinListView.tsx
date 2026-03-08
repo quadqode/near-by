@@ -77,8 +77,11 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
   return (
     <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
       <div
-        className="w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm bg-accent/40 border-2 border-accent-foreground/15">
-        
+        className={`w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm border-2 ${
+          place.offer
+            ? 'bg-[hsl(35_90%_55%_/_0.12)] border-[hsl(35_90%_55%_/_0.35)]'
+            : 'bg-accent/40 border-accent-foreground/15'
+        }`}>
         {meta.emoji}
       </div>
       <div className="flex-1 min-w-0">
@@ -86,7 +89,13 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
           <span className="font-heading font-semibold text-sm text-foreground group-hover:text-primary transition-colors line-clamp-1">{place.name}</span>
           <span className="text-xs font-semibold text-primary shrink-0">{distLabel(dist)}</span>
         </div>
-        <div className="flex items-center gap-2 mt-0.5">
+        {place.offer && (
+          <div className="flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-[hsl(35_90%_55%_/_0.08)] border border-[hsl(35_90%_55%_/_0.2)]">
+            <Tag className="h-3 w-3 text-[hsl(35_90%_50%)]" />
+            <span className="text-[10px] font-semibold text-[hsl(35_80%_35%)]">{place.offer}</span>
+          </div>
+        )}
+        <div className="flex items-center gap-2 mt-1">
           <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-accent/50 text-accent-foreground border border-border/50">{meta.label}</span>
           <span className="text-[10px] text-muted-foreground">⭐ {place.rating}</span>
         </div>

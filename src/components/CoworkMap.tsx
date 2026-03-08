@@ -217,8 +217,14 @@ export default function CoworkMap() {
     filteredPlaces.forEach((place) => {
       const meta = PLACE_TYPE_META[place.type];
       const el = document.createElement('div');
-      el.className = 'place-marker';
+      el.className = `place-marker${place.offer ? ' has-offer' : ''}`;
       el.textContent = meta.emoji;
+      if (place.offer) {
+        const tag = document.createElement('span');
+        tag.className = 'offer-tag';
+        tag.textContent = '🏷️';
+        el.appendChild(tag);
+      }
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         setSelectedPlace(place);

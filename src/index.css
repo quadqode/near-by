@@ -200,10 +200,37 @@
   cursor: pointer;
   transition: transform 0.2s ease;
   background: hsl(30 80% 55%);
+  position: relative;
 }
 
 .place-marker:hover {
   transform: scale(1.15);
+}
+
+.place-marker.has-offer {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2), 0 0 0 3px hsl(35 90% 55% / 0.4);
+  animation: offer-glow 2.5s ease-in-out infinite;
+}
+
+.place-marker .offer-tag {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: hsl(35 90% 50%);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 6px;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+
+@keyframes offer-glow {
+  0%, 100% { box-shadow: 0 2px 12px rgba(0,0,0,0.2), 0 0 0 3px hsl(35 90% 55% / 0.3); }
+  50% { box-shadow: 0 2px 16px rgba(0,0,0,0.25), 0 0 0 6px hsl(35 90% 55% / 0.15); }
 }
 
 @keyframes pulse-marker {
