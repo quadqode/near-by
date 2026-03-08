@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+mapboxgl.accessToken = 'pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw';
 import { CoworkPin, Role, TimeSlot, ROLES, RADIUS_KM } from '@/lib/types';
 import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins } from '@/lib/pinStore';
 import DropPinDialog from './DropPinDialog';
@@ -36,8 +38,8 @@ export default function CoworkMap() {
   const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
-  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   const refreshPins = useCallback(async () => {
     const data = await getPins();
@@ -59,15 +61,15 @@ export default function CoworkMap() {
   // Init map
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
-    const map = new maplibregl.Map({
+    const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+      style: 'mapbox://styles/mapbox/light-v11',
       center: [userPos[1], userPos[0]],
       zoom: 13,
       attributionControl: false,
     });
-    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-    map.addControl(new maplibregl.GeolocateControl({ trackUserLocation: true }), 'top-right');
+    map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+    map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
     map.on('click', (e) => {
       const event = new CustomEvent('map-click', { detail: { lat: e.lngLat.lat, lng: e.lngLat.lng } });
       window.dispatchEvent(event);
@@ -113,7 +115,7 @@ export default function CoworkMap() {
         e.stopPropagation();
         setSelectedPin(pin);
       });
-      const marker = new maplibregl.Marker({ element: el })
+      const marker = new mapboxgl.Marker({ element: el })
         .setLngLat([pin.lng, pin.lat])
         .addTo(map);
       markersRef.current.push(marker);
