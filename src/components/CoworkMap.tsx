@@ -64,10 +64,13 @@ export default function CoworkMap() {
 
   useEffect(() => {
     refreshPins();
+    const timeout = setTimeout(() => setUserPos(prev => prev || [40.7128, -74.006]), 3000);
     navigator.geolocation.getCurrentPosition(
-      pos => setUserPos([pos.coords.latitude, pos.coords.longitude]),
-      () => setUserPos([40.7128, -74.006]) // fallback NYC
+      pos => { clearTimeout(timeout); setUserPos([pos.coords.latitude, pos.coords.longitude]); },
+      () => { clearTimeout(timeout); setUserPos([40.7128, -74.006]); },
+      { timeout: 5000, maximumAge: 60000 }
     );
+    return () => clearTimeout(timeout);
   }, [refreshPins]);
 
   const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
