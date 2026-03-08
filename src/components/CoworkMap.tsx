@@ -297,7 +297,14 @@ export default function CoworkMap() {
         </div>
       </motion.div>
 
-      <div className="absolute bottom-20 sm:bottom-4 left-4 z-[1000] flex items-center gap-2">
+      <div className="absolute bottom-20 sm:bottom-4 left-4 z-[1000] flex flex-col items-start gap-2">
+        <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
+        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setIntentPickerOpen(true)}>
+          <SlidersHorizontal className="h-4 w-4" />
+        </Button>
+        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setGuideOpen(true)}>
+          <HelpCircle className="h-4 w-4" />
+        </Button>
         <div className="bg-card rounded-xl shadow-lg border border-border p-1 flex">
           <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('map')}>
             <Map className="h-4 w-4" />
@@ -306,13 +313,6 @@ export default function CoworkMap() {
             <List className="h-4 w-4" />
           </Button>
         </div>
-        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setGuideOpen(true)}>
-          <HelpCircle className="h-4 w-4" />
-        </Button>
-        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setIntentPickerOpen(true)}>
-          <SlidersHorizontal className="h-4 w-4" />
-        </Button>
-        <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 left-0 right-0 z-[1000] flex justify-center pointer-events-none">
