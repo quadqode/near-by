@@ -33,10 +33,10 @@ const ROLE_HEX: Record<Role, string> = {
 // Helper: create GeoJSON circle
 function createGeoJSONCircle(center: [number, number], radiusKm: number, points = 64) {
   const coords: [number, number][] = [];
-  const distanceX = radiusKm / (111.32 * Math.cos((center[1] * Math.PI) / 180));
+  const distanceX = radiusKm / (111.32 * Math.cos(center[1] * Math.PI / 180));
   const distanceY = radiusKm / 110.574;
   for (let i = 0; i < points; i++) {
-    const theta = (i / points) * (2 * Math.PI);
+    const theta = i / points * (2 * Math.PI);
     coords.push([center[0] + distanceX * Math.cos(theta), center[1] + distanceY * Math.sin(theta)]);
   }
   coords.push(coords[0]);
@@ -46,7 +46,7 @@ function createGeoJSONCircle(center: [number, number], radiusKm: number, points 
 export default function CoworkMap() {
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [pins, setPins] = useState<CoworkPin[]>([]);
-  const [dropDialog, setDropDialog] = useState<{lat: number; lng: number} | null>(null);
+  const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterRoles, setFilterRoles] = useState<Role[]>([]);
   const [filterTimes, setFilterTimes] = useState<TimeSlot[]>([]);
@@ -134,8 +134,8 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'fill-color': 'hsl(243, 75%, 58%)',
-          'fill-opacity': 0.07,
-        },
+          'fill-opacity': 0.07
+        }
       });
       map.addLayer({
         id: 'radius-circle-stroke',
@@ -145,14 +145,14 @@ export default function CoworkMap() {
           'line-color': 'hsl(243, 75%, 50%)',
           'line-opacity': 0.24,
           'line-width': 2,
-          'line-dasharray': [4, 3],
-        },
+          'line-dasharray': [4, 3]
+        }
       });
       updateRadius();
     });
 
     mapRef.current = map;
-    return () => { map.remove(); mapRef.current = null; };
+    return () => {map.remove();mapRef.current = null;};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPos]);
 
@@ -163,10 +163,10 @@ export default function CoworkMap() {
   const showPeople = userIntents.includes('people');
   const showPlaces = userIntents.includes('food') || userIntents.includes('cowork');
 
-  const filtered = userPos && showPeople
-    ? filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
-        .filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4))
-    : [];
+  const filtered = userPos && showPeople ?
+  filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests }).
+  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4)) :
+  [];
 
   // Update markers
   useEffect(() => {
@@ -187,34 +187,34 @@ export default function CoworkMap() {
       });
       // Use fuzzy location on map for privacy
       const [fLat, fLng] = fuzzyLocation(pin.lat, pin.lng, pin.id);
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat([fLng, fLat])
-        .addTo(map);
+      const marker = new mapboxgl.Marker({ element: el }).
+      setLngLat([fLng, fLat]).
+      addTo(map);
       markersRef.current.push(marker);
     });
   }, [filtered]);
 
   // Update place markers
-  const filteredPlaces = userPos && showPlaces
-    ? places.filter(p => {
-        const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
-        if (dist > Math.min(visibleRadius, 4)) return false;
-        // Filter by intent: 'food' shows restaurants (type 'other'), 'cowork' shows cafes/coworking/libraries
-        const isFoodPlace = p.type === 'other';
-        const isWorkPlace = p.type === 'cafe' || p.type === 'coworking' || p.type === 'library';
-        if (userIntents.includes('food') && isFoodPlace) return true;
-        if (userIntents.includes('cowork') && isWorkPlace) return true;
-        return false;
-      })
-    : [];
+  const filteredPlaces = userPos && showPlaces ?
+  places.filter((p) => {
+    const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
+    if (dist > Math.min(visibleRadius, 4)) return false;
+    // Filter by intent: 'food' shows restaurants (type 'other'), 'cowork' shows cafes/coworking/libraries
+    const isFoodPlace = p.type === 'other';
+    const isWorkPlace = p.type === 'cafe' || p.type === 'coworking' || p.type === 'library';
+    if (userIntents.includes('food') && isFoodPlace) return true;
+    if (userIntents.includes('cowork') && isWorkPlace) return true;
+    return false;
+  }) :
+  [];
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    placeMarkersRef.current.forEach(m => m.remove());
+    placeMarkersRef.current.forEach((m) => m.remove());
     placeMarkersRef.current = [];
 
-    filteredPlaces.forEach(place => {
+    filteredPlaces.forEach((place) => {
       const meta = PLACE_TYPE_META[place.type];
       const el = document.createElement('div');
       el.className = 'place-marker';
@@ -223,9 +223,9 @@ export default function CoworkMap() {
         e.stopPropagation();
         setSelectedPlace(place);
       });
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat([place.lng, place.lat])
-        .addTo(map);
+      const marker = new mapboxgl.Marker({ element: el }).
+      setLngLat([place.lng, place.lat]).
+      addTo(map);
       placeMarkersRef.current.push(marker);
     });
   }, [filteredPlaces]);
@@ -256,31 +256,31 @@ export default function CoworkMap() {
       <div ref={mapContainerRef} className={`h-full w-full transition-opacity duration-300 ${view === 'list' ? 'opacity-0 pointer-events-none absolute' : ''}`} />
 
       <AnimatePresence>
-        {view === 'list' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
-            <div className="h-full pt-16">
+        {view === 'list' &&
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
+            <div className="h-full pt-16 py-[76px]">
               <PinListView pins={filtered} places={filteredPlaces} userPos={userPos} intents={userIntents} onPinSelect={handlePinSelect} onPlaceSelect={(place) => setSelectedPlace(place)} />
             </div>
           </motion.div>
-        )}
+        }
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedPin && (
-          <>
+        {selectedPin &&
+        <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-foreground/20 z-[1050]" onClick={() => setSelectedPin(null)} />
             <PinDetailPanel pin={selectedPin} userPos={userPos} onClose={() => setSelectedPin(null)} />
           </>
-        )}
+        }
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedPlace && (
-          <>
+        {selectedPlace &&
+        <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-foreground/20 z-[1050]" onClick={() => setSelectedPlace(null)} />
             <PlaceDetailPanel place={selectedPlace} userPos={userPos} onClose={() => setSelectedPlace(null)} />
           </>
-        )}
+        }
       </AnimatePresence>
 
       <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 right-4 z-[1000] flex flex-wrap items-center gap-2">
@@ -327,10 +327,10 @@ export default function CoworkMap() {
       <IntentPicker
         open={intentPickerOpen}
         intents={userIntents}
-        onSave={(intents) => { setUserIntents(intents); localStorage.setItem('cowork-user-intents', JSON.stringify(intents)); }}
-        onClose={() => setIntentPickerOpen(false)}
-      />
+        onSave={(intents) => {setUserIntents(intents);localStorage.setItem('cowork-user-intents', JSON.stringify(intents));}}
+        onClose={() => setIntentPickerOpen(false)} />
+      
       <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
-    </div>
-  );
+    </div>);
+
 }
