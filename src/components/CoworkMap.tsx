@@ -193,8 +193,17 @@ export default function CoworkMap() {
   }, [filtered]);
 
   // Update place markers
-  const filteredPlaces = userPos
-    ? places.filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4))
+  const filteredPlaces = userPos && showPlaces
+    ? places.filter(p => {
+        const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
+        if (dist > Math.min(visibleRadius, 4)) return false;
+        // Filter by intent: 'food' shows restaurants (type 'other'), 'cowork' shows cafes/coworking/libraries
+        const isFoodPlace = p.type === 'other';
+        const isWorkPlace = p.type === 'cafe' || p.type === 'coworking' || p.type === 'library';
+        if (userIntents.includes('food') && isFoodPlace) return true;
+        if (userIntents.includes('cowork') && isWorkPlace) return true;
+        return false;
+      })
     : [];
 
   useEffect(() => {
