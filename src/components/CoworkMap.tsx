@@ -316,9 +316,26 @@ export default function CoworkMap() {
         <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-11 w-11 rounded-xl" onClick={() => setGuideOpen(true)}>
           <HelpCircle className="h-4 w-4" />
         </Button>
-        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-11 w-11 rounded-xl" onClick={() => setIntentPickerOpen(true)}>
-          <SlidersHorizontal className="h-4 w-4" />
-        </Button>
+        <div className="relative">
+          <Button size="icon" variant="outline" className="relative bg-card shadow-lg border-border h-11 w-11 rounded-xl" onClick={() => setIntentPickerOpen(v => !v)}>
+            <SlidersHorizontal className="h-4 w-4" />
+            {userIntents.length < 3 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {userIntents.length}
+              </span>
+            )}
+          </Button>
+          <IntentPicker
+            open={intentPickerOpen}
+            intents={userIntents}
+            onToggle={(v) => {
+              const next = userIntents.includes(v) ? userIntents.filter(i => i !== v) : [...userIntents, v];
+              setUserIntents(next);
+              localStorage.setItem('cowork-user-intents', JSON.stringify(next));
+            }}
+            onClose={() => setIntentPickerOpen(false)}
+          />
+        </div>
         <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
@@ -331,11 +348,6 @@ export default function CoworkMap() {
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
-      <IntentPicker
-        open={intentPickerOpen}
-        intents={userIntents}
-        onSave={(intents) => {setUserIntents(intents);localStorage.setItem('cowork-user-intents', JSON.stringify(intents));}}
-        onClose={() => setIntentPickerOpen(false)} />
       
       <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
     </div>);
