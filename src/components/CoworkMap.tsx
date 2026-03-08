@@ -38,8 +38,8 @@ export default function CoworkMap() {
   const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
-  const markersRef = useRef<maplibregl.Marker[]>([]);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
 
   const refreshPins = useCallback(async () => {
     const data = await getPins();
