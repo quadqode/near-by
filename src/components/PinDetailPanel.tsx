@@ -126,29 +126,37 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
           </div>
         )}
 
-        {/* Location with directions */}
-        <div>
-          <h3 className="font-heading font-semibold text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Location</h3>
-          <button
-            onClick={handleGetDirections}
-            className="w-full bg-accent/40 hover:bg-accent/60 rounded-xl p-3.5 flex items-center gap-3 transition-colors group border border-border/50"
-          >
-            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
-              <MapPin className="h-4 w-4 text-primary" />
+        {/* Location with directions — only shown after Hi is sent */}
+        {hiSent && (
+          <div>
+            <h3 className="font-heading font-semibold text-[10px] text-muted-foreground uppercase tracking-wider mb-2">Location</h3>
+            <button
+              onClick={handleGetDirections}
+              className="w-full bg-accent/40 hover:bg-accent/60 rounded-xl p-3.5 flex items-center gap-3 transition-colors group border border-border/50"
+            >
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/20 transition-colors">
+                <MapPin className="h-4 w-4 text-primary" />
+              </div>
+              <div className="text-left flex-1 min-w-0">
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Exact Location</p>
+                <p className="text-xs font-medium text-foreground truncate">{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</p>
+              </div>
+              <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
+            </button>
+          </div>
+        )}
+
+        {!hiSent && (
+          <div className="bg-muted/10 rounded-xl p-3.5 border border-border/50 flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-muted/20 flex items-center justify-center shrink-0">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="text-left flex-1 min-w-0">
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                {hiSent ? 'Exact Location' : 'Approximate Area'}
-              </p>
-              {hiSent ? (
-                <p className="text-xs font-medium text-foreground truncate">{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</p>
-              ) : (
-                <p className="text-xs font-medium text-muted-foreground truncate">Say Hi to reveal exact location</p>
-              )}
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Location Hidden</p>
+              <p className="text-xs text-muted-foreground">Say Hi to unlock directions</p>
             </div>
-            <ExternalLink className="h-3.5 w-3.5 text-muted-foreground shrink-0 group-hover:text-primary transition-colors" />
-          </button>
-        </div>
+          </div>
+        )}
 
         {/* Posted time */}
         <p className="text-[10px] text-muted-foreground/50 text-center pt-1">
@@ -157,21 +165,23 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
       </div>
 
       {/* Bottom actions */}
-      <div className="px-5 py-4 border-t border-border flex gap-2.5">
-        <Button
-          variant="outline"
-          className="flex-1 font-heading font-semibold h-11 rounded-xl gap-2 border-border"
-          onClick={handleGetDirections}
-        >
-          <Navigation className="h-4 w-4" /> Directions
-        </Button>
-        <Button
-          className="flex-1 font-heading font-semibold h-11 rounded-xl gap-2"
-          onClick={handleSayHi}
-          disabled={hiSent || sending}
-        >
-          {hiSent ? <><Check className="h-4 w-4" /> Sent!</> : <><span>👋</span> {sending ? 'Sending...' : 'Say Hi'}</>}
-        </Button>
+      <div className="px-5 py-4 border-t border-border">
+        {hiSent ? (
+          <Button
+            className="w-full font-heading font-semibold h-11 rounded-xl gap-2"
+            onClick={handleGetDirections}
+          >
+            <Navigation className="h-4 w-4" /> Get Directions
+          </Button>
+        ) : (
+          <Button
+            className="w-full font-heading font-semibold h-11 rounded-xl gap-2"
+            onClick={handleSayHi}
+            disabled={sending}
+          >
+            <span>👋</span> {sending ? 'Sending...' : 'Say Hi'}
+          </Button>
+        )}
       </div>
     </motion.div>
   );
