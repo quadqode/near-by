@@ -24,8 +24,8 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
   const toggleInterest = (i: string) =>
     setInterests(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
 
-  const handleSubmit = () => {
-    addPin({ lat, lng, role, timeSlot, interests, message });
+  const handleSubmit = async () => {
+    await addPin({ lat, lng, role, timeSlot, interests, message });
     setMessage('');
     setInterests([]);
     onPinAdded();
