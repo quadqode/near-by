@@ -132,7 +132,7 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'fill-color': 'hsl(243, 75%, 58%)',
-          'fill-opacity': 0.12,
+          'fill-opacity': 0.07,
         },
       });
       map.addLayer({
