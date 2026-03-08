@@ -141,7 +141,7 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'line-color': 'hsl(243, 75%, 50%)',
-          'line-opacity': 0.4,
+          'line-opacity': 0.24,
           'line-width': 2,
           'line-dasharray': [4, 3],
         },
