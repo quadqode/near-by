@@ -58,7 +58,7 @@ export default function CoworkMap() {
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
-  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const placeMarkersRef = useRef<mapboxgl.Marker[]>([]);
 
   const { showCheckIn, handleStillHere, handleRemove, registerPin } = useExpiryCheckIn();
 
