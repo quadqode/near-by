@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle } from 'react-leaflet';
+import { useEffect, useState, useCallback } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { CoworkPin, Role, TimeSlot, ROLES, RADIUS_KM } from '@/lib/types';
@@ -49,8 +49,16 @@ function MapClickHandler({ onClick }: { onClick: (lat: number, lng: number) => v
   return null;
 }
 
+function FlyToUser({ pos }: { pos: [number, number] }) {
+  const map = useMap();
+  useEffect(() => { map.flyTo(pos, 14); }, [pos, map]);
+  return null;
+}
+
+const DEFAULT_POS: [number, number] = [40.7128, -74.006];
+
 export default function CoworkMap() {
-  const [userPos, setUserPos] = useState<[number, number] | null>(null);
+  const [userPos, setUserPos] = useState<[number, number]>(DEFAULT_POS);
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{ lat: number; lng: number } | null>(null);
   const [dropping, setDropping] = useState(false);
@@ -58,49 +66,27 @@ export default function CoworkMap() {
   const [filterRoles, setFilterRoles] = useState<Role[]>([]);
   const [filterTimes, setFilterTimes] = useState<TimeSlot[]>([]);
   const [filterInterests, setFilterInterests] = useState<string[]>([]);
-  const mapRef = useRef<L.Map | null>(null);
 
   const refreshPins = useCallback(() => setPins(getPins()), []);
 
   useEffect(() => {
     refreshPins();
-    const timeout = setTimeout(() => setUserPos(prev => prev || [40.7128, -74.006]), 3000);
     navigator.geolocation.getCurrentPosition(
-      pos => { clearTimeout(timeout); setUserPos([pos.coords.latitude, pos.coords.longitude]); },
-      () => { clearTimeout(timeout); setUserPos([40.7128, -74.006]); },
+      pos => setUserPos([pos.coords.latitude, pos.coords.longitude]),
+      () => {},
       { timeout: 5000, maximumAge: 60000 }
     );
-    return () => clearTimeout(timeout);
   }, [refreshPins]);
 
   const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
-    .filter(p => !userPos || getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM);
+    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM);
 
   const handleMapClick = (lat: number, lng: number) => {
     if (!dropping) return;
-    if (userPos && getDistance(userPos[0], userPos[1], lat, lng) > RADIUS_KM) return;
+    if (getDistance(userPos[0], userPos[1], lat, lng) > RADIUS_KM) return;
     setDropDialog({ lat, lng });
     setDropping(false);
   };
-
-  const centerOnUser = () => {
-    if (userPos && mapRef.current) mapRef.current.flyTo(userPos, 14);
-  };
-
-  if (!userPos) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-background">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center space-y-3"
-        >
-          <div className="animate-pulse-pin inline-block text-4xl">📍</div>
-          <p className="text-muted-foreground font-body">Finding your location…</p>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
@@ -142,14 +128,6 @@ export default function CoworkMap() {
         className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1000] flex items-center gap-3"
       >
         <Button
-          size="icon"
-          variant="outline"
-          onClick={centerOnUser}
-          className="h-12 w-12 rounded-full bg-card shadow-lg border-border"
-        >
-          <Navigation className="h-5 w-5" />
-        </Button>
-        <Button
           onClick={() => setDropping(!dropping)}
           className={`h-14 px-6 rounded-full shadow-lg font-heading font-semibold text-base gap-2 transition-all ${
             dropping ? 'bg-secondary hover:bg-secondary/90 ring-2 ring-secondary/30' : ''
@@ -166,15 +144,14 @@ export default function CoworkMap() {
         zoom={14}
         className="h-full w-full"
         zoomControl={false}
-        ref={mapRef}
       >
         <TileLayer
           attribution='&copy; <a href="https://carto.com/">CARTO</a>'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
         <MapClickHandler onClick={handleMapClick} />
+        <FlyToUser pos={userPos} />
 
-        {/* Radius circle */}
         <Circle
           center={userPos}
           radius={RADIUS_KM * 1000}
@@ -187,7 +164,6 @@ export default function CoworkMap() {
           }}
         />
 
-        {/* Pins */}
         {filtered.map(pin => (
           <Marker
             key={pin.id}
@@ -205,15 +181,11 @@ export default function CoworkMap() {
                     </span>
                   )}
                 </div>
-                {pin.message && (
-                  <p className="text-xs text-muted-foreground mb-2">"{pin.message}"</p>
-                )}
+                {pin.message && <p className="text-xs text-muted-foreground mb-2">"{pin.message}"</p>}
                 {pin.interests.length > 0 && (
                   <div className="flex flex-wrap gap-1">
                     {pin.interests.map(i => (
-                      <span key={i} className="bg-muted text-muted-foreground text-[10px] px-1.5 py-0.5 rounded-full">
-                        {i}
-                      </span>
+                      <span key={i} className="bg-muted text-muted-foreground text-[10px] px-1.5 py-0.5 rounded-full">{i}</span>
                     ))}
                   </div>
                 )}
@@ -226,7 +198,6 @@ export default function CoworkMap() {
         ))}
       </MapContainer>
 
-      {/* Drop dialog */}
       {dropDialog && (
         <DropPinDialog
           open={!!dropDialog}
