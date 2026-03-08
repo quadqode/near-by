@@ -9,6 +9,11 @@ interface Props {
 
 const steps = [
   {
+    icon: <SlidersHorizontal className="h-5 w-5" />,
+    title: 'Choose your intent',
+    items: ['Pick what you're looking for: Food, Cafés, or People', 'The map & list adapt to show only what matters to you', 'Change anytime with the sliders button at the bottom'],
+  },
+  {
     icon: <Navigation className="h-5 w-5" />,
     title: 'Map navigation',
     items: ['Scroll to zoom in and out', 'Click and drag to pan the map', 'Pinch on mobile to zoom'],
@@ -26,7 +31,7 @@ const steps = [
   {
     icon: <List className="h-5 w-5" />,
     title: 'List view',
-    items: ['Toggle between Map and List views', 'List is sorted by nearest location first', 'Click any card to see details'],
+    items: ['Toggle between Map and List views', 'List adapts filters based on your selected intents', 'Click any card to see details'],
   },
   {
     icon: <Clock className="h-5 w-5" />,

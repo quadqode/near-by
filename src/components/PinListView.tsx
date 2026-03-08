@@ -105,18 +105,23 @@ function PlaceCard({ place, dist, onClick }: { place: WorkPlace; dist: number; o
   );
 }
 
-export default function PinListView({ pins, places, userPos, onPinSelect, onPlaceSelect }: Props) {
+export default function PinListView({ pins, places, userPos, intents, onPinSelect, onPlaceSelect }: Props) {
   const [viewFilter, setViewFilter] = useState<ViewFilter>('all');
+
+  // Determine which categories are available based on intents
+  const hasPeople = intents.includes('people');
+  const hasPlaces = intents.includes('food') || intents.includes('cowork');
+  const multipleCategories = hasPeople && hasPlaces;
 
   const items: ListItem[] = [];
 
-  if (viewFilter !== 'places') {
+  if (hasPeople && viewFilter !== 'places') {
     pins.forEach(p => {
       const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
       if (dist <= 4) items.push({ kind: 'pin', data: p, dist });
     });
   }
-  if (viewFilter !== 'people') {
+  if (hasPlaces && viewFilter !== 'people') {
     places.forEach(p => {
       const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
       if (dist <= 4) items.push({ kind: 'place', data: p, dist });
@@ -133,23 +138,25 @@ export default function PinListView({ pins, places, userPos, onPinSelect, onPlac
 
   return (
     <div className="h-full flex flex-col bg-background">
-      {/* Filter tabs */}
-      <div className="px-4 pt-3 pb-2 flex gap-1.5 border-b border-border/50">
-        {filters.map(f => (
-          <button
-            key={f.value}
-            onClick={() => setViewFilter(f.value)}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
-              viewFilter === f.value
-                ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
-            }`}
-          >
-            <span>{f.emoji}</span>
-            {f.label}
-          </button>
-        ))}
-      </div>
+      {/* Only show filter tabs when multiple categories are active */}
+      {multipleCategories && (
+        <div className="px-4 pt-3 pb-2 flex gap-1.5 border-b border-border/50">
+          {filters.map(f => (
+            <button
+              key={f.value}
+              onClick={() => setViewFilter(f.value)}
+              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                viewFilter === f.value
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
+              }`}
+            >
+              <span>{f.emoji}</span>
+              {f.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {items.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-1 text-center px-6 py-20">
