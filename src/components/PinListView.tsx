@@ -92,7 +92,7 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
           <span className="text-xs font-semibold text-primary shrink-0">{distLabel(dist)}</span>
         </div>
         {place.offer && (
-          <div className="flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-[hsl(35_90%_55%_/_0.08)] border border-[hsl(35_90%_55%_/_0.2)]">
+          <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-[hsl(35_90%_55%_/_0.08)] border border-[hsl(35_90%_55%_/_0.2)] w-fit">
             <Tag className="h-3 w-3 text-[hsl(35_90%_50%)]" />
             <span className="text-[10px] font-semibold text-[hsl(35_80%_35%)]">{place.offer}</span>
           </div>
