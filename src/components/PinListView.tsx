@@ -82,10 +82,10 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
     <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
       <div
         className={`w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm border-2 ${
-          place.offer
-            ? 'bg-[hsl(35_90%_55%_/_0.12)] border-[hsl(35_90%_55%_/_0.35)]'
-            : 'bg-accent/40 border-accent-foreground/15'
-        }`}>
+        place.offer ?
+        'bg-[hsl(35_90%_55%_/_0.12)] border-[hsl(35_90%_55%_/_0.35)]' :
+        'bg-accent/40 border-accent-foreground/15'}`
+        }>
         {meta.emoji}
       </div>
       <div className="flex-1 min-w-0">
@@ -93,12 +93,12 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
           <span className="font-heading font-semibold text-sm text-foreground group-hover:text-primary transition-colors line-clamp-1">{place.name}</span>
           <span className="text-xs font-semibold text-primary shrink-0">{distLabel(dist)}</span>
         </div>
-        {place.offer && (
-          <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-[hsl(35_90%_55%_/_0.08)] border border-[hsl(35_90%_55%_/_0.2)] w-fit">
+        {place.offer &&
+        <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-[hsl(35_90%_55%_/_0.08)] border border-[hsl(35_90%_55%_/_0.2)] w-fit">
             <Tag className="h-3 w-3 text-[hsl(35_90%_50%)]" />
             <span className="text-[10px] font-semibold text-[hsl(35_80%_35%)]">{place.offer}</span>
           </div>
-        )}
+        }
         <div className="flex items-center gap-2 mt-1">
           <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-accent/50 text-accent-foreground border border-border/50">{meta.label}</span>
           <span className="text-[10px] text-muted-foreground">⭐ {place.rating}</span>
@@ -210,19 +210,19 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
       }
 
       {/* Offers toggle */}
-      {hasPlacesVisible && (
-        <div className="px-4 py-2.5 border-b border-border/50 flex items-center justify-between">
-          <span className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1.5">
-            <Tag className="h-3 w-3" /> Offers only
-          </span>
-          <button
-            onClick={() => onOffersOnlyChange(!offersOnly)}
-            className={`w-9 h-5 rounded-full transition-colors relative ${offersOnly ? 'bg-primary' : 'bg-border'}`}
-          >
-            <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-card shadow-sm transition-transform ${offersOnly ? 'left-[18px]' : 'left-0.5'}`} />
-          </button>
-        </div>
-      )}
+      {hasPlacesVisible
+
+
+
+
+
+
+
+
+
+
+
+      }
 
       {items.length === 0 ?
       <div className="flex flex-col items-center justify-center flex-1 text-center px-6 py-20">
@@ -249,14 +249,14 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
               </motion.div>
           )}
             {/* Register place card — show when only places intents are active */}
-            {hasPlaces && viewFilter === 'places' && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: items.length * 0.03 }}
-                className="bg-card border border-dashed border-primary/30 rounded-xl p-4 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
-                onClick={() => setRegisterOpen(true)}
-              >
+            {hasPlaces && viewFilter === 'places' &&
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: items.length * 0.03 }}
+            className="bg-card border border-dashed border-primary/30 rounded-xl p-4 hover:border-primary/50 hover:shadow-md transition-all cursor-pointer"
+            onClick={() => setRegisterOpen(true)}>
+            
                 <div className="flex items-start gap-3.5">
                   <div className="w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm border-2 bg-primary/10 border-primary/30">
                     <Store className="h-5 w-5 text-primary" />
@@ -278,7 +278,7 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
                   </div>
                 </div>
               </motion.div>
-            )}
+          }
           </div>
         </ScrollArea>
       }
