@@ -21,8 +21,8 @@ const steps = [
     icon: <MapPin className="h-5 w-5" />,
     title: 'Drop a pin',
     items: [
-      'Tap "Drop a pin" at the bottom',
-      'Click anywhere on the map within your radius',
+      'Tap anywhere on the map to drop a pin',
+      'Or use the "Drop a pin" button',
       'Select your role, availability, and interests',
     ],
   },
@@ -58,26 +58,26 @@ const steps = [
 export default function UsageGuide({ open, onClose }: Props) {
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden z-[2000] border-border">
-        <div className="px-6 pt-8 pb-2 text-center">
-          <div className="mx-auto w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
-            <MousePointer2 className="h-7 w-7 text-primary" />
+      <DialogContent className="sm:max-w-lg max-h-[90dvh] p-0 overflow-hidden z-[2000] border-border w-[calc(100%-2rem)] rounded-2xl">
+        <div className="px-4 sm:px-6 pt-6 sm:pt-8 pb-2 text-center">
+          <div className="mx-auto w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-3 sm:mb-4">
+            <MousePointer2 className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
           </div>
-          <h2 className="font-heading font-bold text-xl text-foreground">Usage Guide</h2>
-          <p className="text-sm text-muted-foreground mt-1">Learn how to navigate and use the platform effectively</p>
+          <h2 className="font-heading font-bold text-lg sm:text-xl text-foreground">Usage Guide</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Learn how to navigate and use the platform</p>
         </div>
 
-        <div className="px-6 pb-6 space-y-4 max-h-[60vh] overflow-y-auto">
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4 max-h-[55dvh] overflow-y-auto">
           {steps.map((step, idx) => (
-            <div key={idx} className="flex gap-3 p-3 rounded-xl bg-accent/30 border border-border/50">
-              <div className="mt-0.5 w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+            <div key={idx} className="flex gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl bg-accent/30 border border-border/50">
+              <div className="mt-0.5 w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-primary">
                 {step.icon}
               </div>
-              <div>
-                <h3 className="font-heading font-semibold text-sm text-foreground">{step.title}</h3>
-                <ul className="mt-1.5 space-y-1">
+              <div className="min-w-0">
+                <h3 className="font-heading font-semibold text-xs sm:text-sm text-foreground">{step.title}</h3>
+                <ul className="mt-1 sm:mt-1.5 space-y-0.5 sm:space-y-1">
                   {step.items.map((item, i) => (
-                    <li key={i} className="text-xs text-muted-foreground flex items-start gap-1.5">
+                    <li key={i} className="text-[11px] sm:text-xs text-muted-foreground flex items-start gap-1.5">
                       <span className="text-primary/50 mt-0.5">•</span>
                       {item}
                     </li>
@@ -88,8 +88,8 @@ export default function UsageGuide({ open, onClose }: Props) {
           ))}
         </div>
 
-        <div className="px-6 pb-6">
-          <Button onClick={onClose} className="w-full font-heading font-semibold h-11 rounded-xl">
+        <div className="px-4 sm:px-6 pb-4 sm:pb-6">
+          <Button onClick={onClose} className="w-full font-heading font-semibold h-10 sm:h-11 rounded-xl text-sm">
             Got it, let's go!
           </Button>
         </div>

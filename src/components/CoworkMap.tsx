@@ -24,11 +24,23 @@ const ROLE_HEX: Record<Role, string> = {
   other: '#6b8299'
 };
 
+// Helper: create GeoJSON circle
+function createGeoJSONCircle(center: [number, number], radiusKm: number, points = 64) {
+  const coords: [number, number][] = [];
+  const distanceX = radiusKm / (111.32 * Math.cos((center[1] * Math.PI) / 180));
+  const distanceY = radiusKm / 110.574;
+  for (let i = 0; i < points; i++) {
+    const theta = (i / points) * (2 * Math.PI);
+    coords.push([center[0] + distanceX * Math.cos(theta), center[1] + distanceY * Math.sin(theta)]);
+  }
+  coords.push(coords[0]);
+  return { type: 'Feature' as const, geometry: { type: 'Polygon' as const, coordinates: [coords] }, properties: {} };
+}
+
 export default function CoworkMap() {
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number; lng: number} | null>(null);
-  
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterRoles, setFilterRoles] = useState<Role[]>([]);
   const [filterTimes, setFilterTimes] = useState<TimeSlot[]>([]);
@@ -60,6 +72,15 @@ export default function CoworkMap() {
     return unsub;
   }, [refreshPins]);
 
+  // Update radius circle on map
+  const updateRadiusCircle = useCallback((map: mapboxgl.Map, center: [number, number], radiusKm: number) => {
+    const circleData = createGeoJSONCircle([center[1], center[0]], radiusKm);
+    const source = map.getSource('radius-circle') as mapboxgl.GeoJSONSource;
+    if (source) {
+      source.setData(circleData as any);
+    }
+  }, []);
+
   // Init map when userPos is set
   useEffect(() => {
     if (!userPos || !mapContainerRef.current || mapRef.current) return;
@@ -76,13 +97,44 @@ export default function CoworkMap() {
     map.on('click', (e) => {
       setDropDialog({ lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
+
     const updateRadius = () => {
       const zoom = map.getZoom();
       const km = Math.round(40000 / 2 ** zoom * 10) / 10;
-      setVisibleRadius(Math.max(0.5, Math.min(km, 4)));
+      const clamped = Math.max(0.5, Math.min(km, 4));
+      setVisibleRadius(clamped);
+      updateRadiusCircle(map, userPos, clamped);
     };
+
     map.on('zoomend', updateRadius);
-    map.on('load', updateRadius);
+
+    map.on('load', () => {
+      // Add radius circle source + layers
+      const initialCircle = createGeoJSONCircle([userPos[1], userPos[0]], 2);
+      map.addSource('radius-circle', { type: 'geojson', data: initialCircle as any });
+      map.addLayer({
+        id: 'radius-circle-fill',
+        type: 'fill',
+        source: 'radius-circle',
+        paint: {
+          'fill-color': 'hsl(210, 70%, 55%)',
+          'fill-opacity': 0.06,
+        },
+      });
+      map.addLayer({
+        id: 'radius-circle-stroke',
+        type: 'line',
+        source: 'radius-circle',
+        paint: {
+          'line-color': 'hsl(210, 70%, 55%)',
+          'line-opacity': 0.25,
+          'line-width': 1.5,
+          'line-dasharray': [4, 3],
+        },
+      });
+      updateRadius();
+    });
+
     mapRef.current = map;
     return () => { map.remove(); mapRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,7 +143,6 @@ export default function CoworkMap() {
   useEffect(() => {
     if (userPos && mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
   }, [userPos]);
-
 
   const filtered = userPos
     ? filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
@@ -193,7 +244,7 @@ export default function CoworkMap() {
         <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setGuideOpen(true)}>
           <HelpCircle className="h-4 w-4" />
         </Button>
-        <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
+        <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 left-0 right-0 z-[1000] flex justify-center pointer-events-none">
