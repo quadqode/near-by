@@ -73,8 +73,9 @@ export default function CoworkMap() {
     setPins(data);
   }, []);
 
-  const handleLocationSet = useCallback((lat: number, lng: number) => {
+  const handleLocationSet = useCallback((lat: number, lng: number, intents?: UserIntent[]) => {
     setUserPos([lat, lng]);
+    if (intents) setUserIntents(intents);
     setPlaces(generateDemoPlaces(lat, lng));
     seedDemoPins(lat, lng).then(() => refreshPins());
   }, [refreshPins]);
