@@ -17,6 +17,22 @@ const NAMES: Array<{ role: Role; timeSlot: TimeSlot; interests: string[]; messag
   { role: 'writer', timeSlot: 'afternoon', interests: ['Accountability', 'Side projects'], message: 'Tech journalist, researching a story' },
   { role: 'other', timeSlot: 'morning', interests: ['Networking', 'Learning'], message: 'Startup founder looking for co-builders' },
   { role: 'marketer', timeSlot: 'now', interests: ['Coffee chat', 'Brainstorming'], message: 'SEO nerd, happy to audit your site!' },
+  { role: 'developer', timeSlot: 'now', interests: ['Pair programming', 'Side projects'], message: 'Hacking on a Svelte migration 🚀' },
+  { role: 'designer', timeSlot: 'morning', interests: ['Design review', 'Coffee chat'], message: 'Brand designer, let's talk typography' },
+  { role: 'writer', timeSlot: 'now', interests: ['Coffee chat', 'Learning'], message: 'Copywriter cranking out landing pages' },
+  { role: 'developer', timeSlot: 'afternoon', interests: ['Learning', 'Pair programming'], message: 'Backend eng exploring Elixir' },
+  { role: 'other', timeSlot: 'now', interests: ['Networking', 'Brainstorming'], message: 'VC scout, always curious about projects' },
+  { role: 'marketer', timeSlot: 'evening', interests: ['Side projects', 'Coffee chat'], message: 'Building my personal brand on socials' },
+  { role: 'developer', timeSlot: 'now', interests: ['Side projects', 'Coffee chat'], message: 'Mobile dev, building a fitness app' },
+  { role: 'designer', timeSlot: 'now', interests: ['Brainstorming', 'Design review'], message: 'Product designer, love whiteboard jams' },
+  { role: 'writer', timeSlot: 'morning', interests: ['Accountability', 'Networking'], message: 'Screenwriter working on a pilot 🎬' },
+  { role: 'developer', timeSlot: 'now', interests: ['Learning', 'Side projects'], message: 'Data engineer playing with DuckDB' },
+  { role: 'other', timeSlot: 'afternoon', interests: ['Coffee chat', 'Networking'], message: 'Recruiter who loves the indie scene' },
+  { role: 'marketer', timeSlot: 'now', interests: ['Brainstorming', 'Learning'], message: 'Content strategist, ask me anything!' },
+  { role: 'developer', timeSlot: 'morning', interests: ['Pair programming', 'Coffee chat'], message: 'DevOps nerd, automating everything' },
+  { role: 'designer', timeSlot: 'afternoon', interests: ['Side projects', 'Networking'], message: '3D artist learning Blender 🧊' },
+  { role: 'developer', timeSlot: 'now', interests: ['Side projects', 'Learning'], message: 'Game dev prototyping in Godot' },
+  { role: 'writer', timeSlot: 'evening', interests: ['Accountability', 'Coffee chat'], message: 'Novelist on chapter 12, need company' },
 ];
 
 /** Generate a random offset in km converted to degrees */
