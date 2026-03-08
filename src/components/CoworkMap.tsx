@@ -111,12 +111,8 @@ export default function CoworkMap() {
     return () => window.removeEventListener('map-click', handler);
   }, [dropping, userPos]);
 
-  const nearbyPins = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
-    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM);
-  const extendedPins = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
-    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM_EXTENDED);
-  const filtered = nearbyPins.length > 0 ? nearbyPins : extendedPins;
-  const activeRadius = nearbyPins.length > 0 ? RADIUS_KM : RADIUS_KM_EXTENDED;
+  const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
+    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= visibleRadius);
 
   // Update markers
   useEffect(() => {
