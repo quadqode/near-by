@@ -74,8 +74,7 @@ export default function CoworkMap() {
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
     map.on('click', (e) => {
-      const event = new CustomEvent('map-click', { detail: { lat: e.lngLat.lat, lng: e.lngLat.lng } });
-      window.dispatchEvent(event);
+      setDropDialog({ lat: e.lngLat.lat, lng: e.lngLat.lng });
     });
     const updateRadius = () => {
       const zoom = map.getZoom();
