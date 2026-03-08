@@ -5,6 +5,7 @@ import { getDistance } from '@/lib/pinStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Clock, MapPin, Wifi, Plug, Volume2, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
+import type { UserIntent } from './LocationPicker';
 
 type ViewFilter = 'all' | 'people' | 'places';
 
@@ -12,6 +13,7 @@ interface Props {
   pins: CoworkPin[];
   places: WorkPlace[];
   userPos: [number, number];
+  intents: UserIntent[];
   onPinSelect: (pin: CoworkPin) => void;
   onPlaceSelect: (place: WorkPlace) => void;
 }
