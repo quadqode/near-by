@@ -11,7 +11,7 @@ import PinListView from './PinListView';
 import PinDetailPanel from './PinDetailPanel';
 import UsageGuide from './UsageGuide';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
