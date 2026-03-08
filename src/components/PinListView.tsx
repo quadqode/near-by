@@ -4,7 +4,7 @@ import { WorkPlace, PLACE_TYPE_META } from '@/lib/placeTypes';
 import { getDistance } from '@/lib/pinStore';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
-import { Clock, MapPin, Wifi, Plug, Volume2, Coffee, Tag, Store } from 'lucide-react';
+import { Clock, MapPin, Wifi, Plug, Volume2, Coffee, Tag, Store, Send } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { UserIntent } from './LocationPicker';
 import RegisterPlaceDialog from './RegisterPlaceDialog';
