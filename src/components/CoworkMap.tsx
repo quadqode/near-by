@@ -204,7 +204,7 @@ export default function CoworkMap() {
       </div>
 
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1000]">
-        <Button onClick={() => setDropping(!dropping)} size="lg" className={`h-14 px-7 rounded-full shadow-xl font-heading font-semibold text-base gap-2.5 transition-all ${dropping ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' : ''}`}>
+        <Button onClick={() => setDropping(!dropping)} size="lg" className={`h-14 px-7 rounded-lg shadow-xl font-heading font-semibold text-base gap-2.5 transition-all ${dropping ? 'bg-destructive hover:bg-destructive/90 text-destructive-foreground' : ''}`}>
           <Plus className={`h-5 w-5 transition-transform ${dropping ? 'rotate-45' : ''}`} />
           {dropping ? 'Tap the map' : 'Drop a pin'}
         </Button>
