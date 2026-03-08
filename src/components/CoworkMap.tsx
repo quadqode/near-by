@@ -316,7 +316,7 @@ export default function CoworkMap() {
       </div>
 
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 right-4 sm:left-0 sm:right-0 z-[1000] flex justify-end sm:justify-center pointer-events-none">
-        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-12 sm:h-14 px-3 sm:px-7 rounded-lg shadow-xl font-heading font-semibold text-sm sm:text-base gap-0 sm:gap-2.5">
+        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-12 w-12 sm:h-14 sm:w-auto px-0 sm:px-7 rounded-lg shadow-xl font-heading font-semibold text-sm sm:text-base gap-0 sm:gap-2.5">
           <Plus className="h-5 w-5" />
           <span className="hidden sm:inline">Drop a pin</span>
         </Button>
