@@ -216,11 +216,8 @@ export default function CoworkMap() {
     });
   }, [filteredPlaces]);
 
-  const handleGuideClose = (intents: UserIntent[]) => {
+  const handleGuideClose = () => {
     setGuideOpen(false);
-    setUserIntents(intents);
-    localStorage.setItem('cowork-guide-seen', 'true');
-    localStorage.setItem('cowork-user-intents', JSON.stringify(intents));
   };
 
   const handlePinSelect = (pin: CoworkPin) => {
