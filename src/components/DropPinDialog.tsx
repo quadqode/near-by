@@ -68,7 +68,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
           {/* Role */}
           <div>
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">Your role</label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {ROLES.map(r => (
                 <button
                   key={r.value}
