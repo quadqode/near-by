@@ -115,7 +115,7 @@ export default function CoworkMap() {
         e.stopPropagation();
         setSelectedPin(pin);
       });
-      const marker = new maplibregl.Marker({ element: el })
+      const marker = new mapboxgl.Marker({ element: el })
         .setLngLat([pin.lng, pin.lat])
         .addTo(map);
       markersRef.current.push(marker);
