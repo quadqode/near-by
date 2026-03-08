@@ -161,6 +161,8 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
   { value: 'cafe', label: 'Cafés & Cowork', emoji: '☕' },
   { value: 'food', label: 'Food Places', emoji: '🍽️' }];
 
+  const hasPlacesVisible = hasPlaces && viewFilter !== 'people';
+
 
   return (
     <div className="h-full flex flex-col bg-background">
