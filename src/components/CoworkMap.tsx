@@ -28,7 +28,7 @@ export default function CoworkMap() {
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number; lng: number} | null>(null);
-  const [dropping, setDropping] = useState(false);
+  
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterRoles, setFilterRoles] = useState<Role[]>([]);
   const [filterTimes, setFilterTimes] = useState<TimeSlot[]>([]);
