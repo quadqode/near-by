@@ -19,7 +19,7 @@ const ROLE_HEX: Record<Role, string> = {
   developer: '#1a9a7a',
   writer: '#d97706',
   marketer: '#d9365b',
-  other: '#6b8299',
+  other: '#6b8299'
 };
 
 const DEFAULT_POS: [number, number] = [40.7128, -74.006];
@@ -27,7 +27,7 @@ const DEFAULT_POS: [number, number] = [40.7128, -74.006];
 export default function CoworkMap() {
   const [userPos, setUserPos] = useState<[number, number]>(DEFAULT_POS);
   const [pins, setPins] = useState<CoworkPin[]>([]);
-  const [dropDialog, setDropDialog] = useState<{ lat: number; lng: number } | null>(null);
+  const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
   const [dropping, setDropping] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterRoles, setFilterRoles] = useState<Role[]>([]);
@@ -50,7 +50,7 @@ export default function CoworkMap() {
   // Init: seed demo data, fetch pins, geolocate, subscribe to realtime
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
-      pos => {
+      (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
         setUserPos([lat, lng]);
@@ -73,7 +73,7 @@ export default function CoworkMap() {
       style: 'mapbox://styles/mapbox/light-v11',
       center: [userPos[1], userPos[0]],
       zoom: 13,
-      attributionControl: false,
+      attributionControl: false
     });
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
@@ -85,13 +85,13 @@ export default function CoworkMap() {
       const zoom = map.getZoom();
       // Approximate visible radius in km from zoom level
       // At zoom 13 ≈ 4km, zoom 11 ≈ 15km, zoom 15 ≈ 1km
-      const km = Math.round(40000 / (2 ** zoom) * 10) / 10;
+      const km = Math.round(40000 / 2 ** zoom * 10) / 10;
       setVisibleRadius(Math.max(0.5, Math.min(km, 50)));
     };
     map.on('zoomend', updateRadius);
     map.on('load', updateRadius);
     mapRef.current = map;
-    return () => { map.remove(); mapRef.current = null; };
+    return () => {map.remove();mapRef.current = null;};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -111,29 +111,29 @@ export default function CoworkMap() {
     return () => window.removeEventListener('map-click', handler);
   }, [dropping, userPos]);
 
-  const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
-    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= visibleRadius);
+  const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests }).
+  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= visibleRadius);
 
   // Update markers
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    markersRef.current.forEach(m => m.remove());
+    markersRef.current.forEach((m) => m.remove());
     markersRef.current = [];
 
-    filtered.forEach(pin => {
+    filtered.forEach((pin) => {
       const el = document.createElement('div');
       el.className = `pin-marker ${pin.timeSlot === 'now' ? 'is-now' : ''}`;
       el.style.backgroundColor = ROLE_HEX[pin.role];
-      const role = ROLES.find(r => r.value === pin.role);
+      const role = ROLES.find((r) => r.value === pin.role);
       el.textContent = role?.emoji || '🤝';
       el.addEventListener('click', (e) => {
         e.stopPropagation();
         setSelectedPin(pin);
       });
-      const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat([pin.lng, pin.lat])
-        .addTo(map);
+      const marker = new mapboxgl.Marker({ element: el }).
+      setLngLat([pin.lng, pin.lat]).
+      addTo(map);
       markersRef.current.push(marker);
     });
   }, [filtered]);
@@ -155,22 +155,22 @@ export default function CoworkMap() {
       <div ref={mapContainerRef} className={`h-full w-full transition-opacity duration-300 ${view === 'list' ? 'opacity-0 pointer-events-none absolute' : ''}`} />
 
       <AnimatePresence>
-        {view === 'list' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
+        {view === 'list' &&
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
             <div className="h-full pt-16">
               <PinListView pins={filtered} userPos={userPos} onPinSelect={handlePinSelect} />
             </div>
           </motion.div>
-        )}
+        }
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedPin && (
-          <>
+        {selectedPin &&
+        <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-foreground/20 z-[1050]" onClick={() => setSelectedPin(null)} />
             <PinDetailPanel pin={selectedPin} userPos={userPos} onClose={() => setSelectedPin(null)} />
           </>
-        )}
+        }
       </AnimatePresence>
 
       <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 z-[1000] flex items-center gap-2">
@@ -196,7 +196,7 @@ export default function CoworkMap() {
         <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setGuideOpen(true)}>
           <HelpCircle className="h-4 w-4" />
         </Button>
-        <FilterPanel open={filterOpen} onToggle={() => setFilterOpen(v => !v)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
+        <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-8 left-1/2 -translate-x-1/2 z-[1000]">
@@ -208,7 +208,7 @@ export default function CoworkMap() {
 
       <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="absolute bottom-4 left-4 z-[1000]">
         <div className="bg-card/90 backdrop-blur-sm rounded-lg border border-border px-3 py-1.5 flex items-center gap-4 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5"><Users className="h-3 w-3" /> {filtered.length} people</span>
+          
           <span className="text-border">|</span>
           <span>{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`} radius</span>
         </div>
@@ -216,6 +216,6 @@ export default function CoworkMap() {
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={refreshPins} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
-    </div>
-  );
+    </div>);
+
 }
