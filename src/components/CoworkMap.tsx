@@ -4,11 +4,15 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw';
 import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
+import { WorkPlace } from '@/lib/placeTypes';
+import { PLACE_TYPE_META } from '@/lib/placeTypes';
+import { generateDemoPlaces } from '@/lib/demoPlaces';
 import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins } from '@/lib/pinStore';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
 import PinDetailPanel from './PinDetailPanel';
+import PlaceDetailPanel from './PlaceDetailPanel';
 import UsageGuide from './UsageGuide';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
@@ -47,12 +51,15 @@ export default function CoworkMap() {
   const [filterInterests, setFilterInterests] = useState<string[]>([]);
   const [view, setView] = useState<'map' | 'list'>('map');
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
+  const [selectedPlace, setSelectedPlace] = useState<WorkPlace | null>(null);
   const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
   const [visibleRadius, setVisibleRadius] = useState(2);
+  const [places, setPlaces] = useState<WorkPlace[]>([]);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const placeMarkersRef = useRef<mapboxgl.Marker[]>([]);
 
   const { showCheckIn, handleStillHere, handleRemove, registerPin } = useExpiryCheckIn();
 
@@ -63,6 +70,7 @@ export default function CoworkMap() {
 
   const handleLocationSet = useCallback((lat: number, lng: number) => {
     setUserPos([lat, lng]);
+    setPlaces(generateDemoPlaces(lat, lng));
     seedDemoPins(lat, lng).then(() => refreshPins());
   }, [refreshPins]);
 
@@ -173,6 +181,33 @@ export default function CoworkMap() {
     });
   }, [filtered]);
 
+  // Update place markers
+  const filteredPlaces = userPos
+    ? places.filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4))
+    : [];
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    placeMarkersRef.current.forEach(m => m.remove());
+    placeMarkersRef.current = [];
+
+    filteredPlaces.forEach(place => {
+      const meta = PLACE_TYPE_META[place.type];
+      const el = document.createElement('div');
+      el.className = 'place-marker';
+      el.textContent = meta.emoji;
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSelectedPlace(place);
+      });
+      const marker = new mapboxgl.Marker({ element: el })
+        .setLngLat([place.lng, place.lat])
+        .addTo(map);
+      placeMarkersRef.current.push(marker);
+    });
+  }, [filteredPlaces]);
+
   const handleGuideClose = () => {
     setGuideOpen(false);
     localStorage.setItem('cowork-guide-seen', 'true');
@@ -214,6 +249,15 @@ export default function CoworkMap() {
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-foreground/20 z-[1050]" onClick={() => setSelectedPin(null)} />
             <PinDetailPanel pin={selectedPin} userPos={userPos} onClose={() => setSelectedPin(null)} />
+          </>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {selectedPlace && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-foreground/20 z-[1050]" onClick={() => setSelectedPlace(null)} />
+            <PlaceDetailPanel place={selectedPlace} userPos={userPos} onClose={() => setSelectedPlace(null)} />
           </>
         )}
       </AnimatePresence>
