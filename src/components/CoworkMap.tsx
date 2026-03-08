@@ -73,6 +73,7 @@ export default function CoworkMap() {
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [userPos[1], userPos[0]],
       zoom: 13,
+      minZoom: 11,
       attributionControl: false
     });
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
