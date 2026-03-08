@@ -36,7 +36,7 @@ export default function CoworkMap() {
   const [view, setView] = useState<'map' | 'list'>('map');
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
   const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
-  const [visibleRadius, setVisibleRadius] = useState(4);
+  const [visibleRadius, setVisibleRadius] = useState(2);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -72,8 +72,8 @@ export default function CoworkMap() {
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [userPos[1], userPos[0]],
-      zoom: 13,
-      minZoom: 11,
+      zoom: 14,
+      minZoom: 12.5,
       attributionControl: false
     });
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
@@ -87,7 +87,7 @@ export default function CoworkMap() {
       // Approximate visible radius in km from zoom level
       // At zoom 13 ≈ 4km, zoom 11 ≈ 15km, zoom 15 ≈ 1km
       const km = Math.round(40000 / 2 ** zoom * 10) / 10;
-      setVisibleRadius(Math.max(0.5, Math.min(km, 10)));
+      setVisibleRadius(Math.max(0.5, Math.min(km, 4)));
     };
     map.on('zoomend', updateRadius);
     map.on('load', updateRadius);
@@ -97,7 +97,7 @@ export default function CoworkMap() {
   }, []);
 
   useEffect(() => {
-    if (mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 13 });
+    if (mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
   }, [userPos]);
 
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function CoworkMap() {
   }, [dropping, userPos]);
 
   const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests }).
-  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 10));
+  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4));
 
   // Update markers
   useEffect(() => {
