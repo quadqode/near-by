@@ -201,7 +201,7 @@ export default function PinListView({ pins, places, userPos, intents, onPinSelec
         </div> :
 
       <ScrollArea className="flex-1">
-          <div className="p-4 space-y-2.5 pb-24">
+          <div className="p-4 space-y-2.5 pb-4">
             {items.map((item, idx) =>
           <motion.div
             key={item.kind === 'pin' ? `pin-${item.data.id}` : `place-${item.data.id}`}
