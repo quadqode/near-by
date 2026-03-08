@@ -52,55 +52,64 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
 
   return (
     <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 font-heading">
-            <MapPin className="h-5 w-5 text-primary" />
-            Drop your pin
-          </DialogTitle>
-        </DialogHeader>
+      <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto w-[calc(100%-2rem)] rounded-2xl bg-card border-border p-0">
+        <div className="px-5 sm:px-6 pt-5 sm:pt-6">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2.5 font-heading text-foreground">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
+                <MapPin className="h-4.5 w-4.5 text-primary" />
+              </div>
+              Drop your pin
+            </DialogTitle>
+          </DialogHeader>
+        </div>
 
-        <div className="space-y-5">
+        <div className="px-5 sm:px-6 pb-5 sm:pb-6 space-y-5">
           {/* Role */}
           <div>
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">Your role</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">Your role</label>
             <div className="flex flex-wrap gap-2">
               {ROLES.map(r => (
-                <Button
+                <button
                   key={r.value}
-                  size="sm"
-                  variant={role === r.value ? 'default' : 'outline'}
                   onClick={() => setRole(r.value)}
-                  className="gap-1.5"
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                    role === r.value
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'bg-background border-border text-foreground hover:border-primary/30 hover:bg-accent/30'
+                  }`}
                 >
                   <span>{r.emoji}</span> {r.label}
-                </Button>
+                </button>
               ))}
             </div>
           </div>
 
           {/* Time */}
           <div>
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">When</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">When</label>
             <div className="flex flex-wrap gap-2">
               {TIME_SLOTS.map(t => (
-                <Button
+                <button
                   key={t.value}
-                  size="sm"
-                  variant={timeSlot === t.value ? 'default' : 'outline'}
                   onClick={() => setTimeSlot(t.value)}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                    timeSlot === t.value
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'bg-background border-border text-foreground hover:border-primary/30 hover:bg-accent/30'
+                  }`}
                 >
                   {t.label}
-                </Button>
+                </button>
               ))}
             </div>
-            <p className="text-[10px] text-muted-foreground mt-1.5">Pins auto-expire after 4 hours</p>
+            <p className="text-[10px] text-muted-foreground mt-2">Pins auto-expire after 4 hours</p>
           </div>
 
           {/* Manual location — shown when scheduling */}
           {isScheduled && (
             <div>
-              <label className="text-sm font-medium text-muted-foreground mb-2 block">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">
                 📍 Pin location {useCustomLocation ? '(custom)' : '(map tap)'}
               </label>
               <LocationAutocomplete
@@ -115,7 +124,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
                   <Button
                     size="sm"
                     variant="ghost"
-                    className="text-xs h-6 px-2"
+                    className="text-xs h-6 px-2 text-muted-foreground"
                     onClick={() => { setUseCustomLocation(false); setLocationLabel(''); }}
                   >
                     Reset
@@ -127,34 +136,38 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
 
           {/* Interests */}
           <div>
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">Open to</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">Open to</label>
             <div className="flex flex-wrap gap-2">
               {INTERESTS.map(i => (
-                <Badge
+                <button
                   key={i}
-                  variant={interests.includes(i) ? 'default' : 'outline'}
-                  className="cursor-pointer select-none transition-colors"
                   onClick={() => toggleInterest(i)}
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
+                    interests.includes(i)
+                      ? 'bg-primary/10 border-primary/30 text-primary'
+                      : 'bg-background border-border text-muted-foreground hover:border-primary/20'
+                  }`}
                 >
                   {i}
-                </Badge>
+                </button>
               ))}
             </div>
           </div>
 
           {/* Message */}
           <div>
-            <label className="text-sm font-medium text-muted-foreground mb-2 block">Short note (optional)</label>
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">Short note (optional)</label>
             <Textarea
               placeholder="e.g. Working on a side project, happy to chat!"
               value={message}
               onChange={e => setMessage(e.target.value)}
               maxLength={120}
               rows={2}
+              className="rounded-xl border-border bg-background text-foreground placeholder:text-muted-foreground/50 resize-none"
             />
           </div>
 
-          <Button onClick={handleSubmit} className="w-full font-heading font-semibold">
+          <Button onClick={handleSubmit} className="w-full font-heading font-semibold h-11 rounded-xl text-sm">
             Drop Pin 📍
           </Button>
         </div>
