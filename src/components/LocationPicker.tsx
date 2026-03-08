@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { MapPin, LocateFixed, Search, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import LocationAutocomplete from './LocationAutocomplete';
 
 interface Props {
   onLocationSet: (lat: number, lng: number) => void;
@@ -10,7 +10,6 @@ interface Props {
 
 export default function LocationPicker({ onLocationSet }: Props) {
   const [mode, setMode] = useState<'choice' | 'manual'>('choice');
-  const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -29,28 +28,6 @@ export default function LocationPicker({ onLocationSet }: Props) {
       },
       { timeout: 8000, maximumAge: 60000 }
     );
-  };
-
-  const handleSearch = async () => {
-    if (!query.trim()) return;
-    setLoading(true);
-    setError('');
-    try {
-      const res = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query.trim())}.json?access_token=pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw&limit=1`
-      );
-      const data = await res.json();
-      if (data.features?.length > 0) {
-        const [lng, lat] = data.features[0].center;
-        onLocationSet(lat, lng);
-      } else {
-        setError('No results found. Try a different search.');
-      }
-    } catch {
-      setError('Search failed. Please try again.');
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -111,23 +88,11 @@ export default function LocationPicker({ onLocationSet }: Props) {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-3"
           >
-            <div className="flex gap-2">
-              <Input
-                placeholder="e.g. Times Square, NYC"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="h-12 rounded-xl text-sm"
-                autoFocus
-              />
-              <Button
-                onClick={handleSearch}
-                disabled={loading || !query.trim()}
-                className="h-12 px-4 rounded-xl shrink-0"
-              >
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-              </Button>
-            </div>
+            <LocationAutocomplete
+              placeholder="e.g. Times Square, NYC"
+              onSelect={(lat, lng) => onLocationSet(lat, lng)}
+              autoFocus
+            />
 
             <Button
               variant="ghost"
