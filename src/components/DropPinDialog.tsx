@@ -73,7 +73,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
                 <button
                   key={r.value}
                   onClick={() => setRole(r.value)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border active:scale-[0.95] ${
                     role === r.value
                       ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                       : 'bg-background border-border text-foreground hover:border-primary/30 hover:bg-accent/30'
@@ -93,7 +93,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
                 <button
                   key={t.value}
                   onClick={() => setTimeSlot(t.value)}
-                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border active:scale-[0.95] ${
                     timeSlot === t.value
                       ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                       : 'bg-background border-border text-foreground hover:border-primary/30 hover:bg-accent/30'
@@ -142,7 +142,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
                 <button
                   key={i}
                   onClick={() => toggleInterest(i)}
-                  className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border ${
+                  className={`px-3 py-1.5 rounded-lg text-[11px] font-medium transition-all border active:scale-[0.95] ${
                     interests.includes(i)
                       ? 'bg-primary/10 border-primary/30 text-primary'
                       : 'bg-background border-border text-muted-foreground hover:border-primary/20'

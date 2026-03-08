@@ -14,6 +14,7 @@ import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
 import PinDetailPanel from './PinDetailPanel';
 import PlaceDetailPanel from './PlaceDetailPanel';
+import SplashScreen from './SplashScreen';
 import UsageGuide from './UsageGuide';
 import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
@@ -55,6 +56,7 @@ export default function CoworkMap() {
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<WorkPlace | null>(null);
   const [guideOpen, setGuideOpen] = useState(false);
+  const [showSplash, setShowSplash] = useState(() => !localStorage.getItem('cowork-splash-seen'));
   const [intentPickerOpen, setIntentPickerOpen] = useState(false);
   const [userIntents, setUserIntents] = useState<UserIntent[]>(() => {
     const stored = localStorage.getItem('cowork-user-intents');
@@ -245,6 +247,11 @@ export default function CoworkMap() {
     registerPin(pinId);
     refreshPins();
   };
+
+  // Show splash screen first time
+  if (showSplash) {
+    return <SplashScreen onContinue={() => { setShowSplash(false); localStorage.setItem('cowork-splash-seen', '1'); }} />;
+  }
 
   // Show location picker if no position yet
   if (!userPos) {
