@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { ROLES, TIME_SLOTS, INTERESTS, Role, TimeSlot } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface Props {
   open: boolean;
   onToggle: () => void;
+  onClose: () => void;
   roles: Role[];
   timeSlots: TimeSlot[];
   interests: string[];
@@ -16,17 +18,37 @@ interface Props {
 }
 
 export default function FilterPanel({
-  open, onToggle, roles, timeSlots, interests,
+  open, onToggle, onClose, roles, timeSlots, interests,
   onRolesChange, onTimeSlotsChange, onInterestsChange,
 }: Props) {
+  const panelRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   const toggle = <T,>(arr: T[], item: T) =>
     arr.includes(item) ? arr.filter(x => x !== item) : [...arr, item];
 
   const activeCount = roles.length + timeSlots.length + interests.length;
 
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (
+        panelRef.current && !panelRef.current.contains(e.target as Node) &&
+        buttonRef.current && !buttonRef.current.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    };
+    // Delay to avoid immediate close from the toggle click
+    const timer = setTimeout(() => document.addEventListener('mousedown', handler), 0);
+    return () => { clearTimeout(timer); document.removeEventListener('mousedown', handler); };
+  }, [open, onClose]);
+
   return (
     <div className="relative">
       <Button
+        ref={buttonRef}
         size="icon"
         variant="outline"
         onClick={onToggle}
@@ -43,14 +65,15 @@ export default function FilterPanel({
       <AnimatePresence>
         {open && (
           <motion.div
+            ref={panelRef}
             initial={{ opacity: 0, y: -8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            className="fixed bottom-32 left-4 right-4 sm:absolute sm:bottom-14 sm:left-0 sm:right-auto sm:w-80 bg-card rounded-2xl shadow-xl border border-border p-5 space-y-5 z-[1000]"
+            className="fixed bottom-32 left-4 right-4 sm:absolute sm:bottom-14 sm:left-0 sm:right-auto sm:w-80 bg-card rounded-2xl shadow-xl border border-border p-5 space-y-5 z-[1100]"
           >
             <div className="flex items-center justify-between">
               <h3 className="font-heading font-bold text-sm text-foreground">Filters</h3>
-              <Button size="icon" variant="ghost" onClick={onToggle} className="h-7 w-7 rounded-lg">
+              <Button size="icon" variant="ghost" onClick={onClose} className="h-7 w-7 rounded-lg">
                 <X className="h-3.5 w-3.5" />
               </Button>
             </div>
