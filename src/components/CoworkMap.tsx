@@ -299,17 +299,17 @@ export default function CoworkMap() {
 
       <div className="absolute bottom-4 left-4 z-[1000] flex items-center gap-2">
         <div className="bg-card rounded-xl shadow-lg border border-border p-1 flex">
-          <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('map')}>
+          <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-9 w-9 rounded-lg" onClick={() => setView('map')}>
             <Map className="h-4 w-4" />
           </Button>
-          <Button size="icon" variant={view === 'list' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('list')}>
+          <Button size="icon" variant={view === 'list' ? 'default' : 'ghost'} className="h-9 w-9 rounded-lg" onClick={() => setView('list')}>
             <List className="h-4 w-4" />
           </Button>
         </div>
-        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setGuideOpen(true)}>
+        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-11 w-11 rounded-xl" onClick={() => setGuideOpen(true)}>
           <HelpCircle className="h-4 w-4" />
         </Button>
-        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setIntentPickerOpen(true)}>
+        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-11 w-11 rounded-xl" onClick={() => setIntentPickerOpen(true)}>
           <SlidersHorizontal className="h-4 w-4" />
         </Button>
         <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
