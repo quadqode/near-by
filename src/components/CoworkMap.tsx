@@ -248,6 +248,11 @@ export default function CoworkMap() {
     refreshPins();
   };
 
+  // Show splash screen first time
+  if (showSplash) {
+    return <SplashScreen onContinue={() => { setShowSplash(false); localStorage.setItem('cowork-splash-seen', '1'); }} />;
+  }
+
   // Show location picker if no position yet
   if (!userPos) {
     return <LocationPicker onLocationSet={handleLocationSet} />;
