@@ -208,6 +208,7 @@
 }
 
 .place-marker.has-offer {
+  background: hsl(35 90% 55%);
   box-shadow: 0 2px 12px rgba(0,0,0,0.2), 0 0 0 3px hsl(35 90% 55% / 0.4);
   animation: offer-glow 2.5s ease-in-out infinite;
 }

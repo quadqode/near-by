@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { X, Navigation, ExternalLink, Wifi, WifiOff, Plug, Volume2, Star, Clock, Armchair, Sun, Coffee, UtensilsCrossed, ChevronLeft, ChevronRight, Tag, Store } from 'lucide-react';
 import { motion } from 'framer-motion';
 import RegisterPlaceDialog from './RegisterPlaceDialog';
-import { motion } from 'framer-motion';
 
 interface Props {
   place: WorkPlace;
