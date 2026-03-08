@@ -97,7 +97,7 @@ export default function CoworkMap() {
   }, []);
 
   useEffect(() => {
-    if (mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 13 });
+    if (mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
   }, [userPos]);
 
   useEffect(() => {
