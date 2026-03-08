@@ -112,9 +112,7 @@ export default function CoworkMap() {
     });
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
-    map.on('click', (e) => {
-      setDropDialog({ lat: e.lngLat.lat, lng: e.lngLat.lng });
-    });
+    // Map click no longer opens drop pin dialog
 
     const updateRadius = () => {
       const zoom = map.getZoom();
