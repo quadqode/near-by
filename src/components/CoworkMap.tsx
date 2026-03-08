@@ -4,6 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw';
 import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
+import type { UserIntent } from './UsageGuide';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
 import { generateDemoPlaces } from '@/lib/demoPlaces';
