@@ -249,7 +249,7 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
               </motion.div>
           )}
             {/* Register place card — show when only places intents are active */}
-            {!hasPeople && hasPlaces && (
+            {hasPlaces && viewFilter !== 'people' && (
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
