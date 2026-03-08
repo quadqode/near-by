@@ -18,7 +18,7 @@ const NAMES: Array<{ role: Role; timeSlot: TimeSlot; interests: string[]; messag
   { role: 'other', timeSlot: 'morning', interests: ['Networking', 'Learning'], message: 'Startup founder looking for co-builders' },
   { role: 'marketer', timeSlot: 'now', interests: ['Coffee chat', 'Brainstorming'], message: 'SEO nerd, happy to audit your site!' },
   { role: 'developer', timeSlot: 'now', interests: ['Pair programming', 'Side projects'], message: 'Hacking on a Svelte migration 🚀' },
-  { role: 'designer', timeSlot: 'morning', interests: ['Design review', 'Coffee chat'], message: 'Brand designer, let's talk typography' },
+  { role: 'designer', timeSlot: 'morning', interests: ['Design review', 'Coffee chat'], message: 'Brand designer, talk typography with me' },
   { role: 'writer', timeSlot: 'now', interests: ['Coffee chat', 'Learning'], message: 'Copywriter cranking out landing pages' },
   { role: 'developer', timeSlot: 'afternoon', interests: ['Learning', 'Pair programming'], message: 'Backend eng exploring Elixir' },
   { role: 'other', timeSlot: 'now', interests: ['Networking', 'Brainstorming'], message: 'VC scout, always curious about projects' },
