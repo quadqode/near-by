@@ -137,7 +137,7 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
           {/* Interests */}
           <div>
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 block">Open to</label>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-2 gap-2">
               {INTERESTS.map(i => (
                 <button
                   key={i}
