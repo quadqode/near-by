@@ -1,73 +1,78 @@
-import { useState } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { SlidersHorizontal } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import type { UserIntent } from './LocationPicker';
 
 interface Props {
   open: boolean;
   intents: UserIntent[];
-  onSave: (intents: UserIntent[]) => void;
+  onToggle: (v: UserIntent) => void;
   onClose: () => void;
 }
 
 const intentOptions: { value: UserIntent; emoji: string; label: string }[] = [
-  { value: 'food', emoji: '🍽️', label: 'Handcrafted Food Places' },
-  { value: 'cowork', emoji: '☕', label: 'Cafés & Places to Work' },
-  { value: 'people', emoji: '👥', label: 'People to Work With' },
+  { value: 'food', emoji: '🍽️', label: 'Handcrafted Food' },
+  { value: 'cowork', emoji: '☕', label: 'Cafés & Cowork' },
+  { value: 'people', emoji: '👥', label: 'People Nearby' },
 ];
 
-export default function IntentPicker({ open, intents, onSave, onClose }: Props) {
-  const [selected, setSelected] = useState<UserIntent[]>(intents);
+export default function IntentPicker({ open, intents, onToggle, onClose }: Props) {
+  const panelRef = useRef<HTMLDivElement>(null);
 
-  const toggle = (v: UserIntent) =>
-    setSelected(prev => prev.includes(v) ? prev.filter(i => i !== v) : [...prev, v]);
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+    const timer = setTimeout(() => document.addEventListener('mousedown', handler), 0);
+    return () => { clearTimeout(timer); document.removeEventListener('mousedown', handler); };
+  }, [open, onClose]);
 
-  const handleSave = () => {
-    const final = selected.length > 0 ? selected : (['food', 'cowork', 'people'] as UserIntent[]);
-    onSave(final);
-    onClose();
+  const handleToggle = (v: UserIntent) => {
+    // Prevent deselecting the last intent
+    if (intents.includes(v) && intents.length <= 1) return;
+    onToggle(v);
   };
 
   return (
-    <Dialog open={open} onOpenChange={v => !v && onClose()}>
-      <DialogContent className="sm:max-w-sm w-[calc(100%-2rem)] rounded-2xl bg-card border-border p-0 z-[2000]">
-        <div className="px-5 pt-5 pb-2 text-center">
-          <div className="mx-auto w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center mb-3">
-            <SlidersHorizontal className="h-5 w-5 text-primary" />
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          ref={panelRef}
+          initial={{ opacity: 0, y: -8, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -8, scale: 0.95 }}
+          className="fixed bottom-32 left-4 right-4 sm:absolute sm:bottom-14 sm:left-0 sm:right-auto sm:w-72 bg-card rounded-2xl shadow-xl border border-border p-5 space-y-4 z-[1100]"
+        >
+          <div className="flex items-center justify-between">
+            <h3 className="font-heading font-bold text-sm text-foreground">Show on map</h3>
+            <Button size="icon" variant="ghost" onClick={onClose} className="h-7 w-7 rounded-lg">
+              <X className="h-3.5 w-3.5" />
+            </Button>
           </div>
-          <h2 className="font-heading font-bold text-base text-foreground">What do you want to see?</h2>
-        </div>
 
-        <div className="px-5 space-y-2">
-          {intentOptions.map(opt => {
-            const active = selected.includes(opt.value);
-            return (
-              <button
+          <div className="flex flex-wrap gap-1.5">
+            {intentOptions.map(opt => (
+              <Badge
                 key={opt.value}
-                onClick={() => toggle(opt.value)}
-                className={`w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all text-left ${
-                  active ? 'border-primary bg-primary/5' : 'border-border bg-background hover:border-primary/30'
+                variant={intents.includes(opt.value) ? 'default' : 'outline'}
+                className={`cursor-pointer text-xs rounded-lg px-3 py-1.5 transition-colors active:scale-[0.97] ${
+                  intents.includes(opt.value)
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
                 }`}
+                onClick={() => handleToggle(opt.value)}
               >
-                <span className="text-xl">{opt.emoji}</span>
-                <span className={`font-heading font-semibold text-sm flex-1 ${active ? 'text-primary' : 'text-foreground'}`}>{opt.label}</span>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
-                  active ? 'border-primary bg-primary' : 'border-border'
-                }`}>
-                  {active && <span className="text-primary-foreground text-[10px] font-bold">✓</span>}
-                </div>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="px-5 pb-5 pt-3">
-          <Button onClick={handleSave} className="w-full font-heading font-semibold h-11 rounded-xl text-sm">
-            Apply
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+                {opt.emoji} {opt.label}
+              </Badge>
+            ))}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
