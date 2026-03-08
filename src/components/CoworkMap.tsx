@@ -4,7 +4,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw';
 import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
-import type { UserIntent } from './UsageGuide';
+import type { UserIntent } from './LocationPicker';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
 import { generateDemoPlaces } from '@/lib/demoPlaces';
@@ -53,7 +53,7 @@ export default function CoworkMap() {
   const [view, setView] = useState<'map' | 'list'>('map');
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
   const [selectedPlace, setSelectedPlace] = useState<WorkPlace | null>(null);
-  const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
+  const [guideOpen, setGuideOpen] = useState(false);
   const [userIntents, setUserIntents] = useState<UserIntent[]>(() => {
     const stored = localStorage.getItem('cowork-user-intents');
     return stored ? JSON.parse(stored) : ['food', 'cowork', 'people'];
@@ -73,8 +73,9 @@ export default function CoworkMap() {
     setPins(data);
   }, []);
 
-  const handleLocationSet = useCallback((lat: number, lng: number) => {
+  const handleLocationSet = useCallback((lat: number, lng: number, intents?: UserIntent[]) => {
     setUserPos([lat, lng]);
+    if (intents) setUserIntents(intents);
     setPlaces(generateDemoPlaces(lat, lng));
     seedDemoPins(lat, lng).then(() => refreshPins());
   }, [refreshPins]);
@@ -215,11 +216,8 @@ export default function CoworkMap() {
     });
   }, [filteredPlaces]);
 
-  const handleGuideClose = (intents: UserIntent[]) => {
+  const handleGuideClose = () => {
     setGuideOpen(false);
-    setUserIntents(intents);
-    localStorage.setItem('cowork-guide-seen', 'true');
-    localStorage.setItem('cowork-user-intents', JSON.stringify(intents));
   };
 
   const handlePinSelect = (pin: CoworkPin) => {
