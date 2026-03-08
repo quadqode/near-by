@@ -11,7 +11,7 @@ const steps = [
   {
     icon: <SlidersHorizontal className="h-5 w-5" />,
     title: 'Choose your intent',
-    items: ['Pick what you're looking for: Food, Cafés, or People', 'The map & list adapt to show only what matters to you', 'Change anytime with the sliders button at the bottom'],
+    items: ['Pick what you are looking for: Food, Cafes, or People', 'The map & list adapt to show only what matters to you', 'Change anytime with the sliders button at the bottom'],
   },
   {
     icon: <Navigation className="h-5 w-5" />,
