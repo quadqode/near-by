@@ -1,103 +1,76 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Coffee, Users, UtensilsCrossed, Sparkles } from 'lucide-react';
-import { motion } from 'framer-motion';
-
-export type UserIntent = 'food' | 'cowork' | 'people';
+import { MapPin, Filter, List, Navigation, MousePointer2, Clock } from 'lucide-react';
 
 interface Props {
   open: boolean;
-  onClose: (intents: UserIntent[]) => void;
+  onClose: () => void;
 }
 
-const intentOptions: { value: UserIntent; emoji: string; icon: React.ElementType; label: string; description: string }[] = [
+const steps = [
   {
-    value: 'food',
-    emoji: '🍽️',
-    icon: UtensilsCrossed,
-    label: 'Handcrafted Food Places',
-    description: 'Discover curated restaurants, bakeries & street food gems nearby',
+    icon: <Navigation className="h-5 w-5" />,
+    title: 'Map navigation',
+    items: ['Scroll to zoom in and out', 'Click and drag to pan the map', 'Pinch on mobile to zoom'],
   },
   {
-    value: 'cowork',
-    emoji: '☕',
-    icon: Coffee,
-    label: 'Cafés to Work From',
-    description: 'Find WiFi-friendly cafés, coworking spots & quiet libraries',
+    icon: <MapPin className="h-5 w-5" />,
+    title: 'Drop a pin',
+    items: ['Tap anywhere on the map to drop a pin', 'Or use the "Drop a pin" button', 'Select your role, availability, and interests'],
   },
   {
-    value: 'people',
-    emoji: '👥',
-    icon: Users,
-    label: 'People to Work With',
-    description: 'Connect with designers, developers & creatives around you',
+    icon: <Filter className="h-5 w-5" />,
+    title: 'Filters',
+    items: ['Filter by role: Designer, Developer, Writer…', 'Filter by time: Morning, Afternoon, Evening, Now', 'Filter by interests to find your match'],
+  },
+  {
+    icon: <List className="h-5 w-5" />,
+    title: 'List view',
+    items: ['Toggle between Map and List views', 'List is sorted by nearest location first', 'Click any card to see details'],
+  },
+  {
+    icon: <Clock className="h-5 w-5" />,
+    title: 'How it works',
+    items: ['Pins expire after 4 hours automatically', 'Only pins within 4km are visible', 'No personal names — just roles and interests'],
   },
 ];
 
 export default function UsageGuide({ open, onClose }: Props) {
-  const handleSelect = (intent: UserIntent) => {
-    onClose([intent]);
-  };
-
-  const handleAll = () => {
-    onClose(['food', 'cowork', 'people']);
-  };
-
   return (
-    <Dialog open={open} onOpenChange={(v) => !v && handleAll()}>
+    <Dialog open={open} onOpenChange={v => !v && onClose()}>
       <DialogContent className="sm:max-w-lg max-h-[90dvh] p-0 overflow-hidden z-[2000] border-border w-[calc(100%-2rem)] rounded-2xl bg-card">
-        {/* Header */}
-        <div className="px-5 sm:px-7 pt-7 sm:pt-9 pb-2 text-center">
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.1, type: 'spring', damping: 20 }}
-            className="mx-auto w-14 h-14 sm:w-16 sm:h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-4"
-          >
-            <Sparkles className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
-          </motion.div>
-          <h2 className="font-heading font-bold text-xl sm:text-2xl text-foreground">
-            What are you looking for?
-          </h2>
-          <p className="text-sm text-muted-foreground mt-1.5 max-w-xs mx-auto">
-            We'll personalize your experience based on what matters to you
-          </p>
+        <div className="px-5 sm:px-6 pt-6 sm:pt-8 pb-2 text-center">
+          <div className="mx-auto w-12 h-12 sm:w-14 sm:h-14 bg-primary/10 rounded-2xl flex items-center justify-center mb-3 sm:mb-4">
+            <MousePointer2 className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+          </div>
+          <h2 className="font-heading font-bold text-lg sm:text-xl text-foreground">Usage Guide</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Learn how to navigate and use the platform</p>
         </div>
 
-        {/* Intent cards */}
-        <div className="px-5 sm:px-7 pb-3 space-y-2.5">
-          {intentOptions.map((opt, idx) => (
-            <motion.button
-              key={opt.value}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 + idx * 0.08 }}
-              onClick={() => handleSelect(opt.value)}
-              className="w-full flex items-center gap-4 p-4 rounded-xl border border-border bg-background hover:border-primary/40 hover:bg-accent/30 transition-all group text-left"
-            >
-              <div className="w-12 h-12 rounded-xl bg-primary/8 flex items-center justify-center text-2xl shrink-0 group-hover:bg-primary/15 transition-colors border border-border/50">
-                {opt.emoji}
+        <div className="px-5 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4 max-h-[55dvh] overflow-y-auto">
+          {steps.map((step, idx) => (
+            <div key={idx} className="flex gap-2.5 sm:gap-3 p-3 rounded-xl bg-background border border-border/50">
+              <div className="mt-0.5 w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+                {step.icon}
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-heading font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
-                  {opt.label}
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
-                  {opt.description}
-                </p>
+              <div className="min-w-0">
+                <h3 className="font-heading font-semibold text-xs sm:text-sm text-foreground">{step.title}</h3>
+                <ul className="mt-1 sm:mt-1.5 space-y-0.5 sm:space-y-1">
+                  {step.items.map((item, i) => (
+                    <li key={i} className="text-[11px] sm:text-xs text-muted-foreground flex items-start gap-1.5">
+                      <span className="text-primary/50 mt-0.5">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
-            </motion.button>
+            </div>
           ))}
         </div>
 
-        {/* Show all */}
-        <div className="px-5 sm:px-7 pb-6 sm:pb-7">
-          <Button
-            onClick={handleAll}
-            variant="outline"
-            className="w-full font-heading font-semibold h-11 rounded-xl text-sm border-border hover:border-primary/30"
-          >
-            Show me everything ✨
+        <div className="px-5 sm:px-6 pb-5 sm:pb-6">
+          <Button onClick={onClose} className="w-full font-heading font-semibold h-10 sm:h-11 rounded-xl text-sm">
+            Got it, let's go!
           </Button>
         </div>
       </DialogContent>
