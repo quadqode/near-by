@@ -174,8 +174,10 @@ export default function CoworkMap() {
         e.stopPropagation();
         setSelectedPin(pin);
       });
+      // Use fuzzy location on map for privacy
+      const [fLat, fLng] = fuzzyLocation(pin.lat, pin.lng, pin.id);
       const marker = new mapboxgl.Marker({ element: el })
-        .setLngLat([pin.lng, pin.lat])
+        .setLngLat([fLng, fLat])
         .addTo(map);
       markersRef.current.push(marker);
     });
