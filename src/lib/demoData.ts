@@ -35,6 +35,22 @@ const NAMES: Array<{ role: Role; timeSlot: TimeSlot; interests: string[]; messag
   { role: 'writer', timeSlot: 'evening', interests: ['Accountability', 'Coffee chat'], message: 'Novelist on chapter 12, need company' },
 ];
 
+// Extra cluster of people near Nehru Place, New Delhi
+const NEHRU_PLACE_PEOPLE: Array<{ role: Role; timeSlot: TimeSlot; interests: string[]; message: string }> = [
+  { role: 'developer', timeSlot: 'now', interests: ['Pair programming', 'Coffee chat'], message: 'Building SaaS dashboards at Nehru Place ☕' },
+  { role: 'developer', timeSlot: 'now', interests: ['Learning', 'Side projects'], message: 'Flutter dev, working from a cafe here' },
+  { role: 'designer', timeSlot: 'morning', interests: ['Design review', 'Networking'], message: 'UI designer freelancing in South Delhi' },
+  { role: 'marketer', timeSlot: 'now', interests: ['Brainstorming', 'Coffee chat'], message: 'Running ads for D2C brands, let us chat!' },
+  { role: 'developer', timeSlot: 'afternoon', interests: ['Pair programming', 'Learning'], message: 'Python dev exploring ML, open to collab' },
+  { role: 'writer', timeSlot: 'now', interests: ['Accountability', 'Coffee chat'], message: 'Tech blogger writing about Indian startups' },
+  { role: 'other', timeSlot: 'now', interests: ['Networking', 'Brainstorming'], message: 'Startup founder, building fintech product' },
+  { role: 'developer', timeSlot: 'evening', interests: ['Side projects', 'Pair programming'], message: 'React Native dev, shipping a health app' },
+  { role: 'designer', timeSlot: 'now', interests: ['Brainstorming', 'Side projects'], message: 'Graphic designer working on brand kits' },
+  { role: 'developer', timeSlot: 'now', interests: ['Coffee chat', 'Learning'], message: 'DevOps eng at a Nehru Place coworking space' },
+  { role: 'marketer', timeSlot: 'morning', interests: ['Networking', 'Side projects'], message: 'Content creator shooting reels nearby 🎥' },
+  { role: 'writer', timeSlot: 'now', interests: ['Coffee chat', 'Accountability'], message: 'Freelance copywriter, need a focus buddy' },
+];
+
 /** Generate a random offset in km converted to degrees */
 function offsetDeg(kmRange: number): number {
   const km = (Math.random() - 0.5) * 2 * kmRange;
@@ -46,8 +62,7 @@ function offsetDeg(kmRange: number): number {
  * Called with the user's geolocation so pins always appear nearby.
  */
 export function generateDemoPins(centerLat = 40.7128, centerLng = -74.006): CoworkPin[] {
-  return NAMES.map((data, i) => {
-    // Spread pins across varying distances: some close (1-2km), some mid (3-5km), some far (6-10km)
+  const mainPins = NAMES.map((data, i) => {
     const distanceBucket = i % 3;
     const range = distanceBucket === 0 ? 1.5 : distanceBucket === 1 ? 4 : 8;
     return {
@@ -59,4 +74,16 @@ export function generateDemoPins(centerLat = 40.7128, centerLng = -74.006): Cowo
       expiresAt: new Date(Date.now() + (2 + Math.random() * 6) * 3600000),
     };
   });
+
+  // Nehru Place cluster (28.5491, 77.2533) — tight 1.5km spread
+  const nehruPins = NEHRU_PLACE_PEOPLE.map((data, i) => ({
+    ...data,
+    id: `demo-np-${i}`,
+    lat: 28.5491 + offsetDeg(1.5),
+    lng: 77.2533 + offsetDeg(1.5) / Math.cos(28.5491 * Math.PI / 180),
+    createdAt: new Date(Date.now() - Math.random() * 3600000),
+    expiresAt: new Date(Date.now() + (2 + Math.random() * 6) * 3600000),
+  }));
+
+  return [...mainPins, ...nehruPins];
 }
