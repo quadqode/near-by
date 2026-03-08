@@ -149,8 +149,13 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
 
       {/* Bottom action */}
       <div className="px-6 py-4 border-t border-border">
-        <Button className="w-full font-heading font-semibold h-12 rounded-xl gap-2" size="lg">
-          <span>👋</span> Say Hi
+        <Button
+          className="w-full font-heading font-semibold h-12 rounded-xl gap-2"
+          size="lg"
+          onClick={handleSayHi}
+          disabled={hiSent || sending}
+        >
+          {hiSent ? <><Check className="h-4 w-4" /> Hi Sent!</> : <><span>👋</span> {sending ? 'Sending...' : 'Say Hi'}</>}
         </Button>
       </div>
     </motion.div>
