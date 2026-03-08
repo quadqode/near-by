@@ -6,6 +6,7 @@ import { getPins, filterPins, getDistance } from '@/lib/pinStore';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
+import PinDetailPanel from './PinDetailPanel';
 import UsageGuide from './UsageGuide';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, Map, List, HelpCircle } from 'lucide-react';
@@ -21,40 +22,6 @@ const ROLE_HEX: Record<Role, string> = {
   other: '#6b8299',
 };
 
-function createPopupHTML(pin: CoworkPin): string {
-  const role = ROLES.find(r => r.value === pin.role);
-  const nowBadge = pin.timeSlot === 'now'
-    ? `<span style="background:#dcfce7;color:#16a34a;font-size:10px;font-weight:600;padding:2px 8px;border-radius:9999px;display:inline-flex;align-items:center;gap:4px;">
-        <span style="width:6px;height:6px;border-radius:50%;background:#16a34a;"></span>HERE NOW
-       </span>`
-    : '';
-  const interests = pin.interests.length > 0
-    ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;">${pin.interests.map(i =>
-        `<span style="background:#f5f5f5;color:#737373;font-size:10px;padding:3px 8px;border-radius:9999px;">${i}</span>`
-      ).join('')}</div>`
-    : '';
-  const msg = pin.message ? `<p style="font-size:13px;color:#737373;margin:6px 0 0;">"${pin.message}"</p>` : '';
-
-  return `
-    <div style="padding:16px;min-width:200px;font-family:'DM Sans',sans-serif;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-        <div style="width:36px;height:36px;border-radius:50%;background:${ROLE_HEX[pin.role]};display:flex;align-items:center;justify-content:center;font-size:16px;">${role?.emoji}</div>
-        <div>
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span style="font-weight:600;font-size:14px;text-transform:capitalize;font-family:'Space Grotesk',sans-serif;">${pin.role}</span>
-            ${nowBadge}
-          </div>
-        </div>
-      </div>
-      ${msg}
-      ${interests}
-      <p style="font-size:10px;color:#a3a3a3;margin-top:10px;">
-        Expires ${new Date(pin.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-      </p>
-    </div>
-  `;
-}
-
 const DEFAULT_POS: [number, number] = [40.7128, -74.006];
 
 export default function CoworkMap() {
@@ -67,6 +34,7 @@ export default function CoworkMap() {
   const [filterTimes, setFilterTimes] = useState<TimeSlot[]>([]);
   const [filterInterests, setFilterInterests] = useState<string[]>([]);
   const [view, setView] = useState<'map' | 'list'>('map');
+  const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
   const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -75,7 +43,6 @@ export default function CoworkMap() {
 
   const refreshPins = useCallback(() => setPins(getPins()), []);
 
-  // Init geolocation
   useEffect(() => {
     refreshPins();
     navigator.geolocation.getCurrentPosition(
@@ -85,10 +52,8 @@ export default function CoworkMap() {
     );
   }, [refreshPins]);
 
-  // Init map
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
-
     mapboxgl.accessToken = MAPBOX_TOKEN;
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -97,26 +62,21 @@ export default function CoworkMap() {
       zoom: 13,
       attributionControl: false,
     });
-
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
     map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
-
     map.on('click', (e) => {
       const event = new CustomEvent('map-click', { detail: { lat: e.lngLat.lat, lng: e.lngLat.lng } });
       window.dispatchEvent(event);
     });
-
     mapRef.current = map;
     return () => { map.remove(); mapRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Fly to user position
   useEffect(() => {
     if (mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 13 });
   }, [userPos]);
 
-  // Handle map clicks for dropping
   useEffect(() => {
     const handler = (e: Event) => {
       if (!dropping) return;
@@ -129,15 +89,12 @@ export default function CoworkMap() {
     return () => window.removeEventListener('map-click', handler);
   }, [dropping, userPos]);
 
-  // Filter pins
   const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
     .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM);
 
-  // Update markers
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-
     markersRef.current.forEach(m => m.remove());
     markersRef.current = [];
 
@@ -148,12 +105,13 @@ export default function CoworkMap() {
       const role = ROLES.find(r => r.value === pin.role);
       el.textContent = role?.emoji || '🤝';
 
-      const popup = new mapboxgl.Popup({ offset: 25, maxWidth: '280px' })
-        .setHTML(createPopupHTML(pin));
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSelectedPin(pin);
+      });
 
       const marker = new mapboxgl.Marker({ element: el })
         .setLngLat([pin.lng, pin.lat])
-        .setPopup(popup)
         .addTo(map);
 
       markersRef.current.push(marker);
@@ -165,15 +123,20 @@ export default function CoworkMap() {
     localStorage.setItem('cowork-guide-seen', 'true');
   };
 
+  const handlePinSelect = (pin: CoworkPin) => {
+    setSelectedPin(pin);
+    if (view === 'map' && mapRef.current) {
+      mapRef.current.flyTo({ center: [pin.lng, pin.lat], zoom: 15 });
+    }
+  };
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-background">
-      {/* Map */}
       <div
         ref={mapContainerRef}
         className={`h-full w-full transition-opacity duration-300 ${view === 'list' ? 'opacity-0 pointer-events-none absolute' : ''}`}
       />
 
-      {/* List view */}
       <AnimatePresence>
         {view === 'list' && (
           <motion.div
@@ -183,9 +146,29 @@ export default function CoworkMap() {
             className="absolute inset-0 bg-background z-[500]"
           >
             <div className="h-full pt-16">
-              <PinListView pins={filtered} userPos={userPos} />
+              <PinListView pins={filtered} userPos={userPos} onPinSelect={handlePinSelect} />
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Detail panel */}
+      <AnimatePresence>
+        {selectedPin && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-foreground/20 z-[1050]"
+              onClick={() => setSelectedPin(null)}
+            />
+            <PinDetailPanel
+              pin={selectedPin}
+              userPos={userPos}
+              onClose={() => setSelectedPin(null)}
+            />
+          </>
         )}
       </AnimatePresence>
 
@@ -207,37 +190,17 @@ export default function CoworkMap() {
 
       {/* Right controls */}
       <div className="absolute top-4 right-4 z-[1000] flex items-center gap-2">
-        {/* View toggle */}
         <div className="bg-card rounded-xl shadow-lg border border-border p-1 flex">
-          <Button
-            size="icon"
-            variant={view === 'map' ? 'default' : 'ghost'}
-            className="h-8 w-8 rounded-lg"
-            onClick={() => setView('map')}
-          >
+          <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('map')}>
             <Map className="h-4 w-4" />
           </Button>
-          <Button
-            size="icon"
-            variant={view === 'list' ? 'default' : 'ghost'}
-            className="h-8 w-8 rounded-lg"
-            onClick={() => setView('list')}
-          >
+          <Button size="icon" variant={view === 'list' ? 'default' : 'ghost'} className="h-8 w-8 rounded-lg" onClick={() => setView('list')}>
             <List className="h-4 w-4" />
           </Button>
         </div>
-
-        {/* Help */}
-        <Button
-          size="icon"
-          variant="outline"
-          className="bg-card shadow-lg border-border h-10 w-10 rounded-xl"
-          onClick={() => setGuideOpen(true)}
-        >
+        <Button size="icon" variant="outline" className="bg-card shadow-lg border-border h-10 w-10 rounded-xl" onClick={() => setGuideOpen(true)}>
           <HelpCircle className="h-4 w-4" />
         </Button>
-
-        {/* Filter */}
         <FilterPanel
           open={filterOpen}
           onToggle={() => setFilterOpen(v => !v)}
@@ -250,7 +213,7 @@ export default function CoworkMap() {
         />
       </div>
 
-      {/* Bottom bar */}
+      {/* Drop pin button */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -269,32 +232,23 @@ export default function CoworkMap() {
         </Button>
       </motion.div>
 
-      {/* Bottom stats bar */}
+      {/* Bottom stats */}
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="absolute bottom-4 left-4 z-[1000] flex items-center gap-3"
+        className="absolute bottom-4 left-4 z-[1000]"
       >
         <div className="bg-card/90 backdrop-blur-sm rounded-lg border border-border px-3 py-1.5 flex items-center gap-4 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <Users className="h-3 w-3" /> {filtered.length} people
-          </span>
+          <span className="flex items-center gap-1.5"><Users className="h-3 w-3" /> {filtered.length} people</span>
           <span className="text-border">|</span>
           <span>{RADIUS_KM}km radius</span>
         </div>
       </motion.div>
 
       {dropDialog && (
-        <DropPinDialog
-          open={!!dropDialog}
-          onClose={() => setDropDialog(null)}
-          lat={dropDialog.lat}
-          lng={dropDialog.lng}
-          onPinAdded={refreshPins}
-        />
+        <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={refreshPins} />
       )}
-
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
     </div>
   );

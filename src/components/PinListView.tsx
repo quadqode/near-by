@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 interface Props {
   pins: CoworkPin[];
   userPos: [number, number];
+  onPinSelect: (pin: CoworkPin) => void;
 }
 
 const ROLE_BG: Record<string, string> = {
@@ -18,7 +19,7 @@ const ROLE_BG: Record<string, string> = {
   other: 'bg-pin-other',
 };
 
-export default function PinListView({ pins, userPos }: Props) {
+export default function PinListView({ pins, userPos, onPinSelect }: Props) {
   const sorted = [...pins].sort((a, b) => {
     const da = getDistance(userPos[0], userPos[1], a.lat, a.lng);
     const db = getDistance(userPos[0], userPos[1], b.lat, b.lng);
@@ -51,6 +52,7 @@ export default function PinListView({ pins, userPos }: Props) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.04 }}
               className="bg-card border border-border rounded-xl p-4 hover:shadow-md transition-shadow cursor-pointer"
+              onClick={() => onPinSelect(pin)}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3">
