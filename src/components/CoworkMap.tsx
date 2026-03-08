@@ -48,10 +48,16 @@ export default function CoworkMap() {
 
   // Init: seed demo data, fetch pins, geolocate, subscribe to realtime
   useEffect(() => {
-    seedDemoPins().then(() => refreshPins());
     navigator.geolocation.getCurrentPosition(
-      pos => setUserPos([pos.coords.latitude, pos.coords.longitude]),
-      () => {},
+      pos => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        setUserPos([lat, lng]);
+        seedDemoPins(lat, lng).then(() => refreshPins());
+      },
+      () => {
+        seedDemoPins().then(() => refreshPins());
+      },
       { timeout: 5000, maximumAge: 60000 }
     );
     const unsub = subscribeToPins(() => refreshPins());
