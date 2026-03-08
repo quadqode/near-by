@@ -87,7 +87,7 @@ export default function CoworkMap() {
       // Approximate visible radius in km from zoom level
       // At zoom 13 ≈ 4km, zoom 11 ≈ 15km, zoom 15 ≈ 1km
       const km = Math.round(40000 / 2 ** zoom * 10) / 10;
-      setVisibleRadius(Math.max(0.5, Math.min(km, 50)));
+      setVisibleRadius(Math.max(0.5, Math.min(km, 10)));
     };
     map.on('zoomend', updateRadius);
     map.on('load', updateRadius);
