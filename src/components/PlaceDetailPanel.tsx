@@ -88,7 +88,7 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
           <h2 className="font-heading font-bold text-lg text-foreground">{place.name}</h2>
           <div className="flex items-center gap-3 mt-1">
             <div className="flex items-center gap-1">
-              <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
+              <Star className="h-3.5 w-3.5 text-[hsl(var(--pin-writer))] fill-[hsl(var(--pin-writer))]" />
               <span className="text-sm font-semibold text-foreground">{place.rating}</span>
             </div>
             <span className="text-xs text-muted-foreground">•</span>
