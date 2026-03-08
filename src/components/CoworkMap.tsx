@@ -15,6 +15,7 @@ import PinListView from './PinListView';
 import PinDetailPanel from './PinDetailPanel';
 import PlaceDetailPanel from './PlaceDetailPanel';
 import UsageGuide from './UsageGuide';
+import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import { Button } from '@/components/ui/button';
