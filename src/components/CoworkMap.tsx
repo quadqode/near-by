@@ -178,9 +178,13 @@ export default function CoworkMap() {
           <span className="text-lg">🗺️</span>
           <h1 className="font-heading font-bold text-foreground text-base">CoWork Drop</h1>
         </div>
-        <div className="bg-card rounded-xl shadow-lg border border-border px-3 py-2.5 flex items-center gap-1.5">
-          <Users className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-xs font-medium text-muted-foreground">{filtered.length} nearby</span>
+        <div className="bg-card rounded-xl shadow-lg border border-border px-3 py-2.5 flex items-center gap-3">
+          <span className="flex items-center gap-1.5">
+            <Users className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-xs font-medium text-muted-foreground">{filtered.length} nearby</span>
+          </span>
+          <span className="text-border">|</span>
+          <span className="text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`} radius</span>
         </div>
       </motion.div>
 
@@ -206,13 +210,6 @@ export default function CoworkMap() {
         </Button>
       </motion.div>
 
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3 }} className="absolute bottom-4 left-4 z-[1000]">
-        <div className="bg-card/90 backdrop-blur-sm rounded-lg border border-border px-3 py-1.5 flex items-center gap-4 text-xs text-muted-foreground">
-          
-          <span className="text-border">|</span>
-          <span>{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`} radius</span>
-        </div>
-      </motion.div>
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={refreshPins} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
