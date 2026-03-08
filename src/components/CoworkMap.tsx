@@ -315,10 +315,10 @@ export default function CoworkMap() {
         <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 left-0 right-0 z-[1000] flex justify-center pointer-events-none">
-        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-12 sm:h-14 px-6 sm:px-7 rounded-lg shadow-xl font-heading font-semibold text-sm sm:text-base gap-2 sm:gap-2.5">
+      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 right-4 sm:left-0 sm:right-0 z-[1000] flex justify-end sm:justify-center pointer-events-none">
+        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-12 sm:h-14 px-3 sm:px-7 rounded-lg shadow-xl font-heading font-semibold text-sm sm:text-base gap-0 sm:gap-2.5">
           <Plus className="h-5 w-5" />
-          Drop a pin
+          <span className="hidden sm:inline">Drop a pin</span>
         </Button>
       </motion.div>
 
