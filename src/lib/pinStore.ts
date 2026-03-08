@@ -2,7 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { CoworkPin, Role, TimeSlot } from './types';
 import { generateDemoPins } from './demoData';
 
-const DEMO_SEEDED_KEY = 'cowork-demo-seeded-v2';
+const DEMO_SEEDED_KEY = 'cowork-demo-seeded-v3';
 
 function mapRow(row: {
   id: string; lat: number; lng: number; role: string; time_slot: string;
