@@ -3,7 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw';
-import { CoworkPin, Role, TimeSlot, ROLES, RADIUS_KM, RADIUS_KM_EXTENDED } from '@/lib/types';
+import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
 import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins } from '@/lib/pinStore';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
@@ -36,6 +36,7 @@ export default function CoworkMap() {
   const [view, setView] = useState<'map' | 'list'>('map');
   const [selectedPin, setSelectedPin] = useState<CoworkPin | null>(null);
   const [guideOpen, setGuideOpen] = useState(() => !localStorage.getItem('cowork-guide-seen'));
+  const [visibleRadius, setVisibleRadius] = useState(4);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -80,6 +81,15 @@ export default function CoworkMap() {
       const event = new CustomEvent('map-click', { detail: { lat: e.lngLat.lat, lng: e.lngLat.lng } });
       window.dispatchEvent(event);
     });
+    const updateRadius = () => {
+      const zoom = map.getZoom();
+      // Approximate visible radius in km from zoom level
+      // At zoom 13 ≈ 4km, zoom 11 ≈ 15km, zoom 15 ≈ 1km
+      const km = Math.round(40000 / (2 ** zoom) * 10) / 10;
+      setVisibleRadius(Math.max(0.5, Math.min(km, 50)));
+    };
+    map.on('zoomend', updateRadius);
+    map.on('load', updateRadius);
     mapRef.current = map;
     return () => { map.remove(); mapRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -93,7 +103,7 @@ export default function CoworkMap() {
     const handler = (e: Event) => {
       if (!dropping) return;
       const { lat, lng } = (e as CustomEvent).detail;
-      if (getDistance(userPos[0], userPos[1], lat, lng) > RADIUS_KM_EXTENDED) return;
+      if (getDistance(userPos[0], userPos[1], lat, lng) > visibleRadius) return;
       setDropDialog({ lat, lng });
       setDropping(false);
     };
@@ -101,12 +111,8 @@ export default function CoworkMap() {
     return () => window.removeEventListener('map-click', handler);
   }, [dropping, userPos]);
 
-  const nearbyPins = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
-    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM);
-  const extendedPins = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
-    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM_EXTENDED);
-  const filtered = nearbyPins.length > 0 ? nearbyPins : extendedPins;
-  const activeRadius = nearbyPins.length > 0 ? RADIUS_KM : RADIUS_KM_EXTENDED;
+  const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
+    .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= visibleRadius);
 
   // Update markers
   useEffect(() => {
@@ -204,7 +210,7 @@ export default function CoworkMap() {
         <div className="bg-card/90 backdrop-blur-sm rounded-lg border border-border px-3 py-1.5 flex items-center gap-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5"><Users className="h-3 w-3" /> {filtered.length} people</span>
           <span className="text-border">|</span>
-          <span>{activeRadius}km radius</span>
+          <span>{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`} radius</span>
         </div>
       </motion.div>
 

@@ -67,6 +67,17 @@ export async function removePin(id: string) {
   await supabase.from('pins').delete().eq('id', id);
 }
 
+export async function sayHi(pinId: string): Promise<boolean> {
+  const { error: greetErr } = await supabase.from('greetings').insert({ pin_id: pinId });
+  if (greetErr) { console.error('Error sending hi:', greetErr); return false; }
+  // Increment hi_count on the pin
+  const { data: pin } = await supabase.from('pins').select('hi_count').eq('id', pinId).single();
+  if (pin) {
+    await supabase.from('pins').update({ hi_count: (pin.hi_count || 0) + 1 }).eq('id', pinId);
+  }
+  return true;
+}
+
 export function filterPins(
   pins: CoworkPin[],
   filters: { roles?: Role[]; timeSlots?: TimeSlot[]; interests?: string[] }

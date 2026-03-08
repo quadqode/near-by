@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import { CoworkPin, ROLES, TIME_SLOTS } from '@/lib/types';
-import { getDistance } from '@/lib/pinStore';
+import { getDistance, sayHi } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Clock, MapPin, Navigation, MessageCircle } from 'lucide-react';
+import { X, Clock, MapPin, Navigation, MessageCircle, Check } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from '@/hooks/use-toast';
 
 const ROLE_HEX: Record<string, string> = {
   designer: '#7c3aed',
@@ -20,11 +22,25 @@ interface Props {
 }
 
 export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
+  const [hiSent, setHiSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const role = ROLES.find(r => r.value === pin.role);
   const timeSlot = TIME_SLOTS.find(t => t.value === pin.timeSlot);
   const dist = getDistance(userPos[0], userPos[1], pin.lat, pin.lng);
   const distLabel = dist < 1 ? `${Math.round(dist * 1000)}m away` : `${dist.toFixed(1)}km away`;
   const isNow = pin.timeSlot === 'now';
+
+  const handleSayHi = async () => {
+    setSending(true);
+    const ok = await sayHi(pin.id);
+    setSending(false);
+    if (ok) {
+      setHiSent(true);
+      toast({ title: '👋 Hi sent!', description: 'They know you\'re interested.' });
+    } else {
+      toast({ title: 'Oops', description: 'Could not send hi. Try again.', variant: 'destructive' });
+    }
+  };
 
   return (
     <motion.div
@@ -133,8 +149,13 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
 
       {/* Bottom action */}
       <div className="px-6 py-4 border-t border-border">
-        <Button className="w-full font-heading font-semibold h-12 rounded-xl gap-2" size="lg">
-          <span>👋</span> Say Hi
+        <Button
+          className="w-full font-heading font-semibold h-12 rounded-xl gap-2"
+          size="lg"
+          onClick={handleSayHi}
+          disabled={hiSent || sending}
+        >
+          {hiSent ? <><Check className="h-4 w-4" /> Hi Sent!</> : <><span>👋</span> {sending ? 'Sending...' : 'Say Hi'}</>}
         </Button>
       </div>
     </motion.div>
