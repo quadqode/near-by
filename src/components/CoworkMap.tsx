@@ -253,6 +253,15 @@ export default function CoworkMap() {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {selectedPlace && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-foreground/20 z-[1050]" onClick={() => setSelectedPlace(null)} />
+            <PlaceDetailPanel place={selectedPlace} userPos={userPos} onClose={() => setSelectedPlace(null)} />
+          </>
+        )}
+      </AnimatePresence>
+
       <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 right-4 z-[1000] flex flex-wrap items-center gap-2">
         <div className="bg-card rounded-xl shadow-lg border border-border px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2">
           <span className="text-base sm:text-lg">🗺️</span>
