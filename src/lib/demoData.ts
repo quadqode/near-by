@@ -46,12 +46,17 @@ function offsetDeg(kmRange: number): number {
  * Called with the user's geolocation so pins always appear nearby.
  */
 export function generateDemoPins(centerLat = 40.7128, centerLng = -74.006): CoworkPin[] {
-  return NAMES.map((data, i) => ({
-    ...data,
-    id: `demo-${i}`,
-    lat: centerLat + offsetDeg(3),
-    lng: centerLng + offsetDeg(3) / Math.cos(centerLat * Math.PI / 180),
-    createdAt: new Date(Date.now() - Math.random() * 3600000),
-    expiresAt: new Date(Date.now() + (2 + Math.random() * 4) * 3600000),
-  }));
+  return NAMES.map((data, i) => {
+    // Spread pins across varying distances: some close (1-2km), some mid (3-5km), some far (6-10km)
+    const distanceBucket = i % 3;
+    const range = distanceBucket === 0 ? 1.5 : distanceBucket === 1 ? 4 : 8;
+    return {
+      ...data,
+      id: `demo-${i}`,
+      lat: centerLat + offsetDeg(range),
+      lng: centerLng + offsetDeg(range) / Math.cos(centerLat * Math.PI / 180),
+      createdAt: new Date(Date.now() - Math.random() * 3600000),
+      expiresAt: new Date(Date.now() + (2 + Math.random() * 6) * 3600000),
+    };
+  });
 }
