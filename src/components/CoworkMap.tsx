@@ -1,5 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, Circle, useMap } from 'react-leaflet';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { CoworkPin, Role, TimeSlot, ROLES, RADIUS_KM } from '@/lib/types';
@@ -7,7 +6,7 @@ import { getPins, filterPins, getDistance } from '@/lib/pinStore';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
 import { Button } from '@/components/ui/button';
-import { Plus, Navigation, Users } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
@@ -44,15 +43,32 @@ function createPinIcon(role: Role, isNow: boolean) {
   });
 }
 
-function MapClickHandler({ onClick }: { onClick: (lat: number, lng: number) => void }) {
-  useMapEvents({ click: e => onClick(e.latlng.lat, e.latlng.lng) });
-  return null;
-}
+function createPopupContent(pin: CoworkPin): string {
+  const role = ROLES.find(r => r.value === pin.role);
+  const nowBadge = pin.timeSlot === 'now'
+    ? `<span style="background:rgba(26,154,122,0.1);color:#1a9a7a;font-size:10px;font-weight:600;padding:2px 6px;border-radius:9999px;">HERE NOW</span>`
+    : '';
+  const interests = pin.interests.length > 0
+    ? `<div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:6px;">${pin.interests.map(i =>
+        `<span style="background:#f1f5f9;color:#64748b;font-size:10px;padding:2px 6px;border-radius:9999px;">${i}</span>`
+      ).join('')}</div>`
+    : '';
+  const msg = pin.message ? `<p style="font-size:12px;color:#64748b;margin:6px 0;">"${pin.message}"</p>` : '';
 
-function FlyToUser({ pos }: { pos: [number, number] }) {
-  const map = useMap();
-  useEffect(() => { map.flyTo(pos, 14); }, [pos, map]);
-  return null;
+  return `
+    <div style="padding:12px;min-width:180px;font-family:'DM Sans',sans-serif;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+        <span style="font-size:18px;">${role?.emoji}</span>
+        <span style="font-weight:600;font-size:14px;text-transform:capitalize;">${pin.role}</span>
+        ${nowBadge}
+      </div>
+      ${msg}
+      ${interests}
+      <p style="font-size:10px;color:#94a3b8;margin-top:8px;">
+        Expires ${new Date(pin.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      </p>
+    </div>
+  `;
 }
 
 const DEFAULT_POS: [number, number] = [40.7128, -74.006];
@@ -67,8 +83,14 @@ export default function CoworkMap() {
   const [filterTimes, setFilterTimes] = useState<TimeSlot[]>([]);
   const [filterInterests, setFilterInterests] = useState<string[]>([]);
 
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const markersRef = useRef<L.Marker[]>([]);
+  const circleRef = useRef<L.Circle | null>(null);
+
   const refreshPins = useCallback(() => setPins(getPins()), []);
 
+  // Init geolocation
   useEffect(() => {
     refreshPins();
     navigator.geolocation.getCurrentPosition(
@@ -78,18 +100,81 @@ export default function CoworkMap() {
     );
   }, [refreshPins]);
 
+  // Init map
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+    const map = L.map(mapContainerRef.current, { zoomControl: false }).setView(userPos, 14);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+    }).addTo(map);
+
+    map.on('click', (e: L.LeafletMouseEvent) => {
+      // We store click coords in a data attribute for the dropping handler
+      const event = new CustomEvent('map-click', { detail: { lat: e.latlng.lat, lng: e.latlng.lng } });
+      window.dispatchEvent(event);
+    });
+
+    mapRef.current = map;
+    return () => { map.remove(); mapRef.current = null; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Fly to user position
+  useEffect(() => {
+    if (mapRef.current) mapRef.current.flyTo(userPos, 14);
+  }, [userPos]);
+
+  // Handle map clicks for dropping
+  useEffect(() => {
+    const handler = (e: Event) => {
+      if (!dropping) return;
+      const { lat, lng } = (e as CustomEvent).detail;
+      if (getDistance(userPos[0], userPos[1], lat, lng) > RADIUS_KM) return;
+      setDropDialog({ lat, lng });
+      setDropping(false);
+    };
+    window.addEventListener('map-click', handler);
+    return () => window.removeEventListener('map-click', handler);
+  }, [dropping, userPos]);
+
+  // Update markers & circle
   const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
     .filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= RADIUS_KM);
 
-  const handleMapClick = (lat: number, lng: number) => {
-    if (!dropping) return;
-    if (getDistance(userPos[0], userPos[1], lat, lng) > RADIUS_KM) return;
-    setDropDialog({ lat, lng });
-    setDropping(false);
-  };
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+
+    // Clear old markers
+    markersRef.current.forEach(m => m.remove());
+    markersRef.current = [];
+
+    // Add new markers
+    filtered.forEach(pin => {
+      const marker = L.marker([pin.lat, pin.lng], {
+        icon: createPinIcon(pin.role, pin.timeSlot === 'now'),
+      }).addTo(map);
+      marker.bindPopup(createPopupContent(pin));
+      markersRef.current.push(marker);
+    });
+
+    // Update radius circle
+    if (circleRef.current) circleRef.current.remove();
+    circleRef.current = L.circle(userPos, {
+      radius: RADIUS_KM * 1000,
+      color: '#1a9a7a',
+      fillColor: '#1a9a7a',
+      fillOpacity: 0.04,
+      weight: 1.5,
+      dashArray: '6 4',
+    }).addTo(map);
+  }, [filtered, userPos]);
 
   return (
     <div className="relative h-screen w-screen overflow-hidden">
+      {/* Map container */}
+      <div ref={mapContainerRef} className="h-full w-full" />
+
       {/* Header */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
@@ -137,66 +222,6 @@ export default function CoworkMap() {
           {dropping ? 'Tap the map' : 'Drop a pin'}
         </Button>
       </motion.div>
-
-      {/* Map */}
-      <MapContainer
-        center={userPos}
-        zoom={14}
-        className="h-full w-full"
-        zoomControl={false}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-        />
-        <MapClickHandler onClick={handleMapClick} />
-        <FlyToUser pos={userPos} />
-
-        <Circle
-          center={userPos}
-          radius={RADIUS_KM * 1000}
-          pathOptions={{
-            color: 'hsl(168, 60%, 42%)',
-            fillColor: 'hsl(168, 60%, 42%)',
-            fillOpacity: 0.04,
-            weight: 1.5,
-            dashArray: '6 4',
-          }}
-        />
-
-        {filtered.map(pin => (
-          <Marker
-            key={pin.id}
-            position={[pin.lat, pin.lng]}
-            icon={createPinIcon(pin.role, pin.timeSlot === 'now')}
-          >
-            <Popup>
-              <div className="p-3 min-w-[180px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">{ROLES.find(r => r.value === pin.role)?.emoji}</span>
-                  <span className="font-heading font-semibold text-sm capitalize">{pin.role}</span>
-                  {pin.timeSlot === 'now' && (
-                    <span className="bg-primary/10 text-primary text-[10px] font-semibold px-1.5 py-0.5 rounded-full">
-                      HERE NOW
-                    </span>
-                  )}
-                </div>
-                {pin.message && <p className="text-xs text-muted-foreground mb-2">"{pin.message}"</p>}
-                {pin.interests.length > 0 && (
-                  <div className="flex flex-wrap gap-1">
-                    {pin.interests.map(i => (
-                      <span key={i} className="bg-muted text-muted-foreground text-[10px] px-1.5 py-0.5 rounded-full">{i}</span>
-                    ))}
-                  </div>
-                )}
-                <p className="text-[10px] text-muted-foreground mt-2">
-                  Expires {new Date(pin.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
 
       {dropDialog && (
         <DropPinDialog
