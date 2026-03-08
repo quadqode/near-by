@@ -81,6 +81,15 @@ export default function CoworkMap() {
       const event = new CustomEvent('map-click', { detail: { lat: e.lngLat.lat, lng: e.lngLat.lng } });
       window.dispatchEvent(event);
     });
+    const updateRadius = () => {
+      const zoom = map.getZoom();
+      // Approximate visible radius in km from zoom level
+      // At zoom 13 ≈ 4km, zoom 11 ≈ 15km, zoom 15 ≈ 1km
+      const km = Math.round(40000 / (2 ** zoom) * 10) / 10;
+      setVisibleRadius(Math.max(0.5, Math.min(km, 50)));
+    };
+    map.on('zoomend', updateRadius);
+    map.on('load', updateRadius);
     mapRef.current = map;
     return () => { map.remove(); mapRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
