@@ -175,7 +175,7 @@ export default function PinListView({ pins, places, userPos, intents, onPinSelec
 
       {/* Place sub-filter (cafés vs food) — show when places are visible and both intents active */}
       {showPlaceSubFilter && viewFilter !== 'people' && (
-        <div className="px-4 pt-2 pb-2 flex gap-1.5 border-b border-border/50">
+        <div className="px-4 pt-3.5 pb-2 flex gap-1.5 border-b border-border/50">
           {placeFilters.map(f => (
             <button
               key={f.value}
