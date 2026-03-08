@@ -73,6 +73,7 @@ export default function CoworkMap() {
       style: 'mapbox://styles/mapbox/streets-v12',
       center: [userPos[1], userPos[0]],
       zoom: 13,
+      minZoom: 11,
       attributionControl: false
     });
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
@@ -86,7 +87,7 @@ export default function CoworkMap() {
       // Approximate visible radius in km from zoom level
       // At zoom 13 ≈ 4km, zoom 11 ≈ 15km, zoom 15 ≈ 1km
       const km = Math.round(40000 / 2 ** zoom * 10) / 10;
-      setVisibleRadius(Math.max(0.5, Math.min(km, 50)));
+      setVisibleRadius(Math.max(0.5, Math.min(km, 10)));
     };
     map.on('zoomend', updateRadius);
     map.on('load', updateRadius);
@@ -112,7 +113,7 @@ export default function CoworkMap() {
   }, [dropping, userPos]);
 
   const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests }).
-  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= visibleRadius);
+  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 10));
 
   // Update markers
   useEffect(() => {
