@@ -15,6 +15,8 @@ interface Props {
   places: WorkPlace[];
   userPos: [number, number];
   intents: UserIntent[];
+  offersOnly: boolean;
+  onOffersOnlyChange: (v: boolean) => void;
   onPinSelect: (pin: CoworkPin) => void;
   onPlaceSelect: (place: WorkPlace) => void;
 }
