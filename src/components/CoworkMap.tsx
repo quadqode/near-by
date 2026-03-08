@@ -7,7 +7,7 @@ import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
 import { generateDemoPlaces } from '@/lib/demoPlaces';
-import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins } from '@/lib/pinStore';
+import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
