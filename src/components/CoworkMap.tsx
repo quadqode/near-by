@@ -181,6 +181,33 @@ export default function CoworkMap() {
     });
   }, [filtered]);
 
+  // Update place markers
+  const filteredPlaces = userPos
+    ? places.filter(p => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4))
+    : [];
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    placeMarkersRef.current.forEach(m => m.remove());
+    placeMarkersRef.current = [];
+
+    filteredPlaces.forEach(place => {
+      const meta = PLACE_TYPE_META[place.type];
+      const el = document.createElement('div');
+      el.className = 'place-marker';
+      el.textContent = meta.emoji;
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        setSelectedPlace(place);
+      });
+      const marker = new mapboxgl.Marker({ element: el })
+        .setLngLat([place.lng, place.lat])
+        .addTo(map);
+      placeMarkersRef.current.push(marker);
+    });
+  }, [filteredPlaces]);
+
   const handleGuideClose = () => {
     setGuideOpen(false);
     localStorage.setItem('cowork-guide-seen', 'true');
