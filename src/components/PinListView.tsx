@@ -20,65 +20,65 @@ interface Props {
 }
 
 type ListItem =
-  | { kind: 'pin'; data: CoworkPin; dist: number }
-  | { kind: 'place'; data: WorkPlace; dist: number };
+{kind: 'pin';data: CoworkPin;dist: number;} |
+{kind: 'place';data: WorkPlace;dist: number;};
 
 function distLabel(dist: number) {
   return dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`;
 }
 
-function PinCard({ pin, dist, onClick }: { pin: CoworkPin; dist: number; onClick: () => void }) {
-  const role = ROLES.find(r => r.value === pin.role);
+function PinCard({ pin, dist, onClick }: {pin: CoworkPin;dist: number;onClick: () => void;}) {
+  const role = ROLES.find((r) => r.value === pin.role);
   const isNow = pin.timeSlot === 'now';
 
   return (
     <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
       <div
         className="w-11 h-11 rounded-full flex items-center justify-center text-lg shrink-0 shadow-sm"
-        style={{ background: `hsl(var(--pin-${pin.role}) / 0.15)`, border: `2px solid hsl(var(--pin-${pin.role}) / 0.3)` }}
-      >
+        style={{ background: `hsl(var(--pin-${pin.role}) / 0.15)`, border: `2px solid hsl(var(--pin-${pin.role}) / 0.3)` }}>
+        
         {role?.emoji}
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <span className="font-heading font-semibold text-sm text-foreground capitalize group-hover:text-primary transition-colors">{pin.role}</span>
-            {isNow && (
-              <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))]">
+            {isNow &&
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[hsl(var(--success))] text-[hsl(var(--success-foreground))]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[hsl(var(--success-foreground))] animate-pulse" />
                 NOW
               </span>
-            )}
+            }
           </div>
           <span className="text-xs font-semibold text-primary shrink-0">{distLabel(dist)}</span>
         </div>
-        {pin.message && (
-          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 italic">"{pin.message}"</p>
-        )}
-        {pin.interests.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {pin.interests.map(i => (
-              <span key={i} className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-accent/50 text-accent-foreground border border-border/50">{i}</span>
-            ))}
+        {pin.message &&
+        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1 italic">"{pin.message}"</p>
+        }
+        {pin.interests.length > 0 &&
+        <div className="flex flex-wrap gap-1.5 mt-2">
+            {pin.interests.map((i) =>
+          <span key={i} className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-accent/50 text-accent-foreground border border-border/50">{i}</span>
+          )}
           </div>
-        )}
+        }
         <div className="flex items-center gap-1 mt-2 text-[10px] text-muted-foreground">
           <Clock className="h-3 w-3" />
           Expires {new Date(pin.expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
-function PlaceCard({ place, dist, onClick }: { place: WorkPlace; dist: number; onClick: () => void }) {
+function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onClick: () => void;}) {
   const meta = PLACE_TYPE_META[place.type];
 
   return (
     <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
       <div
-        className="w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm bg-accent/40 border-2 border-accent-foreground/15"
-      >
+        className="w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm bg-accent/40 border-2 border-accent-foreground/15">
+        
         {meta.emoji}
       </div>
       <div className="flex-1 min-w-0">
@@ -100,8 +100,8 @@ function PlaceCard({ place, dist, onClick }: { place: WorkPlace; dist: number; o
           <Clock className="h-3 w-3" />{place.hours}
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 }
 
 export default function PinListView({ pins, places, userPos, intents, onPinSelect, onPlaceSelect }: Props) {
@@ -120,13 +120,13 @@ export default function PinListView({ pins, places, userPos, intents, onPinSelec
   const items: ListItem[] = [];
 
   if (hasPeople && viewFilter !== 'places') {
-    pins.forEach(p => {
+    pins.forEach((p) => {
       const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
       if (dist <= 4) items.push({ kind: 'pin', data: p, dist });
     });
   }
   if (hasPlaces && viewFilter !== 'people') {
-    places.forEach(p => {
+    places.forEach((p) => {
       const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
       if (dist <= 4) {
         // Apply place sub-filter
@@ -139,87 +139,87 @@ export default function PinListView({ pins, places, userPos, intents, onPinSelec
 
   items.sort((a, b) => a.dist - b.dist);
 
-  const mainFilters: { value: ViewFilter; label: string; emoji: string }[] = [
-    { value: 'all', label: 'All', emoji: '🔍' },
-    { value: 'people', label: 'People', emoji: '👤' },
-    { value: 'places', label: 'Places', emoji: '📍' },
-  ];
+  const mainFilters: {value: ViewFilter;label: string;emoji: string;}[] = [
+  { value: 'all', label: 'All', emoji: '🔍' },
+  { value: 'people', label: 'People', emoji: '👤' },
+  { value: 'places', label: 'Places', emoji: '📍' }];
 
-  const placeFilters: { value: PlaceSubFilter; label: string; emoji: string }[] = [
-    { value: 'all', label: 'All Places', emoji: '📍' },
-    { value: 'cafe', label: 'Cafés & Cowork', emoji: '☕' },
-    { value: 'food', label: 'Food Places', emoji: '🍽️' },
-  ];
+
+  const placeFilters: {value: PlaceSubFilter;label: string;emoji: string;}[] = [
+  { value: 'all', label: 'All Places', emoji: '📍' },
+  { value: 'cafe', label: 'Cafés & Cowork', emoji: '☕' },
+  { value: 'food', label: 'Food Places', emoji: '🍽️' }];
+
 
   return (
     <div className="h-full flex flex-col bg-background">
       {/* Main category filter tabs */}
-      {multipleCategories && (
-        <div className="px-4 pt-5 pb-2 flex justify-center gap-1.5 border-b border-border/50">
-          {mainFilters.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setViewFilter(f.value)}
-              className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
-                viewFilter === f.value
-                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                  : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
-              }`}
-            >
+      {multipleCategories &&
+      <div className="px-4 pt-5 pb-2 gap-1.5 border-b border-border/50 flex items-center justify-start">
+          {mainFilters.map((f) =>
+        <button
+          key={f.value}
+          onClick={() => setViewFilter(f.value)}
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all border ${
+          viewFilter === f.value ?
+          'bg-primary text-primary-foreground border-primary shadow-sm' :
+          'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'}`
+          }>
+          
               <span>{f.emoji}</span>
               {f.label}
             </button>
-          ))}
+        )}
         </div>
-      )}
+      }
 
       {/* Place sub-filter (cafés vs food) — show when places are visible and both intents active */}
-      {showPlaceSubFilter && viewFilter !== 'people' && (
-        <div className="px-4 py-3 flex justify-center gap-1.5 border-b border-border/50">
-          {placeFilters.map(f => (
-            <button
-              key={f.value}
-              onClick={() => setPlaceSubFilter(f.value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${
-                placeSubFilter === f.value
-                  ? 'bg-accent text-accent-foreground border-primary/40 shadow-sm'
-                  : 'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'
-              }`}
-            >
+      {showPlaceSubFilter && viewFilter !== 'people' &&
+      <div className="px-4 py-3 gap-1.5 border-b border-border/50 flex items-center justify-start">
+          {placeFilters.map((f) =>
+        <button
+          key={f.value}
+          onClick={() => setPlaceSubFilter(f.value)}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all border ${
+          placeSubFilter === f.value ?
+          'bg-accent text-accent-foreground border-primary/40 shadow-sm' :
+          'bg-card border-border text-muted-foreground hover:border-primary/30 hover:text-foreground'}`
+          }>
+          
               <span>{f.emoji}</span>
               {f.label}
             </button>
-          ))}
+        )}
         </div>
-      )}
+      }
 
-      {items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center flex-1 text-center px-6 py-20">
+      {items.length === 0 ?
+      <div className="flex flex-col items-center justify-center flex-1 text-center px-6 py-20">
           <MapPin className="h-10 w-10 text-muted-foreground/30 mb-3" />
           <p className="text-sm font-heading font-semibold text-muted-foreground">Nothing nearby</p>
           <p className="text-xs text-muted-foreground mt-1">Try a different filter or drop a pin!</p>
-        </div>
-      ) : (
-        <ScrollArea className="flex-1">
+        </div> :
+
+      <ScrollArea className="flex-1">
           <div className="p-4 space-y-2.5 pb-24">
-            {items.map((item, idx) => (
-              <motion.div
-                key={item.kind === 'pin' ? `pin-${item.data.id}` : `place-${item.data.id}`}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.03 }}
-                className="bg-card border border-border rounded-xl p-4 hover:border-primary/30 hover:shadow-md transition-all"
-              >
-                {item.kind === 'pin' ? (
-                  <PinCard pin={item.data} dist={item.dist} onClick={() => onPinSelect(item.data)} />
-                ) : (
-                  <PlaceCard place={item.data} dist={item.dist} onClick={() => onPlaceSelect(item.data)} />
-                )}
+            {items.map((item, idx) =>
+          <motion.div
+            key={item.kind === 'pin' ? `pin-${item.data.id}` : `place-${item.data.id}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: idx * 0.03 }}
+            className="bg-card border border-border rounded-xl p-4 hover:border-primary/30 hover:shadow-md transition-all">
+            
+                {item.kind === 'pin' ?
+            <PinCard pin={item.data} dist={item.dist} onClick={() => onPinSelect(item.data)} /> :
+
+            <PlaceCard place={item.data} dist={item.dist} onClick={() => onPlaceSelect(item.data)} />
+            }
               </motion.div>
-            ))}
+          )}
           </div>
         </ScrollArea>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
