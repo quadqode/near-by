@@ -10,6 +10,8 @@ import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
 import PinDetailPanel from './PinDetailPanel';
 import UsageGuide from './UsageGuide';
+import LocationPicker from './LocationPicker';
+import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, Map, List, HelpCircle, Radar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,12 +24,10 @@ const ROLE_HEX: Record<Role, string> = {
   other: '#6b8299'
 };
 
-const DEFAULT_POS: [number, number] = [40.7128, -74.006];
-
 export default function CoworkMap() {
-  const [userPos, setUserPos] = useState<[number, number]>(DEFAULT_POS);
+  const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [pins, setPins] = useState<CoworkPin[]>([]);
-  const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
+  const [dropDialog, setDropDialog] = useState<{lat: number; lng: number} | null>(null);
   const [dropping, setDropping] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [filterRoles, setFilterRoles] = useState<Role[]>([]);
@@ -42,32 +42,27 @@ export default function CoworkMap() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
 
+  const { showCheckIn, handleStillHere, handleRemove, registerPin } = useExpiryCheckIn();
+
   const refreshPins = useCallback(async () => {
     const data = await getPins();
     setPins(data);
   }, []);
 
-  // Init: seed demo data, fetch pins, geolocate, subscribe to realtime
+  const handleLocationSet = useCallback((lat: number, lng: number) => {
+    setUserPos([lat, lng]);
+    seedDemoPins(lat, lng).then(() => refreshPins());
+  }, [refreshPins]);
+
+  // Subscribe to realtime
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setUserPos([lat, lng]);
-        seedDemoPins(lat, lng).then(() => refreshPins());
-      },
-      () => {
-        seedDemoPins().then(() => refreshPins());
-      },
-      { timeout: 5000, maximumAge: 60000 }
-    );
     const unsub = subscribeToPins(() => refreshPins());
     return unsub;
   }, [refreshPins]);
 
-  // Init map
+  // Init map when userPos is set
   useEffect(() => {
-    if (!mapContainerRef.current || mapRef.current) return;
+    if (!userPos || !mapContainerRef.current || mapRef.current) return;
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/streets-v12',
@@ -84,25 +79,23 @@ export default function CoworkMap() {
     });
     const updateRadius = () => {
       const zoom = map.getZoom();
-      // Approximate visible radius in km from zoom level
-      // At zoom 13 ≈ 4km, zoom 11 ≈ 15km, zoom 15 ≈ 1km
       const km = Math.round(40000 / 2 ** zoom * 10) / 10;
       setVisibleRadius(Math.max(0.5, Math.min(km, 4)));
     };
     map.on('zoomend', updateRadius);
     map.on('load', updateRadius);
     mapRef.current = map;
-    return () => {map.remove();mapRef.current = null;};
+    return () => { map.remove(); mapRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userPos]);
 
   useEffect(() => {
-    if (mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
+    if (userPos && mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
   }, [userPos]);
 
   useEffect(() => {
     const handler = (e: Event) => {
-      if (!dropping) return;
+      if (!dropping || !userPos) return;
       const { lat, lng } = (e as CustomEvent).detail;
       if (getDistance(userPos[0], userPos[1], lat, lng) > visibleRadius) return;
       setDropDialog({ lat, lng });
@@ -110,10 +103,12 @@ export default function CoworkMap() {
     };
     window.addEventListener('map-click', handler);
     return () => window.removeEventListener('map-click', handler);
-  }, [dropping, userPos]);
+  }, [dropping, userPos, visibleRadius]);
 
-  const filtered = filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests }).
-  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4));
+  const filtered = userPos
+    ? filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests })
+        .filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4))
+    : [];
 
   // Update markers
   useEffect(() => {
@@ -132,9 +127,9 @@ export default function CoworkMap() {
         e.stopPropagation();
         setSelectedPin(pin);
       });
-      const marker = new mapboxgl.Marker({ element: el }).
-      setLngLat([pin.lng, pin.lat]).
-      addTo(map);
+      const marker = new mapboxgl.Marker({ element: el })
+        .setLngLat([pin.lng, pin.lat])
+        .addTo(map);
       markersRef.current.push(marker);
     });
   }, [filtered]);
@@ -151,27 +146,37 @@ export default function CoworkMap() {
     }
   };
 
+  const handlePinAdded = (pinId: string) => {
+    registerPin(pinId);
+    refreshPins();
+  };
+
+  // Show location picker if no position yet
+  if (!userPos) {
+    return <LocationPicker onLocationSet={handleLocationSet} />;
+  }
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-background">
       <div ref={mapContainerRef} className={`h-full w-full transition-opacity duration-300 ${view === 'list' ? 'opacity-0 pointer-events-none absolute' : ''}`} />
 
       <AnimatePresence>
-        {view === 'list' &&
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
+        {view === 'list' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
             <div className="h-full pt-16">
               <PinListView pins={filtered} userPos={userPos} onPinSelect={handlePinSelect} />
             </div>
           </motion.div>
-        }
+        )}
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedPin &&
-        <>
+        {selectedPin && (
+          <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-foreground/20 z-[1050]" onClick={() => setSelectedPin(null)} />
             <PinDetailPanel pin={selectedPin} userPos={userPos} onClose={() => setSelectedPin(null)} />
           </>
-        }
+        )}
       </AnimatePresence>
 
       <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 right-4 z-[1000] flex flex-wrap items-center gap-2">
@@ -210,9 +215,9 @@ export default function CoworkMap() {
         </Button>
       </motion.div>
 
-
-      {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={refreshPins} />}
+      {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
-    </div>);
-
+      <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
+    </div>
+  );
 }
