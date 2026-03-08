@@ -11,7 +11,7 @@ const features = [
   {
     icon: MapPin,
     title: 'Drop a Pin',
-    desc: 'Share where you're working so others can find you',
+    desc: 'Share where you\'re working so others can find you',
   },
   {
     icon: Users,
