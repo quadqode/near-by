@@ -22,11 +22,25 @@ interface Props {
 }
 
 export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
+  const [hiSent, setHiSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const role = ROLES.find(r => r.value === pin.role);
   const timeSlot = TIME_SLOTS.find(t => t.value === pin.timeSlot);
   const dist = getDistance(userPos[0], userPos[1], pin.lat, pin.lng);
   const distLabel = dist < 1 ? `${Math.round(dist * 1000)}m away` : `${dist.toFixed(1)}km away`;
   const isNow = pin.timeSlot === 'now';
+
+  const handleSayHi = async () => {
+    setSending(true);
+    const ok = await sayHi(pin.id);
+    setSending(false);
+    if (ok) {
+      setHiSent(true);
+      toast({ title: '👋 Hi sent!', description: 'They know you\'re interested.' });
+    } else {
+      toast({ title: 'Oops', description: 'Could not send hi. Try again.', variant: 'destructive' });
+    }
+  };
 
   return (
     <motion.div
