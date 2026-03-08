@@ -3,7 +3,7 @@ import { CoworkPin, Role, TimeSlot } from './types';
 // Demo pins scattered around NYC (default location)
 const DEMO_PINS_DATA: Array<{
   lat: number; lng: number; role: Role; timeSlot: TimeSlot;
-  interests: string[]; message: string; name: string;
+  interests: string[]; message: string;
 }> = [
   { lat: 40.7145, lng: -74.0025, role: 'developer', timeSlot: 'now', interests: ['Pair programming', 'Coffee chat'], message: 'Building a React app, happy to pair!' },
   { lat: 40.7185, lng: -73.9985, role: 'designer', timeSlot: 'now', interests: ['Design review', 'Brainstorming'], message: 'Working on a rebrand project 🎨' },
