@@ -16,6 +16,18 @@ interface Props {
 export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
   const [photoIdx, setPhotoIdx] = useState(0);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') setPhotoIdx(i => (i - 1 + place.photos.length) % place.photos.length);
+      if (e.key === 'ArrowRight') setPhotoIdx(i => (i + 1) % place.photos.length);
+    };
+    document.addEventListener('keydown', handler);
+    panelRef.current?.focus();
+    return () => document.removeEventListener('keydown', handler);
+  }, [onClose, place.photos.length]);
   const meta = PLACE_TYPE_META[place.type];
   const dist = getDistance(userPos[0], userPos[1], place.lat, place.lng);
   const distLabel = dist < 1 ? `${Math.round(dist * 1000)}m away` : `${dist.toFixed(1)}km away`;
