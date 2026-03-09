@@ -251,7 +251,7 @@ export default function CoworkMap() {
           ${place.offer ? `<div style="margin-top:4px;font-size:11px;font-weight:600;color:hsl(var(--primary))">🏷️ ${place.offer}</div>` : ''}
         </div>`;
 
-        const popup = new mapboxgl.Popup({ offset: 6, closeButton: false, closeOnClick: false, className: 'place-hover-popup' })
+        const popup = new mapboxgl.Popup({ offset: [0, -8], anchor: 'bottom', closeButton: false, closeOnClick: false, className: 'place-hover-popup' })
           .setLngLat([place.lng, place.lat])
           .setHTML(html)
           .addTo(map);
