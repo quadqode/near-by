@@ -111,13 +111,17 @@ export default function FilterPanel({
                 {TIME_SLOTS.map(t => (
                   <Badge
                     key={t.value}
+                    tabIndex={0}
+                    role="checkbox"
+                    aria-checked={timeSlots.includes(t.value)}
                     variant={timeSlots.includes(t.value) ? 'default' : 'outline'}
-                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                       timeSlots.includes(t.value)
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
                     }`}
                     onClick={() => onTimeSlotsChange(toggle(timeSlots, t.value))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onTimeSlotsChange(toggle(timeSlots, t.value)); } }}
                   >
                     {t.label}
                   </Badge>
