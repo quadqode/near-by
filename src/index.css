@@ -264,12 +264,17 @@
 }
 
 /* Place hover popup */
+.place-hover-popup {
+  z-index: 1100 !important;
+}
 .place-hover-popup .mapboxgl-popup-content {
   background: hsl(var(--card));
+  color: hsl(var(--foreground));
   border: 1px solid hsl(var(--border));
   border-radius: 12px;
   padding: 10px 12px;
   box-shadow: 0 8px 24px hsl(0 0% 0% / 0.12);
+  margin-bottom: 8px;
 }
 .place-hover-popup .mapboxgl-popup-tip {
   border-top-color: hsl(var(--card));
