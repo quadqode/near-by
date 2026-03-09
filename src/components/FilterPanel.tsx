@@ -87,13 +87,17 @@ export default function FilterPanel({
                 {ROLES.map(r => (
                   <Badge
                     key={r.value}
+                    tabIndex={0}
+                    role="checkbox"
+                    aria-checked={roles.includes(r.value)}
                     variant={roles.includes(r.value) ? 'default' : 'outline'}
-                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                       roles.includes(r.value)
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
                     }`}
                     onClick={() => onRolesChange(toggle(roles, r.value))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onRolesChange(toggle(roles, r.value)); } }}
                   >
                     {r.emoji} {r.label}
                   </Badge>
