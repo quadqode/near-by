@@ -19,6 +19,7 @@ import UsageGuide from './UsageGuide';
 import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
+import OfferBanner from './OfferBanner';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
