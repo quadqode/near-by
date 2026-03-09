@@ -28,8 +28,12 @@ export default function IntentPicker({ open, intents, onToggle, onClose }: Props
         onClose();
       }
     };
+    const keyHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
     const timer = setTimeout(() => document.addEventListener('mousedown', handler), 0);
-    return () => { clearTimeout(timer); document.removeEventListener('mousedown', handler); };
+    document.addEventListener('keydown', keyHandler);
+    return () => { clearTimeout(timer); document.removeEventListener('mousedown', handler); document.removeEventListener('keydown', keyHandler); };
   }, [open, onClose]);
 
   const handleToggle = (v: UserIntent) => {
