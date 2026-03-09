@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CoworkPin, ROLES, TIME_SLOTS } from '@/lib/types';
 import { getDistance, sayHi, fuzzyLocation } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
