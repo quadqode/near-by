@@ -16,6 +16,14 @@ interface Props {
 export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
   const [hiSent, setHiSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handler);
+    panelRef.current?.focus();
+    return () => document.removeEventListener('keydown', handler);
+  }, [onClose]);
   const role = ROLES.find(r => r.value === pin.role);
   const timeSlot = TIME_SLOTS.find(t => t.value === pin.timeSlot);
   const dist = getDistance(userPos[0], userPos[1], pin.lat, pin.lng);
