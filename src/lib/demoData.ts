@@ -1,89 +1,132 @@
 import { CoworkPin, Role, TimeSlot } from './types';
 
-const NAMES: Array<{ role: Role; timeSlot: TimeSlot; interests: string[]; message: string }> = [
-  { role: 'developer', timeSlot: 'now', interests: ['Pair programming', 'Coffee chat'], message: 'Building a React app, happy to pair!' },
-  { role: 'designer', timeSlot: 'now', interests: ['Design review', 'Brainstorming'], message: 'Working on a rebrand project 🎨' },
-  { role: 'writer', timeSlot: 'morning', interests: ['Coffee chat', 'Accountability'], message: 'Writing my newsletter, need focus buddy' },
-  { role: 'marketer', timeSlot: 'afternoon', interests: ['Networking', 'Brainstorming'], message: 'Planning a product launch campaign' },
-  { role: 'developer', timeSlot: 'now', interests: ['Side projects', 'Learning'], message: 'Learning Rust, open to chat about systems' },
-  { role: 'designer', timeSlot: 'evening', interests: ['Design review', 'Side projects'], message: 'Freelance UI/UX, looking for collabs' },
-  { role: 'other', timeSlot: 'now', interests: ['Networking', 'Coffee chat'], message: 'Product manager, love meeting builders!' },
-  { role: 'developer', timeSlot: 'morning', interests: ['Pair programming', 'Learning'], message: 'Full-stack dev, working on AI tools' },
-  { role: 'writer', timeSlot: 'now', interests: ['Accountability', 'Coffee chat'], message: 'Finishing a blog series on productivity' },
-  { role: 'marketer', timeSlot: 'afternoon', interests: ['Brainstorming', 'Side projects'], message: 'Growth hacker, always up for ideas' },
-  { role: 'developer', timeSlot: 'evening', interests: ['Side projects', 'Pair programming'], message: 'Working on an open-source CLI tool' },
-  { role: 'designer', timeSlot: 'now', interests: ['Brainstorming', 'Networking'], message: 'Motion designer at a café ☕' },
-  { role: 'developer', timeSlot: 'now', interests: ['Learning', 'Coffee chat'], message: 'Exploring WebGL and 3D on the web' },
-  { role: 'writer', timeSlot: 'afternoon', interests: ['Accountability', 'Side projects'], message: 'Tech journalist, researching a story' },
-  { role: 'other', timeSlot: 'morning', interests: ['Networking', 'Learning'], message: 'Startup founder looking for co-builders' },
-  { role: 'marketer', timeSlot: 'now', interests: ['Coffee chat', 'Brainstorming'], message: 'SEO nerd, happy to audit your site!' },
-  { role: 'developer', timeSlot: 'now', interests: ['Pair programming', 'Side projects'], message: 'Hacking on a Svelte migration 🚀' },
-  { role: 'designer', timeSlot: 'morning', interests: ['Design review', 'Coffee chat'], message: 'Brand designer, talk typography with me' },
-  { role: 'writer', timeSlot: 'now', interests: ['Coffee chat', 'Learning'], message: 'Copywriter cranking out landing pages' },
-  { role: 'developer', timeSlot: 'afternoon', interests: ['Learning', 'Pair programming'], message: 'Backend eng exploring Elixir' },
-  { role: 'other', timeSlot: 'now', interests: ['Networking', 'Brainstorming'], message: 'VC scout, always curious about projects' },
-  { role: 'marketer', timeSlot: 'evening', interests: ['Side projects', 'Coffee chat'], message: 'Building my personal brand on socials' },
-  { role: 'developer', timeSlot: 'now', interests: ['Side projects', 'Coffee chat'], message: 'Mobile dev, building a fitness app' },
-  { role: 'designer', timeSlot: 'now', interests: ['Brainstorming', 'Design review'], message: 'Product designer, love whiteboard jams' },
-  { role: 'writer', timeSlot: 'morning', interests: ['Accountability', 'Networking'], message: 'Screenwriter working on a pilot 🎬' },
-  { role: 'developer', timeSlot: 'now', interests: ['Learning', 'Side projects'], message: 'Data engineer playing with DuckDB' },
-  { role: 'other', timeSlot: 'afternoon', interests: ['Coffee chat', 'Networking'], message: 'Recruiter who loves the indie scene' },
-  { role: 'marketer', timeSlot: 'now', interests: ['Brainstorming', 'Learning'], message: 'Content strategist, ask me anything!' },
-  { role: 'developer', timeSlot: 'morning', interests: ['Pair programming', 'Coffee chat'], message: 'DevOps nerd, automating everything' },
-  { role: 'designer', timeSlot: 'afternoon', interests: ['Side projects', 'Networking'], message: '3D artist learning Blender 🧊' },
-  { role: 'developer', timeSlot: 'now', interests: ['Side projects', 'Learning'], message: 'Game dev prototyping in Godot' },
-  { role: 'writer', timeSlot: 'evening', interests: ['Accountability', 'Coffee chat'], message: 'Novelist on chapter 12, need company' },
-];
+const ROLES_LIST: Role[] = ['developer', 'designer', 'writer', 'marketer', 'other'];
+const TIME_SLOTS_LIST: TimeSlot[] = ['now', 'morning', 'afternoon', 'evening'];
+const INTERESTS_LIST = ['Brainstorming', 'Pair programming', 'Design review', 'Coffee chat', 'Networking', 'Accountability', 'Learning', 'Side projects'];
 
-// Extra cluster of people near Nehru Place, New Delhi
-const NEHRU_PLACE_PEOPLE: Array<{ role: Role; timeSlot: TimeSlot; interests: string[]; message: string }> = [
-  { role: 'developer', timeSlot: 'now', interests: ['Pair programming', 'Coffee chat'], message: 'Building SaaS dashboards at Nehru Place ☕' },
-  { role: 'developer', timeSlot: 'now', interests: ['Learning', 'Side projects'], message: 'Flutter dev, working from a cafe here' },
-  { role: 'designer', timeSlot: 'morning', interests: ['Design review', 'Networking'], message: 'UI designer freelancing in South Delhi' },
-  { role: 'marketer', timeSlot: 'now', interests: ['Brainstorming', 'Coffee chat'], message: 'Running ads for D2C brands, let us chat!' },
-  { role: 'developer', timeSlot: 'afternoon', interests: ['Pair programming', 'Learning'], message: 'Python dev exploring ML, open to collab' },
-  { role: 'writer', timeSlot: 'now', interests: ['Accountability', 'Coffee chat'], message: 'Tech blogger writing about Indian startups' },
-  { role: 'other', timeSlot: 'now', interests: ['Networking', 'Brainstorming'], message: 'Startup founder, building fintech product' },
-  { role: 'developer', timeSlot: 'evening', interests: ['Side projects', 'Pair programming'], message: 'React Native dev, shipping a health app' },
-  { role: 'designer', timeSlot: 'now', interests: ['Brainstorming', 'Side projects'], message: 'Graphic designer working on brand kits' },
-  { role: 'developer', timeSlot: 'now', interests: ['Coffee chat', 'Learning'], message: 'DevOps eng at a Nehru Place coworking space' },
-  { role: 'marketer', timeSlot: 'morning', interests: ['Networking', 'Side projects'], message: 'Content creator shooting reels nearby 🎥' },
-  { role: 'writer', timeSlot: 'now', interests: ['Coffee chat', 'Accountability'], message: 'Freelance copywriter, need a focus buddy' },
-];
+const MESSAGES: Record<Role, string[]> = {
+  developer: [
+    'Building a React app, happy to pair!', 'Full-stack dev, working on AI tools', 'Learning Rust, open to chat about systems',
+    'Working on an open-source CLI tool', 'Exploring WebGL and 3D on the web', 'Hacking on a Svelte migration 🚀',
+    'Backend eng exploring Elixir', 'DevOps nerd, automating everything', 'Game dev prototyping in Godot',
+    'Data engineer playing with DuckDB', 'Mobile dev, building a fitness app', 'Building SaaS dashboards ☕',
+    'Flutter dev, working from a cafe here', 'React Native dev, shipping a health app', 'DevOps eng at a coworking space',
+    'Shipping a Rust CLI for devs', 'Kubernetes fanatic, scaling infra', 'Building real-time apps with WebSockets',
+    'Hacking on a VS Code extension', 'Writing a compiler in Zig', 'Exploring WASM for edge computing',
+    'Working on a GraphQL gateway', 'Building an AI code review tool', 'Optimizing database queries today',
+    'Migrating a monolith to microservices', 'Building a Tailwind component library', 'Working on OAuth2 integrations',
+    'Experimenting with Deno 2.0', 'Building browser extensions in TypeScript', 'Writing integration tests all day',
+    'Refactoring legacy PHP to Go', 'Building a real-time dashboard with D3', 'Working on a Kafka pipeline',
+    'Prototyping AR features in Swift', 'Building a CLI package manager', 'Exploring vector databases',
+    'Working on a Stripe integration', 'Debugging race conditions 🐛', 'Implementing CRDT sync engine',
+    'Building a RAG pipeline today', 'Setting up CI/CD with GitHub Actions', 'Exploring htmx + Go stack',
+    'Writing Terraform modules', 'Building a design system in Figma tokens', 'Optimizing React renders today',
+    'Working on a Chrome DevTools plugin', 'Implementing WebRTC video calls', 'Shipping an Electron desktop app',
+    'Exploring edge functions', 'Building a serverless API', 'Working on distributed tracing',
+  ],
+  designer: [
+    'Working on a rebrand project 🎨', 'Freelance UI/UX, looking for collabs', 'Motion designer at a café ☕',
+    'Brand designer, talk typography with me', 'Product designer, love whiteboard jams', 'Graphic designer working on brand kits',
+    '3D artist learning Blender 🧊', 'UI designer freelancing', 'Designing a mobile app from scratch',
+    'Working on design tokens & systems', 'Prototyping animations in After Effects', 'Designing landing pages for startups',
+    'Creating icon sets for open source', 'UX researcher doing user interviews', 'Illustration work for a children\'s book',
+    'Designing email templates today', 'Working on accessibility audit', 'Building Figma plugins',
+    'Designing a SaaS onboarding flow', 'Creating social media templates', 'Working on data visualization design',
+    'Redesigning a checkout experience', 'Creating a design system from scratch', 'Prototyping with Framer',
+    'Working on micro-interactions', 'Designing a dashboard layout', 'Creating brand guidelines',
+    'Motion graphics for a product launch', 'Designing a component library', 'UX writing for a fintech app',
+  ],
+  writer: [
+    'Writing my newsletter, need focus buddy', 'Finishing a blog series on productivity', 'Tech journalist, researching a story',
+    'Copywriter cranking out landing pages', 'Screenwriter working on a pilot 🎬', 'Novelist on chapter 12, need company',
+    'Freelance copywriter, need a focus buddy', 'Tech blogger writing about startups', 'Writing documentation for an API',
+    'Working on a sci-fi short story', 'Editing a podcast transcript', 'Writing case studies for a SaaS',
+    'Content strategist planning Q2', 'Writing a book on remote work', 'Drafting press releases today',
+    'Working on SEO content strategy', 'Writing product descriptions', 'Editing a technical whitepaper',
+    'Creating a content calendar', 'Writing UX copy for an app', 'Ghostwriting a founder\'s memoir',
+    'Blogging about design patterns', 'Writing ad copy for campaigns', 'Creating email sequences',
+    'Working on a travel blog post', 'Writing API documentation', 'Drafting investor updates',
+    'Creating a style guide', 'Writing release notes', 'Scripting YouTube videos',
+  ],
+  marketer: [
+    'Planning a product launch campaign', 'Growth hacker, always up for ideas', 'SEO nerd, happy to audit your site!',
+    'Running ads for D2C brands, let us chat!', 'Content creator shooting reels nearby 🎥', 'Building my personal brand on socials',
+    'Content strategist, ask me anything!', 'Working on email marketing funnels', 'A/B testing landing pages today',
+    'Planning an influencer campaign', 'Analyzing Google Analytics data', 'Building a referral program',
+    'Working on brand partnerships', 'Creating TikTok content strategy', 'Setting up marketing automation',
+    'Optimizing PPC campaigns', 'Planning a webinar series', 'Working on customer journey maps',
+    'Building a community strategy', 'Creating performance dashboards', 'Working on attribution modeling',
+    'Planning a product hunt launch', 'Designing email drip campaigns', 'Analyzing funnel conversion rates',
+    'Working on social media calendar', 'Setting up retargeting campaigns', 'Planning a guerrilla marketing stunt',
+    'Building partnership proposals', 'Creating affiliate programs', 'Working on PR outreach',
+  ],
+  other: [
+    'Product manager, love meeting builders!', 'Startup founder looking for co-builders', 'VC scout, always curious about projects',
+    'Recruiter who loves the indie scene', 'Startup founder, building fintech product', 'Data scientist crunching numbers',
+    'Project manager organizing sprints', 'Student working on thesis', 'Researcher in AI ethics',
+    'Consultant helping startups scale', 'Angel investor, happy to chat', 'Operations lead streamlining processes',
+    'Legal advisor for tech startups', 'HR specialist building culture', 'Financial analyst building models',
+    'Business analyst mapping workflows', 'Product owner prioritizing backlog', 'Scrum master running retrospectives',
+    'CTO advising early-stage startups', 'Community builder organizing events', 'Mentor at a startup accelerator',
+    'Educator creating online courses', 'Researcher in quantum computing', 'Data analyst building reports',
+    'Supply chain optimizer', 'Sustainability consultant', 'Policy researcher on tech regulation',
+    'Podcast host interviewing founders', 'Event planner for tech meetups', 'Career coach for tech transitions',
+  ],
+};
 
-/** Generate a random offset in km converted to degrees */
-function offsetDeg(kmRange: number): number {
-  const km = (Math.random() - 0.5) * 2 * kmRange;
-  return km / 111.32; // rough degree conversion
+/** Seeded random number generator */
+function seededRandom(seed: number) {
+  let s = seed;
+  return () => {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
+function offsetDeg(kmRange: number, rng: () => number): number {
+  const km = (rng() - 0.5) * 2 * kmRange;
+  return km / 111.32;
+}
+
+function pickFrom<T>(arr: T[], rng: () => number): T {
+  return arr[Math.floor(rng() * arr.length)];
+}
+
+function pickN<T>(arr: T[], n: number, rng: () => number): T[] {
+  const shuffled = [...arr].sort(() => rng() - 0.5);
+  return shuffled.slice(0, n);
 }
 
 /**
- * Generate demo pins scattered around a center point.
- * Called with the user's geolocation so pins always appear nearby.
+ * Generate 250 demo pins scattered around a center point.
  */
 export function generateDemoPins(centerLat = 40.7128, centerLng = -74.006): CoworkPin[] {
-  const mainPins = NAMES.map((data, i) => {
-    const distanceBucket = i % 3;
-    const range = distanceBucket === 0 ? 1.5 : distanceBucket === 1 ? 4 : 8;
-    return {
-      ...data,
+  const rng = seededRandom(42);
+  const pins: CoworkPin[] = [];
+
+  for (let i = 0; i < 250; i++) {
+    const role = ROLES_LIST[i % ROLES_LIST.length];
+    const timeSlot = TIME_SLOTS_LIST[Math.floor(rng() * TIME_SLOTS_LIST.length)];
+    const msgs = MESSAGES[role];
+    const message = msgs[i % msgs.length];
+    const interests = pickN(INTERESTS_LIST, 1 + Math.floor(rng() * 3), rng);
+
+    // Vary distance: 60% close (1.5km), 25% mid (3km), 15% far (5km)
+    const r = rng();
+    const range = r < 0.6 ? 1.5 : r < 0.85 ? 3 : 5;
+
+    pins.push({
       id: `demo-${i}`,
-      lat: centerLat + offsetDeg(range),
-      lng: centerLng + offsetDeg(range) / Math.cos(centerLat * Math.PI / 180),
-      createdAt: new Date(Date.now() - Math.random() * 3600000),
-      expiresAt: new Date(Date.now() + (2 + Math.random() * 6) * 3600000),
-    };
-  });
+      role,
+      timeSlot,
+      interests,
+      message,
+      lat: centerLat + offsetDeg(range, rng),
+      lng: centerLng + offsetDeg(range, rng) / Math.cos(centerLat * Math.PI / 180),
+      createdAt: new Date(Date.now() - rng() * 3600000),
+      expiresAt: new Date(Date.now() + (2 + rng() * 6) * 3600000),
+    });
+  }
 
-  // Nehru Place cluster (28.5491, 77.2533) — tight 1.5km spread
-  const nehruPins = NEHRU_PLACE_PEOPLE.map((data, i) => ({
-    ...data,
-    id: `demo-np-${i}`,
-    lat: 28.5491 + offsetDeg(1.5),
-    lng: 77.2533 + offsetDeg(1.5) / Math.cos(28.5491 * Math.PI / 180),
-    createdAt: new Date(Date.now() - Math.random() * 3600000),
-    expiresAt: new Date(Date.now() + (2 + Math.random() * 6) * 3600000),
-  }));
-
-  return [...mainPins, ...nehruPins];
+  return pins;
 }
