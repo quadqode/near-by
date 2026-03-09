@@ -114,8 +114,20 @@ export default function CoworkMap() {
       attributionControl: false
     });
     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
-    map.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
-    // Map click no longer opens drop pin dialog
+    
+    const geolocateControl = new mapboxgl.GeolocateControl({ 
+      trackUserLocation: true,
+      showUserHeading: true
+    });
+    map.addControl(geolocateControl, 'top-right');
+    
+    // Update position and data when user moves
+    geolocateControl.on('geolocate', (e: any) => {
+      const newPos: [number, number] = [e.coords.latitude, e.coords.longitude];
+      setUserPos(newPos);
+      setPlaces(generateDemoPlaces(newPos[0], newPos[1]));
+      seedDemoPins(newPos[0], newPos[1]).then(() => refreshPins());
+    });
 
     const updateRadius = () => {
       const zoom = map.getZoom();
