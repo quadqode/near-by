@@ -19,6 +19,7 @@ import UsageGuide from './UsageGuide';
 import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
+import OfferBanner from './OfferBanner';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -70,6 +71,7 @@ export default function CoworkMap() {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const placeMarkersRef = useRef<mapboxgl.Marker[]>([]);
+  const popupRef = useRef<mapboxgl.Popup | null>(null);
 
   const { showCheckIn, handleStillHere, handleRemove, registerPin } = useExpiryCheckIn();
 
@@ -230,6 +232,37 @@ export default function CoworkMap() {
         e.stopPropagation();
         setSelectedPlace(place);
       });
+
+      // Hover popup
+      el.addEventListener('mouseenter', () => {
+        popupRef.current?.remove();
+        const amenities: string[] = [];
+        if (place.amenities.wifi) amenities.push(`📶 WiFi${place.amenities.wifiSpeed ? ` (${place.amenities.wifiSpeed})` : ''}`);
+        if (place.amenities.powerSockets) amenities.push(`🔌 Power${place.amenities.powerSocketsCount ? ` (${place.amenities.powerSocketsCount})` : ''}`);
+        if (place.amenities.coffee) amenities.push('☕ Coffee');
+        if (place.amenities.food) amenities.push('🍽️ Food');
+        if (place.amenities.outdoorSeating) amenities.push('🌤️ Outdoor');
+        amenities.push(`🔇 ${place.amenities.quietLevel}`);
+
+        const html = `<div style="font-family:system-ui;min-width:160px">
+          <div style="font-weight:600;font-size:13px;margin-bottom:2px">${meta.emoji} ${place.name}</div>
+          <div style="font-size:11px;color:#888;margin-bottom:4px">${'⭐'.repeat(Math.round(place.rating))} · ${place.hours}</div>
+          <div style="font-size:11px;display:flex;flex-wrap:wrap;gap:4px">${amenities.map(a => `<span style="background:hsl(var(--muted));padding:1px 5px;border-radius:6px">${a}</span>`).join('')}</div>
+          ${place.offer ? `<div style="margin-top:4px;font-size:11px;font-weight:600;color:hsl(var(--primary))">🏷️ ${place.offer}</div>` : ''}
+        </div>`;
+
+        const popup = new mapboxgl.Popup({ offset: 12, closeButton: false, closeOnClick: false, className: 'place-hover-popup' })
+          .setLngLat([place.lng, place.lat])
+          .setHTML(html)
+          .addTo(map);
+        popupRef.current = popup;
+      });
+
+      el.addEventListener('mouseleave', () => {
+        popupRef.current?.remove();
+        popupRef.current = null;
+      });
+
       const marker = new mapboxgl.Marker({ element: el }).
       setLngLat([place.lng, place.lat]).
       addTo(map);
@@ -266,6 +299,8 @@ export default function CoworkMap() {
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-background">
       <div ref={mapContainerRef} className={`h-full w-full transition-opacity duration-300 ${view === 'list' ? 'opacity-0 pointer-events-none absolute' : ''}`} />
+
+      {view === 'map' && <OfferBanner places={filteredPlaces} onPlaceSelect={(place) => setSelectedPlace(place)} />}
 
       <AnimatePresence>
         {view === 'list' &&
