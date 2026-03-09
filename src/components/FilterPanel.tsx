@@ -135,13 +135,17 @@ export default function FilterPanel({
                 {INTERESTS.map(i => (
                   <Badge
                     key={i}
+                    tabIndex={0}
+                    role="checkbox"
+                    aria-checked={interests.includes(i)}
                     variant={interests.includes(i) ? 'default' : 'outline'}
-                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                       interests.includes(i)
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
                     }`}
                     onClick={() => onInterestsChange(toggle(interests, i))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onInterestsChange(toggle(interests, i)); } }}
                   >
                     {i}
                   </Badge>

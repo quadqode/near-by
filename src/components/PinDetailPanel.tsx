@@ -53,11 +53,15 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
 
   return (
     <motion.div
+      ref={panelRef}
+      tabIndex={-1}
+      role="dialog"
+      aria-label={`${pin.role} pin details`}
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-      className="absolute top-0 right-0 h-full w-full sm:w-[400px] bg-card z-[1100] border-l border-border shadow-2xl flex flex-col"
+      className="absolute top-0 right-0 h-full w-full sm:w-[400px] bg-card z-[1100] border-l border-border shadow-2xl flex flex-col outline-none"
     >
       {/* Header with role color accent */}
       <div className="relative">

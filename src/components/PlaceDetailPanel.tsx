@@ -70,14 +70,16 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
         {place.photos.length > 1 && (
           <>
             <button
+              aria-label="Previous photo"
               onClick={() => setPhotoIdx(i => (i - 1 + place.photos.length) % place.photos.length)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
+              aria-label="Next photo"
               onClick={() => setPhotoIdx(i => (i + 1) % place.photos.length)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

@@ -63,13 +63,17 @@ export default function IntentPicker({ open, intents, onToggle, onClose }: Props
             {intentOptions.map(opt => (
               <Badge
                 key={opt.value}
+                tabIndex={0}
+                role="checkbox"
+                aria-checked={intents.includes(opt.value)}
                 variant={intents.includes(opt.value) ? 'default' : 'outline'}
-                className={`cursor-pointer text-xs rounded-lg px-3 py-1.5 transition-colors active:scale-[0.97] ${
+                className={`cursor-pointer text-xs rounded-lg px-3 py-1.5 transition-colors active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                   intents.includes(opt.value)
                     ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                     : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
                 }`}
                 onClick={() => handleToggle(opt.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggle(opt.value); } }}
               >
                 {opt.emoji} {opt.label}
               </Badge>

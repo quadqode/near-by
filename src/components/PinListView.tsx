@@ -86,7 +86,14 @@ function PlaceCard({ place, dist, onClick }: {place: WorkPlace;dist: number;onCl
   const meta = PLACE_TYPE_META[place.type];
 
   return (
-    <div className="flex items-start gap-3.5 cursor-pointer group" onClick={onClick}>
+    <div
+      className="flex items-start gap-3.5 cursor-pointer group"
+      tabIndex={0}
+      role="button"
+      aria-label={`${place.name}, ${distLabel(dist)} away`}
+      onClick={onClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
+    >
       <div
         className={`w-11 h-11 rounded-lg flex items-center justify-center text-lg shrink-0 shadow-sm border-2 ${
         place.offer ?
