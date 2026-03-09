@@ -244,9 +244,9 @@ export default function CoworkMap() {
         if (place.amenities.outdoorSeating) amenities.push('🌤️ Outdoor');
         amenities.push(`🔇 ${place.amenities.quietLevel}`);
 
-        const html = `<div style="font-family:system-ui;min-width:160px">
+        const html = `<div style="font-family:system-ui;min-width:160px;color:hsl(var(--foreground))">
           <div style="font-weight:600;font-size:13px;margin-bottom:2px">${meta.emoji} ${place.name}</div>
-          <div style="font-size:11px;color:#888;margin-bottom:4px">${'⭐'.repeat(Math.round(place.rating))} · ${place.hours}</div>
+          <div style="font-size:11px;color:hsl(var(--muted-foreground));margin-bottom:4px">${'⭐'.repeat(Math.round(place.rating))} · ${place.hours}</div>
           <div style="font-size:11px;display:flex;flex-wrap:wrap;gap:4px">${amenities.map(a => `<span style="background:hsl(var(--muted));padding:1px 5px;border-radius:6px">${a}</span>`).join('')}</div>
           ${place.offer ? `<div style="margin-top:4px;font-size:11px;font-weight:600;color:hsl(var(--primary))">🏷️ ${place.offer}</div>` : ''}
         </div>`;
