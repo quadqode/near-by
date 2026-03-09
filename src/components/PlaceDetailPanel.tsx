@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { WorkPlace, PLACE_TYPE_META } from '@/lib/placeTypes';
 import { getDistance } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,18 @@ interface Props {
 export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
   const [photoIdx, setPhotoIdx] = useState(0);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') setPhotoIdx(i => (i - 1 + place.photos.length) % place.photos.length);
+      if (e.key === 'ArrowRight') setPhotoIdx(i => (i + 1) % place.photos.length);
+    };
+    document.addEventListener('keydown', handler);
+    panelRef.current?.focus();
+    return () => document.removeEventListener('keydown', handler);
+  }, [onClose, place.photos.length]);
   const meta = PLACE_TYPE_META[place.type];
   const dist = getDistance(userPos[0], userPos[1], place.lat, place.lng);
   const distLabel = dist < 1 ? `${Math.round(dist * 1000)}m away` : `${dist.toFixed(1)}km away`;
@@ -38,11 +50,15 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
 
   return (
     <motion.div
+      ref={panelRef}
+      tabIndex={-1}
+      role="dialog"
+      aria-label={`${place.name} details`}
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-      className="absolute top-0 right-0 h-full w-full sm:w-[420px] bg-card z-[1100] border-l border-border shadow-2xl flex flex-col"
+      className="absolute top-0 right-0 h-full w-full sm:w-[420px] bg-card z-[1100] border-l border-border shadow-2xl flex flex-col outline-none"
     >
       {/* Photo carousel */}
       <div className="relative w-full aspect-[16/10] bg-muted shrink-0">
@@ -54,14 +70,16 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
         {place.photos.length > 1 && (
           <>
             <button
+              aria-label="Previous photo"
               onClick={() => setPhotoIdx(i => (i - 1 + place.photos.length) % place.photos.length)}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors"
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
+              aria-label="Next photo"
               onClick={() => setPhotoIdx(i => (i + 1) % place.photos.length)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

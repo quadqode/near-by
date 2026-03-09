@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { CoworkPin, ROLES, TIME_SLOTS } from '@/lib/types';
 import { getDistance, sayHi, fuzzyLocation } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,14 @@ interface Props {
 export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
   const [hiSent, setHiSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handler);
+    panelRef.current?.focus();
+    return () => document.removeEventListener('keydown', handler);
+  }, [onClose]);
   const role = ROLES.find(r => r.value === pin.role);
   const timeSlot = TIME_SLOTS.find(t => t.value === pin.timeSlot);
   const dist = getDistance(userPos[0], userPos[1], pin.lat, pin.lng);
@@ -45,11 +53,15 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
 
   return (
     <motion.div
+      ref={panelRef}
+      tabIndex={-1}
+      role="dialog"
+      aria-label={`${pin.role} pin details`}
       initial={{ x: '100%' }}
       animate={{ x: 0 }}
       exit={{ x: '100%' }}
       transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-      className="absolute top-0 right-0 h-full w-full sm:w-[400px] bg-card z-[1100] border-l border-border shadow-2xl flex flex-col"
+      className="absolute top-0 right-0 h-full w-full sm:w-[400px] bg-card z-[1100] border-l border-border shadow-2xl flex flex-col outline-none"
     >
       {/* Header with role color accent */}
       <div className="relative">

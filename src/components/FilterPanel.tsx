@@ -40,9 +40,12 @@ export default function FilterPanel({
         onClose();
       }
     };
-    // Delay to avoid immediate close from the toggle click
+    const keyHandler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
     const timer = setTimeout(() => document.addEventListener('mousedown', handler), 0);
-    return () => { clearTimeout(timer); document.removeEventListener('mousedown', handler); };
+    document.addEventListener('keydown', keyHandler);
+    return () => { clearTimeout(timer); document.removeEventListener('mousedown', handler); document.removeEventListener('keydown', keyHandler); };
   }, [open, onClose]);
 
   return (
@@ -84,13 +87,17 @@ export default function FilterPanel({
                 {ROLES.map(r => (
                   <Badge
                     key={r.value}
+                    tabIndex={0}
+                    role="checkbox"
+                    aria-checked={roles.includes(r.value)}
                     variant={roles.includes(r.value) ? 'default' : 'outline'}
-                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                       roles.includes(r.value)
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
                     }`}
                     onClick={() => onRolesChange(toggle(roles, r.value))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onRolesChange(toggle(roles, r.value)); } }}
                   >
                     {r.emoji} {r.label}
                   </Badge>
@@ -104,13 +111,17 @@ export default function FilterPanel({
                 {TIME_SLOTS.map(t => (
                   <Badge
                     key={t.value}
+                    tabIndex={0}
+                    role="checkbox"
+                    aria-checked={timeSlots.includes(t.value)}
                     variant={timeSlots.includes(t.value) ? 'default' : 'outline'}
-                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                       timeSlots.includes(t.value)
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
                     }`}
                     onClick={() => onTimeSlotsChange(toggle(timeSlots, t.value))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onTimeSlotsChange(toggle(timeSlots, t.value)); } }}
                   >
                     {t.label}
                   </Badge>
@@ -124,13 +135,17 @@ export default function FilterPanel({
                 {INTERESTS.map(i => (
                   <Badge
                     key={i}
+                    tabIndex={0}
+                    role="checkbox"
+                    aria-checked={interests.includes(i)}
                     variant={interests.includes(i) ? 'default' : 'outline'}
-                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors ${
+                    className={`cursor-pointer text-xs rounded-lg px-3 py-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ${
                       interests.includes(i)
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                         : 'border-border/60 hover:bg-accent hover:text-accent-foreground'
                     }`}
                     onClick={() => onInterestsChange(toggle(interests, i))}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onInterestsChange(toggle(interests, i)); } }}
                   >
                     {i}
                   </Badge>
