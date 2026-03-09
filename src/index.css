@@ -271,11 +271,11 @@
   background: hsl(var(--card));
   color: hsl(var(--foreground));
   border: 1px solid hsl(var(--border));
-  border-radius: 12px;
-  padding: 10px 12px;
-  box-shadow: 0 8px 24px hsl(0 0% 0% / 0.12);
+  border-radius: 1rem !important;
+  padding: 1.25rem !important;
+  box-shadow: var(--shadow-xl) !important;
   margin-bottom: 8px;
 }
 .place-hover-popup .mapboxgl-popup-tip {
-  border-top-color: hsl(var(--card));
+  display: none;
 }
