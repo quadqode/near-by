@@ -300,6 +300,8 @@ export default function CoworkMap() {
     <div className="relative h-screen w-screen overflow-hidden bg-background">
       <div ref={mapContainerRef} className={`h-full w-full transition-opacity duration-300 ${view === 'list' ? 'opacity-0 pointer-events-none absolute' : ''}`} />
 
+      {view === 'map' && <OfferBanner places={filteredPlaces} onPlaceSelect={(place) => setSelectedPlace(place)} />}
+
       <AnimatePresence>
         {view === 'list' &&
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
