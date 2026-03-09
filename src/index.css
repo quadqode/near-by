@@ -262,3 +262,15 @@
 .card-hover:active {
   transform: translateY(0);
 }
+
+/* Place hover popup */
+.place-hover-popup .mapboxgl-popup-content {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 8px 24px hsl(0 0% 0% / 0.12);
+}
+.place-hover-popup .mapboxgl-popup-tip {
+  border-top-color: hsl(var(--card));
+}
