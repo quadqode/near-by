@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      cowork_sessions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          initiator_id: string
+          pin_id: string | null
+          responder_id: string
+          status: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          initiator_id: string
+          pin_id?: string | null
+          responder_id: string
+          status?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          initiator_id?: string
+          pin_id?: string | null
+          responder_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cowork_sessions_pin_id_fkey"
+            columns: ["pin_id"]
+            isOneToOne: false
+            referencedRelation: "pins"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       greetings: {
         Row: {
           created_at: string
@@ -136,24 +174,104 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          bio: string
+          cafes_visited: number
+          collaboration_score: number
+          collaboration_style: string[]
           created_at: string
           display_name: string
           id: string
+          people_met_count: number
+          sessions_count: number
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          bio?: string
+          cafes_visited?: number
+          collaboration_score?: number
+          collaboration_style?: string[]
           created_at?: string
           display_name?: string
           id: string
+          people_met_count?: number
+          sessions_count?: number
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          bio?: string
+          cafes_visited?: number
+          collaboration_score?: number
+          collaboration_style?: string[]
           created_at?: string
           display_name?: string
           id?: string
+          people_met_count?: number
+          sessions_count?: number
           updated_at?: string
+        }
+        Relationships: []
+      }
+      session_reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          rating: number
+          reviewee_id: string
+          reviewer_id: string
+          session_id: string
+          tags: string[]
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          reviewee_id: string
+          reviewer_id: string
+          session_id: string
+          tags?: string[]
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          reviewee_id?: string
+          reviewer_id?: string
+          session_id?: string
+          tags?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_reviews_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "cowork_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_badges: {
+        Row: {
+          badge_type: string
+          earned_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          badge_type: string
+          earned_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          badge_type?: string
+          earned_at?: string
+          id?: string
+          user_id?: string
         }
         Relationships: []
       }

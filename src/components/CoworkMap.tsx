@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -9,6 +10,7 @@ import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
 import { generateDemoPlaces } from '@/lib/demoPlaces';
 import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
+import { useAuth } from '@/contexts/AuthContext';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
@@ -21,7 +23,7 @@ import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import OfferBanner from './OfferBanner';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
@@ -46,6 +48,8 @@ function createGeoJSONCircle(center: [number, number], radiusKm: number, points 
 }
 
 export default function CoworkMap() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
@@ -345,7 +349,7 @@ export default function CoworkMap() {
       <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 right-4 z-[1000] flex flex-wrap items-center gap-2">
         <div className="bg-card rounded-xl shadow-lg border border-border px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2">
           <span className="text-base sm:text-lg">🗺️</span>
-          <h1 className="font-heading font-bold text-foreground text-sm sm:text-base">CoWork Drop</h1>
+          <h1 className="font-heading font-bold text-foreground text-sm sm:text-base">NearBy</h1>
         </div>
         <div className="bg-card rounded-xl shadow-lg border border-border px-2 sm:px-3 py-2 sm:py-2.5 flex items-center gap-1.5 sm:gap-2">
           {showPeople && (
@@ -364,6 +368,16 @@ export default function CoworkMap() {
           <span className="text-border">|</span>
           <Radar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`}</span>
+        </div>
+        <div className="ml-auto">
+          <Button
+            size="icon"
+            variant="outline"
+            className="bg-card shadow-lg border-border h-9 w-9 rounded-xl"
+            onClick={() => navigate(user ? '/profile' : '/auth')}
+          >
+            <User className="h-4 w-4" />
+          </Button>
         </div>
       </motion.div>
 
