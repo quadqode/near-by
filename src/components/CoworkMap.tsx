@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -9,6 +10,7 @@ import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
 import { generateDemoPlaces } from '@/lib/demoPlaces';
 import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
+import { useAuth } from '@/contexts/AuthContext';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
 import PinListView from './PinListView';
@@ -21,7 +23,7 @@ import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import OfferBanner from './OfferBanner';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
