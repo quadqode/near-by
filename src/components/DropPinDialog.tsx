@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -6,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { ROLES, TIME_SLOTS, INTERESTS, Role, TimeSlot } from '@/lib/types';
 import { addPin } from '@/lib/pinStore';
 import { MapPin } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 import LocationAutocomplete from './LocationAutocomplete';
 
 interface Props {
