@@ -19,6 +19,8 @@ interface Props {
 }
 
 export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: Props) {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [role, setRole] = useState<Role>('developer');
   const [timeSlot, setTimeSlot] = useState<TimeSlot>('now');
   const [interests, setInterests] = useState<string[]>([]);
@@ -27,6 +29,26 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
   const [customLng, setCustomLng] = useState(lng);
   const [useCustomLocation, setUseCustomLocation] = useState(false);
   const [locationLabel, setLocationLabel] = useState('');
+
+  // If not authenticated, prompt login
+  if (!user) {
+    return (
+      <Dialog open={open} onOpenChange={v => !v && onClose()}>
+        <DialogContent className="sm:max-w-sm w-[calc(100%-2rem)] rounded-2xl bg-card border-border p-6 text-center">
+          <div className="space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
+              <MapPin className="h-5 w-5 text-primary" />
+            </div>
+            <h3 className="font-heading font-bold text-foreground">Sign in to drop a pin</h3>
+            <p className="text-sm text-muted-foreground">Create an account to let others know you're working nearby.</p>
+            <Button onClick={() => { onClose(); navigate('/auth'); }} className="w-full h-11 rounded-xl font-heading font-semibold">
+              Sign in / Sign up
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   const toggleInterest = (i: string) =>
     setInterests(prev => prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]);
