@@ -48,6 +48,8 @@ function createGeoJSONCircle(center: [number, number], radiusKm: number, points 
 }
 
 export default function CoworkMap() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [userPos, setUserPos] = useState<[number, number] | null>(null);
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
