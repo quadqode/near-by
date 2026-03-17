@@ -71,6 +71,8 @@ export default function CoworkMap() {
   const [visibleRadius, setVisibleRadius] = useState(2);
   const [places, setPlaces] = useState<WorkPlace[]>([]);
   const [offersOnly, setOffersOnly] = useState(false);
+  const [hiPanelOpen, setHiPanelOpen] = useState(false);
+  const [hiRequestCount, setHiRequestCount] = useState(0);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
