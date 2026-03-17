@@ -235,9 +235,20 @@ export default function CoworkMap() {
 
     filteredPlaces.forEach((place) => {
       const meta = PLACE_TYPE_META[place.type];
+      // Count pins within ~200m of this place
+      const nearbyCount = pins.filter(p => getDistance(place.lat, place.lng, p.lat, p.lng) <= 0.2).length;
       const el = document.createElement('div');
-      el.className = `place-marker${place.offer ? ' has-offer' : ''}`;
+      el.className = `place-marker${place.offer ? ' has-offer' : ''}${nearbyCount > 0 ? ' has-activity' : ''}`;
       el.textContent = meta.emoji;
+      if (nearbyCount > 0) {
+        const badge = document.createElement('span');
+        badge.className = 'activity-badge';
+        const dot = document.createElement('span');
+        dot.className = 'pulse-dot';
+        badge.appendChild(dot);
+        badge.appendChild(document.createTextNode(`${nearbyCount}`));
+        el.appendChild(badge);
+      }
       if (place.offer) {
         const tag = document.createElement('span');
         tag.className = 'offer-tag';
