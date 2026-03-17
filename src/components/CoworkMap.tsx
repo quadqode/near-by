@@ -461,7 +461,7 @@ export default function CoworkMap() {
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
-      
+      <HiRequestsPanel open={hiPanelOpen} onClose={() => setHiPanelOpen(false)} onRequestCount={setHiRequestCount} />
       <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
     </div>);
 
