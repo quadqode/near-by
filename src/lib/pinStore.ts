@@ -143,7 +143,6 @@ export async function getHiRequestsForMyPins(): Promise<HiRequest[]> {
     status: (g as any).status as HiRequest['status'],
     createdAt: new Date(g.created_at),
   }));
-  }));
 }
 
 export async function getMyHiStatus(pinId: string): Promise<HiRequest | null> {
