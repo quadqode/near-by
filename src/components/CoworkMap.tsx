@@ -235,9 +235,20 @@ export default function CoworkMap() {
 
     filteredPlaces.forEach((place) => {
       const meta = PLACE_TYPE_META[place.type];
+      // Count pins within ~200m of this place
+      const nearbyCount = pins.filter(p => getDistance(place.lat, place.lng, p.lat, p.lng) <= 0.2).length;
       const el = document.createElement('div');
-      el.className = `place-marker${place.offer ? ' has-offer' : ''}`;
+      el.className = `place-marker${place.offer ? ' has-offer' : ''}${nearbyCount > 0 ? ' has-activity' : ''}`;
       el.textContent = meta.emoji;
+      if (nearbyCount > 0) {
+        const badge = document.createElement('span');
+        badge.className = 'activity-badge';
+        const dot = document.createElement('span');
+        dot.className = 'pulse-dot';
+        badge.appendChild(dot);
+        badge.appendChild(document.createTextNode(`${nearbyCount}`));
+        el.appendChild(badge);
+      }
       if (place.offer) {
         const tag = document.createElement('span');
         tag.className = 'offer-tag';
@@ -260,10 +271,15 @@ export default function CoworkMap() {
         if (place.amenities.outdoorSeating) amenities.push('🌤️ Outdoor');
         amenities.push(`🔇 ${place.amenities.quietLevel}`);
 
+        const activityHtml = nearbyCount > 0 
+          ? `<div style="margin-top:4px;font-size:11px;font-weight:600;color:hsl(var(--primary));display:flex;align-items:center;gap:4px"><span style="width:6px;height:6px;border-radius:50%;background:hsl(var(--success));display:inline-block"></span> ${nearbyCount} working here now</div>` 
+          : '';
+
         const html = `<div style="font-family:system-ui;min-width:160px;color:hsl(var(--foreground))">
           <div style="font-weight:600;font-size:13px;margin-bottom:2px">${meta.emoji} ${place.name}</div>
           <div style="font-size:11px;color:hsl(var(--muted-foreground));margin-bottom:4px">${'⭐'.repeat(Math.round(place.rating))} · ${place.hours}</div>
           <div style="font-size:11px;display:flex;flex-wrap:wrap;gap:4px">${amenities.map(a => `<span style="background:hsl(var(--muted));padding:1px 5px;border-radius:6px">${a}</span>`).join('')}</div>
+          ${activityHtml}
           ${place.offer ? `<div style="margin-top:4px;font-size:11px;font-weight:600;color:hsl(var(--primary))">🏷️ ${place.offer}</div>` : ''}
         </div>`;
 
@@ -284,7 +300,7 @@ export default function CoworkMap() {
       addTo(map);
       placeMarkersRef.current.push(marker);
     });
-  }, [filteredPlaces]);
+  }, [filteredPlaces, pins]);
 
   const handleGuideClose = () => {
     setGuideOpen(false);

@@ -229,6 +229,43 @@
   pointer-events: none;
 }
 
+.place-marker .activity-badge {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 8px;
+  line-height: 1.3;
+  white-space: nowrap;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.place-marker.has-activity {
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2), 0 0 0 2px hsl(var(--primary) / 0.3);
+}
+
+@keyframes activity-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.place-marker .activity-badge .pulse-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: hsl(var(--success));
+  animation: activity-pulse 2s ease-in-out infinite;
+}
+
 @keyframes offer-glow {
   0%, 100% { box-shadow: 0 2px 12px rgba(0,0,0,0.2), 0 0 0 3px hsl(35 90% 55% / 0.3); }
   50% { box-shadow: 0 2px 16px rgba(0,0,0,0.25), 0 0 0 6px hsl(35 90% 55% / 0.15); }
