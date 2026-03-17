@@ -92,7 +92,7 @@ export async function sendHi(pinId: string): Promise<boolean> {
     sender_id: user.id,
     message: '👋 Hi!',
     status: 'pending',
-  });
+  } as any);
   if (error) { console.error('Error sending hi:', error); return false; }
 
   // Increment hi_count on the pin
