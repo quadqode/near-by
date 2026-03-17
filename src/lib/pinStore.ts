@@ -140,8 +140,9 @@ export async function getHiRequestsForMyPins(): Promise<HiRequest[]> {
     senderId: g.sender_id,
     senderName: profileMap.get(g.sender_id) || 'Someone',
     message: g.message,
-    status: g.status as HiRequest['status'],
+    status: (g as any).status as HiRequest['status'],
     createdAt: new Date(g.created_at),
+  }));
   }));
 }
 
