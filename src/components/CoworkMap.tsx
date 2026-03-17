@@ -22,8 +22,9 @@ import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import OfferBanner from './OfferBanner';
+import HiRequestsPanel from './HiRequestsPanel';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
@@ -70,6 +71,8 @@ export default function CoworkMap() {
   const [visibleRadius, setVisibleRadius] = useState(2);
   const [places, setPlaces] = useState<WorkPlace[]>([]);
   const [offersOnly, setOffersOnly] = useState(false);
+  const [hiPanelOpen, setHiPanelOpen] = useState(false);
+  const [hiRequestCount, setHiRequestCount] = useState(0);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -385,7 +388,24 @@ export default function CoworkMap() {
           <Radar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`}</span>
         </div>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          {user && (
+            <div className="relative">
+              <Button
+                size="icon"
+                variant="outline"
+                className="bg-card shadow-lg border-border h-9 w-9 rounded-xl"
+                onClick={() => setHiPanelOpen(true)}
+              >
+                <Bell className="h-4 w-4" />
+              </Button>
+              {hiRequestCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                  {hiRequestCount}
+                </span>
+              )}
+            </div>
+          )}
           <Button
             size="icon"
             variant="outline"
@@ -441,7 +461,7 @@ export default function CoworkMap() {
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
-      
+      <HiRequestsPanel open={hiPanelOpen} onClose={() => setHiPanelOpen(false)} onRequestCount={setHiRequestCount} />
       <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
     </div>);
 

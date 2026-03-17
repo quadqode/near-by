@@ -12,6 +12,7 @@ export interface CoworkPin {
   message: string;
   createdAt: Date;
   expiresAt: Date;
+  userId?: string;
 }
 
 export const ROLES: { value: Role; label: string; emoji: string }[] = [

@@ -4,9 +4,20 @@ import { generateDemoPins } from './demoData';
 
 const DEMO_SEEDED_KEY = 'cowork-demo-seeded-v4';
 
+export interface HiRequest {
+  id: string;
+  pinId: string;
+  senderId: string;
+  senderName: string;
+  message: string;
+  status: 'pending' | 'accepted' | 'declined';
+  createdAt: Date;
+}
+
 function mapRow(row: {
   id: string; lat: number; lng: number; role: string; time_slot: string;
   interests: string[]; message: string; created_at: string; expires_at: string;
+  user_id?: string | null;
 }): CoworkPin {
   return {
     id: row.id,
@@ -18,6 +29,7 @@ function mapRow(row: {
     message: row.message || '',
     createdAt: new Date(row.created_at),
     expiresAt: new Date(row.expires_at),
+    userId: row.user_id || undefined,
   };
 }
 
@@ -46,7 +58,7 @@ export async function getPins(): Promise<CoworkPin[]> {
   return (data || []).map(mapRow);
 }
 
-export async function addPin(pin: Omit<CoworkPin, 'id' | 'createdAt' | 'expiresAt'>): Promise<CoworkPin | null> {
+export async function addPin(pin: Omit<CoworkPin, 'id' | 'createdAt' | 'expiresAt' | 'userId'>): Promise<CoworkPin | null> {
   const { data: { user } } = await supabase.auth.getUser();
   const { data, error } = await supabase
     .from('pins')
@@ -69,9 +81,20 @@ export async function removePin(id: string) {
   await supabase.from('pins').delete().eq('id', id);
 }
 
-export async function sayHi(pinId: string): Promise<boolean> {
-  const { error: greetErr } = await supabase.from('greetings').insert({ pin_id: pinId });
-  if (greetErr) { console.error('Error sending hi:', greetErr); return false; }
+// --- Hi Request Flow ---
+
+export async function sendHi(pinId: string): Promise<boolean> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return false;
+
+  const { error } = await supabase.from('greetings').insert({
+    pin_id: pinId,
+    sender_id: user.id,
+    message: '👋 Hi!',
+    status: 'pending',
+  } as any);
+  if (error) { console.error('Error sending hi:', error); return false; }
+
   // Increment hi_count on the pin
   const { data: pin } = await supabase.from('pins').select('hi_count').eq('id', pinId).single();
   if (pin) {
@@ -79,6 +102,99 @@ export async function sayHi(pinId: string): Promise<boolean> {
   }
   return true;
 }
+
+export async function getHiRequestsForMyPins(): Promise<HiRequest[]> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  // Get my active pins
+  const { data: myPins } = await supabase
+    .from('pins')
+    .select('id')
+    .eq('user_id', user.id)
+    .gt('expires_at', new Date().toISOString());
+
+  if (!myPins?.length) return [];
+  const pinIds = myPins.map(p => p.id);
+
+  const { data: greetings, error } = await supabase
+    .from('greetings')
+    .select('*')
+    .in('pin_id', pinIds)
+    .order('created_at', { ascending: false });
+
+  if (error || !greetings) return [];
+
+  // Fetch sender profiles
+  const senderIds = [...new Set(greetings.map(g => g.sender_id))];
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, display_name')
+    .in('id', senderIds);
+
+  const profileMap = new Map((profiles || []).map(p => [p.id, p.display_name]));
+
+  return greetings.map(g => ({
+    id: g.id,
+    pinId: g.pin_id,
+    senderId: g.sender_id,
+    senderName: profileMap.get(g.sender_id) || 'Someone',
+    message: g.message,
+    status: (g as any).status as HiRequest['status'],
+    createdAt: new Date(g.created_at),
+  }));
+}
+
+export async function getMyHiStatus(pinId: string): Promise<HiRequest | null> {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data, error } = await supabase
+    .from('greetings')
+    .select('*')
+    .eq('pin_id', pinId)
+    .eq('sender_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return {
+    id: data.id,
+    pinId: data.pin_id,
+    senderId: data.sender_id,
+    senderName: '',
+    message: data.message,
+    status: (data as any).status as HiRequest['status'],
+    createdAt: new Date(data.created_at),
+  };
+}
+
+export async function respondToHi(greetingId: string, status: 'accepted' | 'declined'): Promise<boolean> {
+  const { error } = await supabase
+    .from('greetings')
+    .update({ status } as any)
+    .eq('id', greetingId);
+  if (error) { console.error('Error responding to hi:', error); return false; }
+  return true;
+}
+
+// Legacy alias
+export async function sayHi(pinId: string): Promise<boolean> {
+  return sendHi(pinId);
+}
+
+export function subscribeToGreetings(onUpdate: () => void) {
+  const channel = supabase
+    .channel('greetings-realtime')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'greetings' }, () => {
+      onUpdate();
+    })
+    .subscribe();
+  return () => { supabase.removeChannel(channel); };
+}
+
+// --- Existing utilities ---
 
 export function filterPins(
   pins: CoworkPin[],
@@ -92,16 +208,14 @@ export function filterPins(
   });
 }
 
-// Fuzzy a pin's location by ~200-400m for privacy
 export function fuzzyLocation(lat: number, lng: number, seed: string): [number, number] {
-  // Deterministic hash from seed so same pin always gets same offset
   let hash = 0;
   for (let i = 0; i < seed.length; i++) {
     hash = ((hash << 5) - hash) + seed.charCodeAt(i);
     hash |= 0;
   }
   const angle = (Math.abs(hash) % 360) * (Math.PI / 180);
-  const offsetKm = 0.2 + (Math.abs(hash >> 8) % 200) / 1000; // 0.2–0.4 km
+  const offsetKm = 0.2 + (Math.abs(hash >> 8) % 200) / 1000;
   const dLat = (offsetKm / 110.574) * Math.cos(angle);
   const dLng = (offsetKm / (111.32 * Math.cos(lat * Math.PI / 180))) * Math.sin(angle);
   return [lat + dLat, lng + dLng];

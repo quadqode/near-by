@@ -65,7 +65,7 @@ export type Database = {
           id?: string
           message?: string
           pin_id: string
-          sender_id?: string
+          sender_id: string
         }
         Update: {
           created_at?: string
