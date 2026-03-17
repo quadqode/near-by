@@ -214,12 +214,12 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
             )}
 
             {hiPending && (
-              <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-3.5 flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center shrink-0">
-                  <Loader2 className="h-4 w-4 text-amber-500 animate-spin" />
+              <div className="bg-accent/30 border border-accent-foreground/20 rounded-xl p-3.5 flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-accent flex items-center justify-center shrink-0">
+                  <Loader2 className="h-4 w-4 text-accent-foreground animate-spin" />
                 </div>
                 <div className="text-left flex-1 min-w-0">
-                  <p className="text-[10px] text-amber-600 uppercase tracking-wider font-semibold">Hi Pending</p>
+                  <p className="text-[10px] text-accent-foreground uppercase tracking-wider font-semibold">Hi Pending</p>
                   <p className="text-xs text-muted-foreground">Waiting for them to accept…</p>
                 </div>
               </div>
