@@ -166,7 +166,7 @@ export async function getMyHiStatus(pinId: string): Promise<HiRequest | null> {
     senderId: data.sender_id,
     senderName: '',
     message: data.message,
-    status: data.status as HiRequest['status'],
+    status: (data as any).status as HiRequest['status'],
     createdAt: new Date(data.created_at),
   };
 }
@@ -174,7 +174,7 @@ export async function getMyHiStatus(pinId: string): Promise<HiRequest | null> {
 export async function respondToHi(greetingId: string, status: 'accepted' | 'declined'): Promise<boolean> {
   const { error } = await supabase
     .from('greetings')
-    .update({ status })
+    .update({ status } as any)
     .eq('id', greetingId);
   if (error) { console.error('Error responding to hi:', error); return false; }
   return true;
