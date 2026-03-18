@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { HiRequest, getHiRequestsForMyPins, respondToHi, subscribeToGreetings } from '@/lib/pinStore';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Check, XIcon, Bell, Inbox } from 'lucide-react';
+import { X, Check, XIcon, Bell, Inbox, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
+import SessionReviewForm from './SessionReviewForm';
 
 interface Props {
   open: boolean;
