@@ -132,7 +132,7 @@ export default function CoworkMap() {
     geolocateControl.on('geolocate', (e: any) => {
       const newPos: [number, number] = [e.coords.latitude, e.coords.longitude];
       setUserPos(newPos);
-      setPlaces(generateDemoPlaces(newPos[0], newPos[1]));
+      fetchNearbyPlaces(newPos[0], newPos[1]).then(setPlaces);
       seedDemoPins(newPos[0], newPos[1]).then(() => refreshPins());
     });
 
