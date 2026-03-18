@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback } from 'react';
 import { HiRequest, getHiRequestsForMyPins, respondToHi, subscribeToGreetings } from '@/lib/pinStore';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { X, Check, XIcon, Bell, Inbox } from 'lucide-react';
+import { X, Check, XIcon, Bell, Inbox, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
+import SessionReviewForm from './SessionReviewForm';
 
 interface Props {
   open: boolean;
@@ -44,6 +46,32 @@ export default function HiRequestsPanel({ open, onClose, onRequestCount }: Props
         description: status === 'accepted' ? 'Your exact location has been shared.' : 'Request declined.',
       });
       refresh();
+    }
+  };
+
+  const [reviewTarget, setReviewTarget] = useState<{ sessionId: string; revieweeId: string; revieweeName: string } | null>(null);
+
+  const handleOpenReview = async (req: HiRequest) => {
+    // Find or create a cowork_session for this accepted greeting
+    const { data: existing } = await supabase
+      .from('cowork_sessions')
+      .select('id')
+      .eq('pin_id', req.pinId)
+      .eq('responder_id', req.senderId)
+      .limit(1)
+      .maybeSingle();
+
+    let sessionId = existing?.id;
+    if (!sessionId && user) {
+      const { data: newSession } = await supabase
+        .from('cowork_sessions')
+        .insert({ initiator_id: user.id, responder_id: req.senderId, pin_id: req.pinId, status: 'completed' })
+        .select('id')
+        .single();
+      sessionId = newSession?.id;
+    }
+    if (sessionId) {
+      setReviewTarget({ sessionId, revieweeId: req.senderId, revieweeName: req.senderName || 'Someone' });
     }
   };
 
@@ -175,14 +203,36 @@ export default function HiRequestsPanel({ open, onClose, onRequestCount }: Props
                           {req.status === 'accepted' ? 'Accepted' : 'Declined'} · {req.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
-                      <Badge variant="outline" className="text-[10px] capitalize">
-                        {req.status}
-                      </Badge>
+                      {req.status === 'accepted' ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 rounded-lg text-[10px] gap-1 shrink-0"
+                          onClick={() => handleOpenReview(req)}
+                        >
+                          <Star className="h-3 w-3" /> Review
+                        </Button>
+                      ) : (
+                        <Badge variant="outline" className="text-[10px] capitalize">
+                          {req.status}
+                        </Badge>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
             </div>
+
+            {/* Review Form */}
+            {reviewTarget && (
+              <SessionReviewForm
+                open={!!reviewTarget}
+                onClose={() => setReviewTarget(null)}
+                sessionId={reviewTarget.sessionId}
+                revieweeId={reviewTarget.revieweeId}
+                revieweeName={reviewTarget.revieweeName}
+              />
+            )}
           </motion.div>
         </>
       )}

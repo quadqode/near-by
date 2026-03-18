@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { CoworkPin, ROLES, TIME_SLOTS } from '@/lib/types';
 import { getDistance, sendHi, getMyHiStatus, fuzzyLocation, subscribeToGreetings } from '@/lib/pinStore';
 import type { HiRequest } from '@/lib/pinStore';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Clock, MapPin, Navigation, MessageCircle, Check, ExternalLink, Loader2 } from 'lucide-react';
+import { X, Clock, MapPin, Navigation, MessageCircle, Check, ExternalLink, Loader2, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
+import SessionReviewForm from './SessionReviewForm';
 
 interface Props {
   pin: CoworkPin;
@@ -22,6 +24,7 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
   const [hiStatus, setHiStatus] = useState<HiRequest | null>(null);
   const [sending, setSending] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState(true);
+  const [reviewTarget, setReviewTarget] = useState<{ sessionId: string; revieweeId: string; revieweeName: string } | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const isOwnPin = user && pin.userId === user.id;
@@ -262,12 +265,45 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
         {isOwnPin ? (
           <p className="text-center text-xs text-muted-foreground">Check your Hi requests from the bell icon</p>
         ) : hiAccepted ? (
-          <Button
-            className="w-full font-heading font-semibold h-11 rounded-xl gap-2"
-            onClick={handleGetDirections}
-          >
-            <Navigation className="h-4 w-4" /> Get Directions
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              className="flex-1 font-heading font-semibold h-11 rounded-xl gap-2"
+              onClick={handleGetDirections}
+            >
+              <Navigation className="h-4 w-4" /> Get Directions
+            </Button>
+            <Button
+              variant="outline"
+              className="h-11 rounded-xl gap-1.5 font-heading font-semibold"
+              onClick={async () => {
+                if (!user || !pin.userId) return;
+                // Find or create session
+                const { data: existing } = await supabase
+                  .from('cowork_sessions')
+                  .select('id')
+                  .eq('pin_id', pin.id)
+                  .eq('initiator_id', pin.userId)
+                  .limit(1)
+                  .maybeSingle();
+                let sessionId = existing?.id;
+                if (!sessionId) {
+                  const { data: newS } = await supabase
+                    .from('cowork_sessions')
+                    .insert({ initiator_id: pin.userId, responder_id: user.id, pin_id: pin.id, status: 'completed' })
+                    .select('id')
+                    .single();
+                  sessionId = newS?.id;
+                }
+                if (sessionId) {
+                  // Get pin owner name
+                  const { data: profile } = await supabase.from('profiles').select('display_name').eq('id', pin.userId).single();
+                  setReviewTarget({ sessionId, revieweeId: pin.userId, revieweeName: profile?.display_name || 'Coworker' });
+                }
+              }}
+            >
+              <Star className="h-4 w-4" /> Review
+            </Button>
+          </div>
         ) : hiPending ? (
           <Button className="w-full h-11 rounded-xl gap-2" disabled>
             <Loader2 className="h-4 w-4 animate-spin" /> Waiting for response…
@@ -286,6 +322,17 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
           </Button>
         )}
       </div>
+
+      {/* Review Form */}
+      {reviewTarget && (
+        <SessionReviewForm
+          open={!!reviewTarget}
+          onClose={() => setReviewTarget(null)}
+          sessionId={reviewTarget.sessionId}
+          revieweeId={reviewTarget.revieweeId}
+          revieweeName={reviewTarget.revieweeName}
+        />
+      )}
     </motion.div>
   );
 }
