@@ -322,6 +322,17 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
           </Button>
         )}
       </div>
+
+      {/* Review Form */}
+      {reviewTarget && (
+        <SessionReviewForm
+          open={!!reviewTarget}
+          onClose={() => setReviewTarget(null)}
+          sessionId={reviewTarget.sessionId}
+          revieweeId={reviewTarget.revieweeId}
+          revieweeName={reviewTarget.revieweeName}
+        />
+      )}
     </motion.div>
   );
 }
