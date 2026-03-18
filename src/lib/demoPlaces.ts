@@ -125,7 +125,9 @@ function pickFrom<T>(arr: T[], rng: () => number): T {
  * Generate 250 demo places scattered around a center point.
  */
 export function generateDemoPlaces(centerLat = 28.55, centerLng = 77.22): WorkPlace[] {
-  const rng = seededRandom(123);
+  // Derive seed from location so different areas produce different places
+  const locationSeed = Math.abs(Math.round(centerLat * 10000) * 31 + Math.round(centerLng * 10000) * 37);
+  const rng = seededRandom(locationSeed || 1);
   const places: WorkPlace[] = [];
 
   // Distribution: 80 cafés, 40 coworking, 15 libraries, 115 food = 250
