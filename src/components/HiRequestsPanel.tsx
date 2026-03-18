@@ -203,14 +203,36 @@ export default function HiRequestsPanel({ open, onClose, onRequestCount }: Props
                           {req.status === 'accepted' ? 'Accepted' : 'Declined'} · {req.createdAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       </div>
-                      <Badge variant="outline" className="text-[10px] capitalize">
-                        {req.status}
-                      </Badge>
+                      {req.status === 'accepted' ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-7 rounded-lg text-[10px] gap-1 shrink-0"
+                          onClick={() => handleOpenReview(req)}
+                        >
+                          <Star className="h-3 w-3" /> Review
+                        </Button>
+                      ) : (
+                        <Badge variant="outline" className="text-[10px] capitalize">
+                          {req.status}
+                        </Badge>
+                      )}
                     </div>
                   ))}
                 </div>
               )}
             </div>
+
+            {/* Review Form */}
+            {reviewTarget && (
+              <SessionReviewForm
+                open={!!reviewTarget}
+                onClose={() => setReviewTarget(null)}
+                sessionId={reviewTarget.sessionId}
+                revieweeId={reviewTarget.revieweeId}
+                revieweeName={reviewTarget.revieweeName}
+              />
+            )}
           </motion.div>
         </>
       )}
