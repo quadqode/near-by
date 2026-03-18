@@ -3,12 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { CoworkPin, ROLES, TIME_SLOTS } from '@/lib/types';
 import { getDistance, sendHi, getMyHiStatus, fuzzyLocation, subscribeToGreetings } from '@/lib/pinStore';
 import type { HiRequest } from '@/lib/pinStore';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Clock, MapPin, Navigation, MessageCircle, Check, ExternalLink, Loader2 } from 'lucide-react';
+import { X, Clock, MapPin, Navigation, MessageCircle, Check, ExternalLink, Loader2, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
+import SessionReviewForm from './SessionReviewForm';
 
 interface Props {
   pin: CoworkPin;
