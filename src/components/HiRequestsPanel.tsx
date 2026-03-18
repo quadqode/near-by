@@ -49,6 +49,32 @@ export default function HiRequestsPanel({ open, onClose, onRequestCount }: Props
     }
   };
 
+  const [reviewTarget, setReviewTarget] = useState<{ sessionId: string; revieweeId: string; revieweeName: string } | null>(null);
+
+  const handleOpenReview = async (req: HiRequest) => {
+    // Find or create a cowork_session for this accepted greeting
+    const { data: existing } = await supabase
+      .from('cowork_sessions')
+      .select('id')
+      .eq('pin_id', req.pinId)
+      .eq('responder_id', req.senderId)
+      .limit(1)
+      .maybeSingle();
+
+    let sessionId = existing?.id;
+    if (!sessionId && user) {
+      const { data: newSession } = await supabase
+        .from('cowork_sessions')
+        .insert({ initiator_id: user.id, responder_id: req.senderId, pin_id: req.pinId, status: 'completed' })
+        .select('id')
+        .single();
+      sessionId = newSession?.id;
+    }
+    if (sessionId) {
+      setReviewTarget({ sessionId, revieweeId: req.senderId, revieweeName: req.senderName || 'Someone' });
+    }
+  };
+
   const pendingRequests = requests.filter(r => r.status === 'pending');
   const pastRequests = requests.filter(r => r.status !== 'pending');
 
