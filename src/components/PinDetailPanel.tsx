@@ -24,6 +24,7 @@ export default function PinDetailPanel({ pin, userPos, onClose }: Props) {
   const [hiStatus, setHiStatus] = useState<HiRequest | null>(null);
   const [sending, setSending] = useState(false);
   const [loadingStatus, setLoadingStatus] = useState(true);
+  const [reviewTarget, setReviewTarget] = useState<{ sessionId: string; revieweeId: string; revieweeName: string } | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const isOwnPin = user && pin.userId === user.id;
