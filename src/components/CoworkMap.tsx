@@ -101,6 +101,15 @@ export default function CoworkMap() {
     seedDemoPins(lat, lng).then(() => refreshPins());
   }, [refreshPins]);
 
+  // Load places when restoring position from localStorage
+  useEffect(() => {
+    if (userPos && places.length === 0) {
+      fetchNearbyPlaces(userPos[0], userPos[1]).then(setPlaces);
+      refreshPins();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Subscribe to realtime
   useEffect(() => {
     const unsub = subscribeToPins(() => refreshPins());
