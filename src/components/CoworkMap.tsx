@@ -51,7 +51,13 @@ function createGeoJSONCircle(center: [number, number], radiusKm: number, points 
 export default function CoworkMap() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [userPos, setUserPos] = useState<[number, number] | null>(null);
+  const [userPos, setUserPos] = useState<[number, number] | null>(() => {
+    const stored = localStorage.getItem('cowork-user-pos');
+    if (stored) {
+      try { const [lat, lng] = JSON.parse(stored); return [lat, lng]; } catch { return null; }
+    }
+    return null;
+  });
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
