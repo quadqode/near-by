@@ -80,6 +80,7 @@ export default function CoworkMap() {
   const [offersOnly, setOffersOnly] = useState(false);
   const [hiPanelOpen, setHiPanelOpen] = useState(false);
   const [hiRequestCount, setHiRequestCount] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
