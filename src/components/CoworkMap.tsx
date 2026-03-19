@@ -24,7 +24,8 @@ import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import OfferBanner from './OfferBanner';
 import HiRequestsPanel from './HiRequestsPanel';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell, Search, X } from 'lucide-react';
+import LocationAutocomplete from './LocationAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
