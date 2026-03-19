@@ -3,7 +3,7 @@ import { WorkPlace, PLACE_TYPE_META } from '@/lib/placeTypes';
 import { getDistance } from '@/lib/pinStore';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { X, Navigation, ExternalLink, Wifi, WifiOff, Plug, Volume2, Star, Clock, Armchair, Sun, Coffee, UtensilsCrossed, ChevronLeft, ChevronRight, Tag, Store } from 'lucide-react';
+import { X, Navigation, ExternalLink, Wifi, WifiOff, Plug, Volume2, Star, Clock, Armchair, Sun, Coffee, UtensilsCrossed, ChevronLeft, ChevronRight, Tag, Store, ImageOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import RegisterPlaceDialog from './RegisterPlaceDialog';
 
@@ -16,18 +16,26 @@ interface Props {
 export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
   const [photoIdx, setPhotoIdx] = useState(0);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowLeft') setPhotoIdx(i => (i - 1 + place.photos.length) % place.photos.length);
-      if (e.key === 'ArrowRight') setPhotoIdx(i => (i + 1) % place.photos.length);
+      if (place.photos.length > 0) {
+        if (e.key === 'ArrowLeft') setPhotoIdx(i => (i - 1 + place.photos.length) % place.photos.length);
+        if (e.key === 'ArrowRight') setPhotoIdx(i => (i + 1) % place.photos.length);
+      }
     };
     document.addEventListener('keydown', handler);
     panelRef.current?.focus();
     return () => document.removeEventListener('keydown', handler);
   }, [onClose, place.photos.length]);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [photoIdx]);
+
   const meta = PLACE_TYPE_META[place.type];
   const dist = getDistance(userPos[0], userPos[1], place.lat, place.lng);
   const distLabel = dist < 1 ? `${Math.round(dist * 1000)}m away` : `${dist.toFixed(1)}km away`;
@@ -37,6 +45,7 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
   };
 
   const a = place.amenities;
+  const hasPhotos = place.photos.length > 0;
 
   const amenityItems = [
     { icon: a.wifi ? Wifi : WifiOff, label: a.wifi ? `WiFi${a.wifiSpeed ? ` (${a.wifiSpeed})` : ''}` : 'No WiFi', good: a.wifi },
@@ -62,23 +71,31 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
     >
       {/* Photo carousel */}
       <div className="relative w-full aspect-[16/10] bg-muted shrink-0">
-        <img
-          src={place.photos[photoIdx]}
-          alt={`${place.name} photo ${photoIdx + 1}`}
-          className="w-full h-full object-cover"
-        />
-        {place.photos.length > 1 && (
+        {hasPhotos && !imgError ? (
+          <img
+            src={place.photos[photoIdx]}
+            alt={`${place.name} photo ${photoIdx + 1}`}
+            className="w-full h-full object-cover"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+            <ImageOff className="h-10 w-10 mb-2 opacity-40" />
+            <span className="text-xs opacity-60">No photo available</span>
+          </div>
+        )}
+        {hasPhotos && place.photos.length > 1 && (
           <>
             <button
               aria-label="Previous photo"
-              onClick={() => setPhotoIdx(i => (i - 1 + place.photos.length) % place.photos.length)}
+              onClick={() => { setPhotoIdx(i => (i - 1 + place.photos.length) % place.photos.length); setImgError(false); }}
               className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
               aria-label="Next photo"
-              onClick={() => setPhotoIdx(i => (i + 1) % place.photos.length)}
+              onClick={() => { setPhotoIdx(i => (i + 1) % place.photos.length); setImgError(false); }}
               className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-foreground/50 text-background flex items-center justify-center hover:bg-foreground/70 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <ChevronRight className="h-4 w-4" />
@@ -103,7 +120,6 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-        {/* Name & rating */}
         <div>
           <h2 className="font-heading font-bold text-lg text-foreground">{place.name}</h2>
           <div className="flex items-center gap-3 mt-1">
@@ -121,7 +137,6 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
           </div>
         </div>
 
-        {/* Offer banner */}
         {place.offer && (
           <div className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl bg-[hsl(35_90%_55%_/_0.08)] border border-[hsl(35_90%_55%_/_0.2)]">
             <Tag className="h-4 w-4 text-[hsl(35_90%_50%)] shrink-0" />
@@ -129,10 +144,8 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
           </div>
         )}
 
-        {/* Description */}
         <p className="text-sm text-muted-foreground leading-relaxed">{place.description}</p>
 
-        {/* Amenities grid */}
         <div>
           <h3 className="font-heading font-semibold text-[10px] text-muted-foreground uppercase tracking-wider mb-2.5">Amenities</h3>
           <div className="grid grid-cols-2 gap-2">
@@ -152,7 +165,6 @@ export default function PlaceDetailPanel({ place, userPos, onClose }: Props) {
           </div>
         </div>
 
-        {/* Location */}
         <button
           onClick={handleGetDirections}
           className="w-full bg-accent/40 hover:bg-accent/60 rounded-xl p-3.5 flex items-center gap-3 transition-colors group border border-border/50"

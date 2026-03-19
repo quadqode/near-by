@@ -18,6 +18,9 @@ interface Props {
 
 const TOKEN = 'pk.eyJ1IjoibjFuamEiLCJhIjoiY21taHl5Nm1iMDk0ODJwczc5cG85dnRmaiJ9.j5teJQde50Xj19Zu7q9Jrw';
 
+// Delhi bounding box
+const DELHI_BBOX = '76.84,28.40,77.35,28.88';
+
 export default function LocationAutocomplete({ placeholder = 'Search a locationâ€¦', onSelect, proximity, autoFocus, className }: Props) {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -30,12 +33,9 @@ export default function LocationAutocomplete({ placeholder = 'Search a locationâ
     if (!q.trim()) { setSuggestions([]); return; }
     setLoading(true);
     try {
-      let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q.trim())}.json?access_token=${TOKEN}&limit=5&types=poi,address,place,neighborhood,locality`;
+      let url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(q.trim())}.json?access_token=${TOKEN}&limit=5&types=poi,address,place,neighborhood,locality&bbox=${DELHI_BBOX}&country=in`;
       if (proximity) {
         url += `&proximity=${proximity[1]},${proximity[0]}`;
-        // bbox ~5km around proximity
-        const delta = 0.045; // ~5km
-        url += `&bbox=${proximity[1] - delta},${proximity[0] - delta},${proximity[1] + delta},${proximity[0] + delta}`;
       }
       const res = await fetch(url);
       const data = await res.json();
@@ -55,7 +55,6 @@ export default function LocationAutocomplete({ placeholder = 'Search a locationâ
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   }, [query, fetchSuggestions]);
 
-  // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);

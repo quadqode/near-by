@@ -51,7 +51,13 @@ function createGeoJSONCircle(center: [number, number], radiusKm: number, points 
 export default function CoworkMap() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [userPos, setUserPos] = useState<[number, number] | null>(null);
+  const [userPos, setUserPos] = useState<[number, number] | null>(() => {
+    const stored = localStorage.getItem('cowork-user-pos');
+    if (stored) {
+      try { const [lat, lng] = JSON.parse(stored); return [lat, lng]; } catch { return null; }
+    }
+    return null;
+  });
   const [pins, setPins] = useState<CoworkPin[]>([]);
   const [dropDialog, setDropDialog] = useState<{lat: number;lng: number;} | null>(null);
   const [filterOpen, setFilterOpen] = useState(false);
@@ -89,10 +95,20 @@ export default function CoworkMap() {
 
   const handleLocationSet = useCallback((lat: number, lng: number, intents?: UserIntent[]) => {
     setUserPos([lat, lng]);
+    localStorage.setItem('cowork-user-pos', JSON.stringify([lat, lng]));
     if (intents) setUserIntents(intents);
     fetchNearbyPlaces(lat, lng).then(setPlaces);
     seedDemoPins(lat, lng).then(() => refreshPins());
   }, [refreshPins]);
+
+  // Load places when restoring position from localStorage
+  useEffect(() => {
+    if (userPos && places.length === 0) {
+      fetchNearbyPlaces(userPos[0], userPos[1]).then(setPlaces);
+      refreshPins();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Subscribe to realtime
   useEffect(() => {
@@ -132,6 +148,7 @@ export default function CoworkMap() {
     geolocateControl.on('geolocate', (e: any) => {
       const newPos: [number, number] = [e.coords.latitude, e.coords.longitude];
       setUserPos(newPos);
+      localStorage.setItem('cowork-user-pos', JSON.stringify(newPos));
       fetchNearbyPlaces(newPos[0], newPos[1]).then(setPlaces);
       seedDemoPins(newPos[0], newPos[1]).then(() => refreshPins());
     });
