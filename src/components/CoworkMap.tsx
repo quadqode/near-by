@@ -24,7 +24,8 @@ import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import OfferBanner from './OfferBanner';
 import HiRequestsPanel from './HiRequestsPanel';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell, Search, X } from 'lucide-react';
+import LocationAutocomplete from './LocationAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const ROLE_HEX: Record<Role, string> = {
@@ -79,6 +80,7 @@ export default function CoworkMap() {
   const [offersOnly, setOffersOnly] = useState(false);
   const [hiPanelOpen, setHiPanelOpen] = useState(false);
   const [hiRequestCount, setHiRequestCount] = useState(0);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -382,56 +384,85 @@ export default function CoworkMap() {
         }
       </AnimatePresence>
 
-      <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 right-4 z-[1000] flex flex-wrap items-center gap-2">
-        <div className="bg-card rounded-xl shadow-lg border border-border px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2">
-          <span className="text-base sm:text-lg">🗺️</span>
-          <h1 className="font-heading font-bold text-foreground text-sm sm:text-base">NearBy</h1>
+      <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="bg-card rounded-xl shadow-lg border border-border px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2">
+            <span className="text-base sm:text-lg">🗺️</span>
+            <h1 className="font-heading font-bold text-foreground text-sm sm:text-base">NearBy</h1>
+          </div>
+          <div className="bg-card rounded-xl shadow-lg border border-border px-2 sm:px-3 py-2 sm:py-2.5 flex items-center gap-1.5 sm:gap-2">
+            {showPeople && (
+              <>
+                <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{filtered.length}</span>
+              </>
+            )}
+            {showPeople && showPlaces && <span className="text-border">|</span>}
+            {showPlaces && (
+              <>
+                <Store className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{filteredPlaces.length}</span>
+              </>
+            )}
+            <span className="text-border">|</span>
+            <Radar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`}</span>
+          </div>
+          <div className="ml-auto flex items-center gap-2">
+            <Button
+              size="icon"
+              variant="outline"
+              className="bg-card shadow-lg border-border h-9 w-9 rounded-xl"
+              onClick={() => setSearchOpen(v => !v)}
+            >
+              {searchOpen ? <X className="h-4 w-4" /> : <Search className="h-4 w-4" />}
+            </Button>
+            {user && (
+              <div className="relative">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="bg-card shadow-lg border-border h-9 w-9 rounded-xl"
+                  onClick={() => setHiPanelOpen(true)}
+                >
+                  <Bell className="h-4 w-4" />
+                </Button>
+                {hiRequestCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                    {hiRequestCount}
+                  </span>
+                )}
+              </div>
+            )}
+            <Button
+              size="icon"
+              variant="outline"
+              className="bg-card shadow-lg border-border h-9 w-9 rounded-xl"
+              onClick={() => navigate(user ? '/profile' : '/auth')}
+            >
+              <User className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
-        <div className="bg-card rounded-xl shadow-lg border border-border px-2 sm:px-3 py-2 sm:py-2.5 flex items-center gap-1.5 sm:gap-2">
-          {showPeople && (
-            <>
-              <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{filtered.length}</span>
-            </>
+        <AnimatePresence>
+          {searchOpen && (
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden">
+              <LocationAutocomplete
+                placeholder="Search a place in Delhi…"
+                proximity={userPos || undefined}
+                autoFocus
+                className="w-full"
+                onSelect={(lat, lng) => {
+                  handleLocationSet(lat, lng);
+                  setSearchOpen(false);
+                  if (mapRef.current) {
+                    mapRef.current.flyTo({ center: [lng, lat], zoom: 14 });
+                  }
+                }}
+              />
+            </motion.div>
           )}
-          {showPeople && showPlaces && <span className="text-border">|</span>}
-          {showPlaces && (
-            <>
-              <Store className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-              <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{filteredPlaces.length}</span>
-            </>
-          )}
-          <span className="text-border">|</span>
-          <Radar className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-          <span className="text-[11px] sm:text-xs font-medium text-muted-foreground">{visibleRadius < 1 ? `${Math.round(visibleRadius * 1000)}m` : `${visibleRadius.toFixed(1)}km`}</span>
-        </div>
-        <div className="ml-auto flex items-center gap-2">
-          {user && (
-            <div className="relative">
-              <Button
-                size="icon"
-                variant="outline"
-                className="bg-card shadow-lg border-border h-9 w-9 rounded-xl"
-                onClick={() => setHiPanelOpen(true)}
-              >
-                <Bell className="h-4 w-4" />
-              </Button>
-              {hiRequestCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                  {hiRequestCount}
-                </span>
-              )}
-            </div>
-          )}
-          <Button
-            size="icon"
-            variant="outline"
-            className="bg-card shadow-lg border-border h-9 w-9 rounded-xl"
-            onClick={() => navigate(user ? '/profile' : '/auth')}
-          >
-            <User className="h-4 w-4" />
-          </Button>
-        </div>
+        </AnimatePresence>
       </motion.div>
 
       <div className="absolute bottom-4 left-4 z-[1000] flex items-center gap-2">
