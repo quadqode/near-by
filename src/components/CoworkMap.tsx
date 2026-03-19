@@ -95,6 +95,7 @@ export default function CoworkMap() {
 
   const handleLocationSet = useCallback((lat: number, lng: number, intents?: UserIntent[]) => {
     setUserPos([lat, lng]);
+    localStorage.setItem('cowork-user-pos', JSON.stringify([lat, lng]));
     if (intents) setUserIntents(intents);
     fetchNearbyPlaces(lat, lng).then(setPlaces);
     seedDemoPins(lat, lng).then(() => refreshPins());
