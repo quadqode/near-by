@@ -250,7 +250,7 @@ export default function CoworkMap() {
   const filteredPlaces = userPos && showPlaces ?
   places.filter((p) => {
     const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
-    if (dist > Math.min(visibleRadius, 4)) return false;
+    if (dist > visibleRadius) return false;
     if (offersOnly && !p.offer) return false;
     const isFoodPlace = p.type === 'other';
     const isWorkPlace = p.type === 'cafe' || p.type === 'coworking' || p.type === 'library';
