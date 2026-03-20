@@ -8,7 +8,7 @@ import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
 import type { UserIntent } from './LocationPicker';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
-import { fetchNearbyPlaces } from '@/lib/mapboxPlaces';
+import { generateDemoPlaces } from '@/lib/demoPlaces';
 import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
 import { useAuth } from '@/contexts/AuthContext';
 import DropPinDialog from './DropPinDialog';
