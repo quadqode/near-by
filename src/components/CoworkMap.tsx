@@ -169,7 +169,7 @@ export default function CoworkMap() {
 
     map.on('load', () => {
       // Add radius circle source + layers
-      const initialCircle = createGeoJSONCircle([userPos[1], userPos[0]], 2);
+      const initialCircle = createGeoJSONCircle([userPos[1], userPos[0]], 1.2);
       map.addSource('radius-circle', { type: 'geojson', data: initialCircle as any });
       map.addLayer({
         id: 'radius-circle-fill',
@@ -177,7 +177,7 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'fill-color': 'hsl(243, 75%, 58%)',
-          'fill-opacity': 0.07
+          'fill-opacity': 0.12
         }
       });
       map.addLayer({
@@ -186,8 +186,8 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'line-color': 'hsl(243, 75%, 50%)',
-          'line-opacity': 0.24,
-          'line-width': 2,
+          'line-opacity': 0.4,
+          'line-width': 2.5,
           'line-dasharray': [4, 3]
         }
       });
