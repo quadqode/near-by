@@ -150,7 +150,7 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
   if (hasPeople && viewFilter !== 'places') {
     pins.forEach((p) => {
       const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
-      if (dist <= 4) items.push({ kind: 'pin', data: p, dist });
+      if (dist <= 4) items.push({ kind: 'pin', data: p, dist }); // already filtered by parent
     });
   }
   if (hasPlaces && viewFilter !== 'people') {
