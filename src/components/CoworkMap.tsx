@@ -157,8 +157,9 @@ export default function CoworkMap() {
 
     const updateRadius = () => {
       const zoom = map.getZoom();
-      const km = Math.round(40000 / 2 ** zoom * 10) / 10;
-      const clamped = Math.max(0.5, Math.min(km, 4));
+      // Tighter radius: ~1km at zoom 14, scales with zoom
+      const km = Math.round(20000 / 2 ** zoom * 10) / 10;
+      const clamped = Math.max(0.3, Math.min(km, 3));
       setVisibleRadius(clamped);
       const center = map.getCenter();
       updateRadiusCircle(map, [center.lat, center.lng], clamped);
@@ -168,7 +169,7 @@ export default function CoworkMap() {
 
     map.on('load', () => {
       // Add radius circle source + layers
-      const initialCircle = createGeoJSONCircle([userPos[1], userPos[0]], 2);
+      const initialCircle = createGeoJSONCircle([userPos[1], userPos[0]], 1.2);
       map.addSource('radius-circle', { type: 'geojson', data: initialCircle as any });
       map.addLayer({
         id: 'radius-circle-fill',
@@ -176,7 +177,7 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'fill-color': 'hsl(243, 75%, 58%)',
-          'fill-opacity': 0.07
+          'fill-opacity': 0.12
         }
       });
       map.addLayer({
@@ -185,8 +186,8 @@ export default function CoworkMap() {
         source: 'radius-circle',
         paint: {
           'line-color': 'hsl(243, 75%, 50%)',
-          'line-opacity': 0.24,
-          'line-width': 2,
+          'line-opacity': 0.4,
+          'line-width': 2.5,
           'line-dasharray': [4, 3]
         }
       });
@@ -205,8 +206,8 @@ export default function CoworkMap() {
     map.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
     // Update radius circle center
     const zoom = map.getZoom();
-    const km = Math.round(40000 / 2 ** zoom * 10) / 10;
-    const clamped = Math.max(0.5, Math.min(km, 4));
+    const km = Math.round(20000 / 2 ** zoom * 10) / 10;
+    const clamped = Math.max(0.3, Math.min(km, 3));
     setVisibleRadius(clamped);
     updateRadiusCircle(map, userPos, clamped);
   }, [userPos, updateRadiusCircle]);
@@ -216,7 +217,7 @@ export default function CoworkMap() {
 
   const filtered = userPos && showPeople ?
   filterPins(pins, { roles: filterRoles, timeSlots: filterTimes, interests: filterInterests }).
-  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= Math.min(visibleRadius, 4)) :
+  filter((p) => getDistance(userPos[0], userPos[1], p.lat, p.lng) <= visibleRadius) :
   [];
 
   // Update markers
@@ -249,7 +250,7 @@ export default function CoworkMap() {
   const filteredPlaces = userPos && showPlaces ?
   places.filter((p) => {
     const dist = getDistance(userPos[0], userPos[1], p.lat, p.lng);
-    if (dist > Math.min(visibleRadius, 4)) return false;
+    if (dist > visibleRadius) return false;
     if (offersOnly && !p.offer) return false;
     const isFoodPlace = p.type === 'other';
     const isWorkPlace = p.type === 'cafe' || p.type === 'coworking' || p.type === 'library';
