@@ -8,7 +8,7 @@ import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
 import type { UserIntent } from './LocationPicker';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
-import { fetchNearbyPlaces } from '@/lib/mapboxPlaces';
+import { generateDemoPlaces } from '@/lib/demoPlaces';
 import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
 import { useAuth } from '@/contexts/AuthContext';
 import DropPinDialog from './DropPinDialog';
@@ -99,14 +99,14 @@ export default function CoworkMap() {
     setUserPos([lat, lng]);
     localStorage.setItem('cowork-user-pos', JSON.stringify([lat, lng]));
     if (intents) setUserIntents(intents);
-    fetchNearbyPlaces(lat, lng).then(setPlaces);
+    setPlaces(generateDemoPlaces(lat, lng));
     seedDemoPins(lat, lng).then(() => refreshPins());
   }, [refreshPins]);
 
   // Load places when restoring position from localStorage
   useEffect(() => {
     if (userPos && places.length === 0) {
-      fetchNearbyPlaces(userPos[0], userPos[1]).then(setPlaces);
+      setPlaces(generateDemoPlaces(userPos[0], userPos[1]));
       refreshPins();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -151,18 +151,17 @@ export default function CoworkMap() {
       const newPos: [number, number] = [e.coords.latitude, e.coords.longitude];
       setUserPos(newPos);
       localStorage.setItem('cowork-user-pos', JSON.stringify(newPos));
-      fetchNearbyPlaces(newPos[0], newPos[1]).then(setPlaces);
+      setPlaces(generateDemoPlaces(newPos[0], newPos[1]));
       seedDemoPins(newPos[0], newPos[1]).then(() => refreshPins());
     });
 
     const updateRadius = () => {
       const zoom = map.getZoom();
-      // Tighter radius: ~1km at zoom 14, scales with zoom
       const km = Math.round(20000 / 2 ** zoom * 10) / 10;
       const clamped = Math.max(0.3, Math.min(km, 3));
       setVisibleRadius(clamped);
-      const center = map.getCenter();
-      updateRadiusCircle(map, [center.lat, center.lng], clamped);
+      // Always keep circle centered on userPos, not map center
+      updateRadiusCircle(map, userPos!, clamped);
     };
 
     map.on('zoomend', updateRadius);
