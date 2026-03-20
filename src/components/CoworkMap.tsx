@@ -206,8 +206,8 @@ export default function CoworkMap() {
     map.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
     // Update radius circle center
     const zoom = map.getZoom();
-    const km = Math.round(40000 / 2 ** zoom * 10) / 10;
-    const clamped = Math.max(0.5, Math.min(km, 4));
+    const km = Math.round(20000 / 2 ** zoom * 10) / 10;
+    const clamped = Math.max(0.3, Math.min(km, 3));
     setVisibleRadius(clamped);
     updateRadiusCircle(map, userPos, clamped);
   }, [userPos, updateRadiusCircle]);
