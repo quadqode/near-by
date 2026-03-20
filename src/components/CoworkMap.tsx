@@ -157,8 +157,9 @@ export default function CoworkMap() {
 
     const updateRadius = () => {
       const zoom = map.getZoom();
-      const km = Math.round(40000 / 2 ** zoom * 10) / 10;
-      const clamped = Math.max(0.5, Math.min(km, 4));
+      // Tighter radius: ~1km at zoom 14, scales with zoom
+      const km = Math.round(20000 / 2 ** zoom * 10) / 10;
+      const clamped = Math.max(0.3, Math.min(km, 3));
       setVisibleRadius(clamped);
       const center = map.getCenter();
       updateRadiusCircle(map, [center.lat, center.lng], clamped);
