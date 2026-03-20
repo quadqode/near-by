@@ -160,7 +160,8 @@ export default function CoworkMap() {
       const km = Math.round(40000 / 2 ** zoom * 10) / 10;
       const clamped = Math.max(0.5, Math.min(km, 4));
       setVisibleRadius(clamped);
-      updateRadiusCircle(map, userPos, clamped);
+      const center = map.getCenter();
+      updateRadiusCircle(map, [center.lat, center.lng], clamped);
     };
 
     map.on('zoomend', updateRadius);
