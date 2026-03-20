@@ -215,7 +215,7 @@ export function fuzzyLocation(lat: number, lng: number, seed: string): [number, 
     hash |= 0;
   }
   const angle = (Math.abs(hash) % 360) * (Math.PI / 180);
-  const offsetKm = 0.2 + (Math.abs(hash >> 8) % 200) / 1000;
+  const offsetKm = 0.01 + (Math.abs(hash >> 8) % 10) / 1000; // 10-20 metres
   const dLat = (offsetKm / 110.574) * Math.cos(angle);
   const dLng = (offsetKm / (111.32 * Math.cos(lat * Math.PI / 180))) * Math.sin(angle);
   return [lat + dLat, lng + dLng];

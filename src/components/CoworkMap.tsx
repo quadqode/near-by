@@ -160,7 +160,8 @@ export default function CoworkMap() {
       const km = Math.round(40000 / 2 ** zoom * 10) / 10;
       const clamped = Math.max(0.5, Math.min(km, 4));
       setVisibleRadius(clamped);
-      updateRadiusCircle(map, userPos, clamped);
+      const center = map.getCenter();
+      updateRadiusCircle(map, [center.lat, center.lng], clamped);
     };
 
     map.on('zoomend', updateRadius);
@@ -197,9 +198,18 @@ export default function CoworkMap() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userPos]);
 
+  // When userPos changes, fly to new location and update radius circle
   useEffect(() => {
-    if (userPos && mapRef.current) mapRef.current.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
-  }, [userPos]);
+    if (!userPos || !mapRef.current) return;
+    const map = mapRef.current;
+    map.flyTo({ center: [userPos[1], userPos[0]], zoom: 14 });
+    // Update radius circle center
+    const zoom = map.getZoom();
+    const km = Math.round(40000 / 2 ** zoom * 10) / 10;
+    const clamped = Math.max(0.5, Math.min(km, 4));
+    setVisibleRadius(clamped);
+    updateRadiusCircle(map, userPos, clamped);
+  }, [userPos, updateRadiusCircle]);
 
   const showPeople = userIntents.includes('people');
   const showPlaces = userIntents.includes('food') || userIntents.includes('cowork');
