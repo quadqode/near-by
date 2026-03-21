@@ -540,42 +540,29 @@ export default function CoworkMap() {
       />
 
       {/* Mobile-only filter/intent panels anchored above bottom nav */}
-      <AnimatePresence>
-        {(filterOpen || intentPickerOpen) && (
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: 20, opacity: 0 }}
-            className="fixed bottom-16 left-0 right-0 z-[1999] p-3 md:hidden"
-          >
-            <div className="bg-card rounded-2xl shadow-xl border border-border p-4 space-y-3">
-              <IntentPicker
-                open={true}
-                intents={userIntents}
-                onToggle={(v) => {
-                  const next = userIntents.includes(v) ? userIntents.filter(i => i !== v) : [...userIntents, v];
-                  setUserIntents(next);
-                  localStorage.setItem('cowork-user-intents', JSON.stringify(next));
-                }}
-                onClose={() => { setFilterOpen(false); setIntentPickerOpen(false); }}
-                inline
-              />
-              <FilterPanel
-                open={true}
-                onToggle={() => {}}
-                onClose={() => { setFilterOpen(false); setIntentPickerOpen(false); }}
-                roles={filterRoles}
-                timeSlots={filterTimes}
-                interests={filterInterests}
-                onRolesChange={setFilterRoles}
-                onTimeSlotsChange={setFilterTimes}
-                onInterestsChange={setFilterInterests}
-                inline
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className="md:hidden">
+        <IntentPicker
+          open={intentPickerOpen}
+          intents={userIntents}
+          onToggle={(v) => {
+            const next = userIntents.includes(v) ? userIntents.filter(i => i !== v) : [...userIntents, v];
+            setUserIntents(next);
+            localStorage.setItem('cowork-user-intents', JSON.stringify(next));
+          }}
+          onClose={() => setIntentPickerOpen(false)}
+        />
+        <FilterPanel
+          open={filterOpen}
+          onToggle={() => setFilterOpen(v => !v)}
+          onClose={() => setFilterOpen(false)}
+          roles={filterRoles}
+          timeSlots={filterTimes}
+          interests={filterInterests}
+          onRolesChange={setFilterRoles}
+          onTimeSlotsChange={setFilterTimes}
+          onInterestsChange={setFilterInterests}
+        />
+      </div>
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
