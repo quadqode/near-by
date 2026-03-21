@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map, List, Plus, User, HelpCircle } from 'lucide-react';
+import { Map, List, Plus, User, MessageCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
@@ -7,11 +7,11 @@ interface Props {
   view: 'map' | 'list';
   onViewChange: (v: 'map' | 'list') => void;
   onDropPin: () => void;
-  onHelpOpen: () => void;
-  activeFilters: number;
+  onHiRequestsOpen: () => void;
+  hiRequestCount: number;
 }
 
-export default function BottomNav({ view, onViewChange, onDropPin, onHelpOpen, activeFilters }: Props) {
+export default function BottomNav({ view, onViewChange, onDropPin, onHiRequestsOpen, hiRequestCount }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,11 +42,12 @@ export default function BottomNav({ view, onViewChange, onDropPin, onHelpOpen, a
       onClick: onDropPin,
     },
     {
-      key: 'help',
-      icon: HelpCircle,
-      label: 'Help',
+      key: 'hi',
+      icon: MessageCircle,
+      label: 'Hi\'s',
       active: false,
-      onClick: onHelpOpen,
+      badge: hiRequestCount,
+      onClick: () => user ? onHiRequestsOpen() : navigate('/auth'),
     },
     {
       key: 'profile',
@@ -80,6 +81,11 @@ export default function BottomNav({ view, onViewChange, onDropPin, onHelpOpen, a
             ) : (
               <div className="relative">
                 <item.icon className="h-5 w-5" />
+                {(item as any).badge > 0 && (
+                  <span className="absolute -top-1.5 -right-2.5 bg-primary text-primary-foreground text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse">
+                    {(item as any).badge}
+                  </span>
+                )}
               </div>
             )}
             <span className={cn(
