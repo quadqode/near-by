@@ -22,7 +22,7 @@ import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import PostSessionFeedback from './PostSessionFeedback';
 import OfferBanner from './OfferBanner';
-import HiRequestsPanel from './HiRequestsPanel';
+import NotificationPanel from './NotificationPanel';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell, Search, X, Filter } from 'lucide-react';
 import BottomNav from './BottomNav';
