@@ -24,6 +24,7 @@ import OfferBanner from './OfferBanner';
 import HiRequestsPanel from './HiRequestsPanel';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell, Search, X } from 'lucide-react';
+import BottomNav from './BottomNav';
 import LocationAutocomplete from './LocationAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 
