@@ -82,6 +82,8 @@ export default function CoworkMap() {
   const [hiPanelOpen, setHiPanelOpen] = useState(false);
   const [hiRequestCount, setHiRequestCount] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [expiredPinId, setExpiredPinId] = useState<string | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
