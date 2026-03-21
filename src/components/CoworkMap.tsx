@@ -53,6 +53,7 @@ function createGeoJSONCircle(center: [number, number], radiusKm: number, points 
 
 export default function CoworkMap() {
   const { user } = useAuth();
+  useHiNotifications();
   const navigate = useNavigate();
   const [userPos, setUserPos] = useState<[number, number] | null>(() => {
     const stored = localStorage.getItem('cowork-user-pos');
