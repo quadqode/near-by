@@ -154,7 +154,6 @@ export default function CoworkMap() {
       const newPos: [number, number] = [e.coords.latitude, e.coords.longitude];
       setUserPos(newPos);
       localStorage.setItem('cowork-user-pos', JSON.stringify(newPos));
-      setPlaces(generateDemoPlaces(newPos[0], newPos[1]));
       refreshPins();
     });
 
