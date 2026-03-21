@@ -79,7 +79,7 @@ export default function RegisterPlaceDialog({ open, onClose }: Props) {
           </div>
           <DialogTitle className="text-center font-heading">Register Your Place</DialogTitle>
           <DialogDescription className="text-center text-xs">
-            Submit your café, restaurant, or coworking space to be listed on CoWork Drop
+            Submit your café, restaurant, or coworking space to be listed on NearBy
           </DialogDescription>
         </DialogHeader>
 
