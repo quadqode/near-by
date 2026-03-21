@@ -1,0 +1,1 @@
+ALTER TABLE public.greetings ADD COLUMN status text NOT NULL DEFAULT 'pending';
