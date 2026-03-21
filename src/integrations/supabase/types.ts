@@ -59,6 +59,7 @@ export type Database = {
           message: string
           pin_id: string
           sender_id: string
+          status: string
         }
         Insert: {
           created_at?: string
@@ -66,6 +67,7 @@ export type Database = {
           message?: string
           pin_id: string
           sender_id: string
+          status?: string
         }
         Update: {
           created_at?: string
@@ -73,6 +75,7 @@ export type Database = {
           message?: string
           pin_id?: string
           sender_id?: string
+          status?: string
         }
         Relationships: [
           {
