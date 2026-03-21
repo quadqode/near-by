@@ -156,7 +156,7 @@ export default function CoworkMap() {
       setUserPos(newPos);
       localStorage.setItem('cowork-user-pos', JSON.stringify(newPos));
       setPlaces(generateDemoPlaces(newPos[0], newPos[1]));
-      seedDemoPins(newPos[0], newPos[1]).then(() => refreshPins());
+      refreshPins();
     });
 
     const updateRadius = () => {
