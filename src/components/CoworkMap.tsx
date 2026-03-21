@@ -100,7 +100,7 @@ export default function CoworkMap() {
     setUserPos([lat, lng]);
     localStorage.setItem('cowork-user-pos', JSON.stringify([lat, lng]));
     if (intents) setUserIntents(intents);
-    setPlaces(generateDemoPlaces(lat, lng));
+    // Places will come from real data - no demo places
     refreshPins();
   }, [refreshPins]);
 
