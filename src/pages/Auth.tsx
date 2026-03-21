@@ -71,14 +71,17 @@ export default function Auth() {
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Phone number</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="flex gap-2">
+                  <div className="flex items-center justify-center h-12 px-3 rounded-xl bg-muted/50 border border-border text-sm font-medium text-foreground shrink-0">
+                    🇮🇳 +91
+                  </div>
                   <Input
                     type="tel"
-                    placeholder="+91 98765 43210"
+                    placeholder="98765 43210"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="pl-10 h-12 rounded-xl bg-background border-border text-base"
+                    onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s]/g, ''))}
+                    className="h-12 rounded-xl bg-background border-border text-base"
+                    maxLength={12}
                     required
                   />
                 </div>
