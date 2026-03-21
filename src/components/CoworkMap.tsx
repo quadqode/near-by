@@ -9,7 +9,7 @@ import type { UserIntent } from './LocationPicker';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
 import { generateDemoPlaces } from '@/lib/demoPlaces';
-import { getPins, filterPins, getDistance, seedDemoPins, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
+import { getPins, filterPins, getDistance, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
 import { useAuth } from '@/contexts/AuthContext';
 import DropPinDialog from './DropPinDialog';
 import FilterPanel from './FilterPanel';
@@ -101,7 +101,7 @@ export default function CoworkMap() {
     localStorage.setItem('cowork-user-pos', JSON.stringify([lat, lng]));
     if (intents) setUserIntents(intents);
     setPlaces(generateDemoPlaces(lat, lng));
-    seedDemoPins(lat, lng).then(() => refreshPins());
+    refreshPins();
   }, [refreshPins]);
 
   // Load places when restoring position from localStorage
@@ -156,7 +156,7 @@ export default function CoworkMap() {
       setUserPos(newPos);
       localStorage.setItem('cowork-user-pos', JSON.stringify(newPos));
       setPlaces(generateDemoPlaces(newPos[0], newPos[1]));
-      seedDemoPins(newPos[0], newPos[1]).then(() => refreshPins());
+      refreshPins();
     });
 
     const updateRadius = () => {
