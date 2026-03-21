@@ -535,8 +535,8 @@ export default function CoworkMap() {
         view={view}
         onViewChange={setView}
         onDropPin={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })}
-        onHelpOpen={() => setGuideOpen(true)}
-        activeFilters={activeFilterCount}
+        onHiRequestsOpen={() => setHiPanelOpen(true)}
+        hiRequestCount={hiRequestCount}
       />
 
       {/* Mobile floating FABs for filters & intents — above bottom nav */}
