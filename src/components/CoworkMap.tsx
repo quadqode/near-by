@@ -20,6 +20,7 @@ import UsageGuide from './UsageGuide';
 import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
+import PostSessionFeedback from './PostSessionFeedback';
 import OfferBanner from './OfferBanner';
 import HiRequestsPanel from './HiRequestsPanel';
 import { Button } from '@/components/ui/button';
