@@ -24,7 +24,7 @@ import PostSessionFeedback from './PostSessionFeedback';
 import OfferBanner from './OfferBanner';
 import HiRequestsPanel from './HiRequestsPanel';
 import { Button } from '@/components/ui/button';
-import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell, Search, X } from 'lucide-react';
+import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell, Search, X, Filter } from 'lucide-react';
 import BottomNav from './BottomNav';
 import LocationAutocomplete from './LocationAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -538,6 +538,38 @@ export default function CoworkMap() {
         onHelpOpen={() => setGuideOpen(true)}
         activeFilters={activeFilterCount}
       />
+
+      {/* Mobile floating FABs for filters & intents — above bottom nav */}
+      <div className="fixed bottom-20 right-3 z-[1500] flex flex-col gap-2 md:hidden">
+        <div className="relative">
+          <Button
+            size="icon"
+            variant="outline"
+            className="bg-card shadow-lg border-border h-11 w-11 rounded-xl"
+            onClick={() => setIntentPickerOpen(v => !v)}
+          >
+            <SlidersHorizontal className="h-4 w-4" />
+            {userIntents.length < 3 && (
+              <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {userIntents.length}
+              </span>
+            )}
+          </Button>
+        </div>
+        <Button
+          size="icon"
+          variant="outline"
+          className="relative bg-card shadow-lg border-border h-11 w-11 rounded-xl"
+          onClick={() => setFilterOpen(v => !v)}
+        >
+          <Filter className="h-4 w-4" />
+          {(filterRoles.length + filterTimes.length + filterInterests.length) > 0 && (
+            <span className="absolute -top-1.5 -right-1.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              {filterRoles.length + filterTimes.length + filterInterests.length}
+            </span>
+          )}
+        </Button>
+      </div>
 
       {/* Mobile-only filter/intent panels anchored above bottom nav */}
       <div className="md:hidden">
