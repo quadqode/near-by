@@ -282,7 +282,7 @@ export default function PinListView({ pins, places, userPos, intents, offersOnly
                         BE NEXT
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">Get your café or restaurant listed on CoWork Drop</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">Get your café or restaurant listed on NearBy</p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-accent/50 text-accent-foreground border border-border/50">Register</span>
                     </div>

@@ -54,7 +54,7 @@ export default function SplashScreen({ onContinue }: Props) {
           transition={{ delay: 0.25 }}
           className="font-heading font-bold text-2xl text-foreground text-center"
         >
-          CoWork Drop
+          NearBy
         </motion.h1>
 
         <motion.p
