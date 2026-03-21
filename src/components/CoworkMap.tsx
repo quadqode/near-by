@@ -8,7 +8,6 @@ import { CoworkPin, Role, TimeSlot, ROLES } from '@/lib/types';
 import type { UserIntent } from './LocationPicker';
 import { WorkPlace } from '@/lib/placeTypes';
 import { PLACE_TYPE_META } from '@/lib/placeTypes';
-import { generateDemoPlaces } from '@/lib/demoPlaces';
 import { getPins, filterPins, getDistance, subscribeToPins, fuzzyLocation } from '@/lib/pinStore';
 import { useAuth } from '@/contexts/AuthContext';
 import DropPinDialog from './DropPinDialog';
@@ -25,6 +24,7 @@ import OfferBanner from './OfferBanner';
 import HiRequestsPanel from './HiRequestsPanel';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell, Search, X } from 'lucide-react';
+import BottomNav from './BottomNav';
 import LocationAutocomplete from './LocationAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -100,14 +100,13 @@ export default function CoworkMap() {
     setUserPos([lat, lng]);
     localStorage.setItem('cowork-user-pos', JSON.stringify([lat, lng]));
     if (intents) setUserIntents(intents);
-    setPlaces(generateDemoPlaces(lat, lng));
+    // Places will come from real data - no demo places
     refreshPins();
   }, [refreshPins]);
 
-  // Load places when restoring position from localStorage
+  // Load pins when restoring position from localStorage
   useEffect(() => {
-    if (userPos && places.length === 0) {
-      setPlaces(generateDemoPlaces(userPos[0], userPos[1]));
+    if (userPos) {
       refreshPins();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -155,7 +154,6 @@ export default function CoworkMap() {
       const newPos: [number, number] = [e.coords.latitude, e.coords.longitude];
       setUserPos(newPos);
       localStorage.setItem('cowork-user-pos', JSON.stringify(newPos));
-      setPlaces(generateDemoPlaces(newPos[0], newPos[1]));
       refreshPins();
     });
 
@@ -366,6 +364,8 @@ export default function CoworkMap() {
     return <LocationPicker onLocationSet={handleLocationSet} />;
   }
 
+    const activeFilterCount = filterRoles.length + filterTimes.length + filterInterests.length + (userIntents.length < 3 ? 1 : 0);
+
   return (
     <div className="relative h-screen w-screen overflow-hidden bg-background">
       <div ref={mapContainerRef} className={`h-full w-full transition-opacity duration-300 ${view === 'list' ? 'opacity-0 pointer-events-none absolute' : ''}`} />
@@ -375,7 +375,7 @@ export default function CoworkMap() {
       <AnimatePresence>
         {view === 'list' &&
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 bg-background z-[500]">
-            <div className="h-full pt-16 py-[76px]">
+            <div className="h-full pt-16 pb-20 md:pb-[76px]">
               <PinListView pins={filtered} places={filteredPlaces} userPos={userPos} intents={userIntents} offersOnly={offersOnly} onOffersOnlyChange={setOffersOnly} onPinSelect={handlePinSelect} onPlaceSelect={(place) => setSelectedPlace(place)} />
             </div>
           </motion.div>
@@ -400,6 +400,7 @@ export default function CoworkMap() {
         }
       </AnimatePresence>
 
+      {/* Top bar */}
       <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="absolute top-4 left-4 right-4 z-[1000] flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <div className="bg-card rounded-xl shadow-lg border border-border px-3 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2">
@@ -450,10 +451,11 @@ export default function CoworkMap() {
                 )}
               </div>
             )}
+            {/* Profile button - desktop only, mobile uses bottom nav */}
             <Button
               size="icon"
               variant="outline"
-              className="bg-card shadow-lg border-border h-9 w-9 rounded-xl"
+              className="bg-card shadow-lg border-border h-9 w-9 rounded-xl hidden md:flex"
               onClick={() => navigate(user ? '/profile' : '/auth')}
             >
               <User className="h-4 w-4" />
@@ -481,7 +483,8 @@ export default function CoworkMap() {
         </AnimatePresence>
       </motion.div>
 
-      <div className="absolute bottom-4 left-4 z-[1000] flex items-center gap-2">
+      {/* Desktop bottom controls */}
+      <div className="absolute bottom-4 left-4 z-[1000] hidden md:flex items-center gap-2">
         <div className="bg-card rounded-xl shadow-lg border border-border p-1 flex">
           <Button size="icon" variant={view === 'map' ? 'default' : 'ghost'} className="h-9 w-9 rounded-lg" onClick={() => setView('map')}>
             <Map className="h-4 w-4" />
@@ -516,12 +519,50 @@ export default function CoworkMap() {
         <FilterPanel open={filterOpen} onToggle={() => setFilterOpen((v) => !v)} onClose={() => setFilterOpen(false)} roles={filterRoles} timeSlots={filterTimes} interests={filterInterests} onRolesChange={setFilterRoles} onTimeSlotsChange={setFilterTimes} onInterestsChange={setFilterInterests} />
       </div>
 
-      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 right-4 sm:left-0 sm:right-0 z-[1000] flex justify-end sm:justify-center pointer-events-none">
-        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-11 w-11 sm:h-14 sm:w-auto px-0 sm:px-7 rounded-xl shadow-xl font-heading font-semibold text-sm sm:text-base gap-0 sm:gap-2.5">
+      {/* Desktop drop pin button */}
+      <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="absolute bottom-4 sm:bottom-8 right-4 sm:left-0 sm:right-0 z-[1000] hidden md:flex justify-center pointer-events-none">
+        <Button onClick={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })} size="lg" className="pointer-events-auto h-14 px-7 rounded-xl shadow-xl font-heading font-semibold text-base gap-2.5">
           <Plus className="h-5 w-5" />
-          <span className="hidden sm:inline">Drop a pin</span>
+          Drop a pin
         </Button>
       </motion.div>
+
+      {/* Mobile bottom nav */}
+      <BottomNav
+        view={view}
+        onViewChange={setView}
+        onDropPin={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })}
+        onFiltersOpen={() => {
+          setFilterOpen(v => !v);
+          setIntentPickerOpen(false);
+        }}
+        activeFilters={activeFilterCount}
+      />
+
+      {/* Mobile-only filter/intent panels anchored above bottom nav */}
+      <div className="md:hidden">
+        <IntentPicker
+          open={intentPickerOpen}
+          intents={userIntents}
+          onToggle={(v) => {
+            const next = userIntents.includes(v) ? userIntents.filter(i => i !== v) : [...userIntents, v];
+            setUserIntents(next);
+            localStorage.setItem('cowork-user-intents', JSON.stringify(next));
+          }}
+          onClose={() => setIntentPickerOpen(false)}
+        />
+        <FilterPanel
+          open={filterOpen}
+          onToggle={() => setFilterOpen(v => !v)}
+          onClose={() => setFilterOpen(false)}
+          roles={filterRoles}
+          timeSlots={filterTimes}
+          interests={filterInterests}
+          onRolesChange={setFilterRoles}
+          onTimeSlotsChange={setFilterTimes}
+          onInterestsChange={setFilterInterests}
+        />
+      </div>
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />

@@ -122,7 +122,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-lg mx-auto p-4 pb-20">
+      <div className="max-w-lg mx-auto p-4 pb-24 md:pb-20">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <button onClick={() => navigate('/')} className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
