@@ -321,3 +321,16 @@
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/* Offset Mapbox controls so they don't overlap the top bar */
+.mapboxgl-ctrl-top-right {
+  top: 70px !important;
+}
+
+/* Add to home screen banner */
+.home-screen-banner {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: 1rem;
+  padding: 1rem 1.25rem;
+}
