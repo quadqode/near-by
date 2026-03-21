@@ -535,10 +535,7 @@ export default function CoworkMap() {
         view={view}
         onViewChange={setView}
         onDropPin={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })}
-        onFiltersOpen={() => {
-          setFilterOpen(v => !v);
-          setIntentPickerOpen(false);
-        }}
+        onHelpOpen={() => setGuideOpen(true)}
         activeFilters={activeFilterCount}
       />
 
