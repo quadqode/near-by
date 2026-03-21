@@ -28,6 +28,7 @@ import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, S
 import BottomNav from './BottomNav';
 import LocationAutocomplete from './LocationAutocomplete';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useHiNotifications } from '@/hooks/useHiNotifications';
 
 const ROLE_HEX: Record<Role, string> = {
   designer: '#7c3aed',
@@ -52,6 +53,7 @@ function createGeoJSONCircle(center: [number, number], radiusKm: number, points 
 
 export default function CoworkMap() {
   const { user } = useAuth();
+  useHiNotifications();
   const navigate = useNavigate();
   const [userPos, setUserPos] = useState<[number, number] | null>(() => {
     const stored = localStorage.getItem('cowork-user-pos');
