@@ -22,7 +22,7 @@ import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
 import PostSessionFeedback from './PostSessionFeedback';
 import OfferBanner from './OfferBanner';
-import HiRequestsPanel from './HiRequestsPanel';
+import NotificationPanel from './NotificationPanel';
 import { Button } from '@/components/ui/button';
 import { Plus, Users, Map, List, HelpCircle, Radar, SlidersHorizontal, MapPin, Store, User, Bell, Search, X, Filter } from 'lucide-react';
 import BottomNav from './BottomNav';
@@ -608,7 +608,14 @@ export default function CoworkMap() {
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
-      <HiRequestsPanel open={hiPanelOpen} onClose={() => setHiPanelOpen(false)} onRequestCount={setHiRequestCount} />
+      <NotificationPanel
+        open={hiPanelOpen}
+        onClose={() => setHiPanelOpen(false)}
+        onNotificationCount={setHiRequestCount}
+        places={places}
+        onPlaceSelect={(place) => { setSelectedPlace(place); setHiPanelOpen(false); }}
+        onFeedbackOpen={(pinId) => { setExpiredPinId(pinId); setFeedbackOpen(true); setHiPanelOpen(false); }}
+      />
       <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={() => {
         handleRemove();
         // Show feedback after pin removal
