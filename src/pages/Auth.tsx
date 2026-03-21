@@ -108,7 +108,7 @@ export default function Auth() {
                   </InputOTPGroup>
                 </InputOTP>
                 <p className="text-[11px] text-muted-foreground mt-3">
-                  Sent to <span className="font-medium text-foreground">{phone}</span>
+                  Sent to <span className="font-medium text-foreground">+91 {phone}</span>
                 </p>
               </div>
 
