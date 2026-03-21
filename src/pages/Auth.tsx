@@ -18,13 +18,13 @@ export default function Auth() {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleaned = phone.trim();
+    const cleaned = phone.replace(/\s/g, '').trim();
     if (!cleaned || cleaned.length < 10) {
-      toast({ title: 'Invalid phone', description: 'Please enter a valid phone number with country code.', variant: 'destructive' });
+      toast({ title: 'Invalid phone', description: 'Please enter a valid 10-digit Indian phone number.', variant: 'destructive' });
       return;
     }
     setLoading(true);
-    const { error } = await signInWithPhone(cleaned.startsWith('+') ? cleaned : `+91${cleaned}`);
+    const { error } = await signInWithPhone(`+91${cleaned}`);
     setLoading(false);
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
@@ -41,7 +41,7 @@ export default function Auth() {
       return;
     }
     setLoading(true);
-    const fullPhone = phone.trim().startsWith('+') ? phone.trim() : `+91${phone.trim()}`;
+    const fullPhone = `+91${phone.replace(/\s/g, '').trim()}`;
     const { error } = await verifyOtp(fullPhone, otp);
     setLoading(false);
     if (error) {
@@ -71,14 +71,17 @@ export default function Auth() {
             <form onSubmit={handleSendOtp} className="space-y-4">
               <div>
                 <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 block">Phone number</label>
-                <div className="relative">
-                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <div className="flex gap-2">
+                  <div className="flex items-center justify-center h-12 px-3 rounded-xl bg-muted/50 border border-border text-sm font-medium text-foreground shrink-0">
+                    🇮🇳 +91
+                  </div>
                   <Input
                     type="tel"
-                    placeholder="+91 98765 43210"
+                    placeholder="98765 43210"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    className="pl-10 h-12 rounded-xl bg-background border-border text-base"
+                    onChange={(e) => setPhone(e.target.value.replace(/[^0-9\s]/g, ''))}
+                    className="h-12 rounded-xl bg-background border-border text-base"
+                    maxLength={12}
                     required
                   />
                 </div>
@@ -105,7 +108,7 @@ export default function Auth() {
                   </InputOTPGroup>
                 </InputOTP>
                 <p className="text-[11px] text-muted-foreground mt-3">
-                  Sent to <span className="font-medium text-foreground">{phone}</span>
+                  Sent to <span className="font-medium text-foreground">+91 {phone}</span>
                 </p>
               </div>
 
