@@ -18,13 +18,13 @@ export default function Auth() {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    const cleaned = phone.trim();
+    const cleaned = phone.replace(/\s/g, '').trim();
     if (!cleaned || cleaned.length < 10) {
-      toast({ title: 'Invalid phone', description: 'Please enter a valid phone number with country code.', variant: 'destructive' });
+      toast({ title: 'Invalid phone', description: 'Please enter a valid 10-digit Indian phone number.', variant: 'destructive' });
       return;
     }
     setLoading(true);
-    const { error } = await signInWithPhone(cleaned.startsWith('+') ? cleaned : `+91${cleaned}`);
+    const { error } = await signInWithPhone(`+91${cleaned}`);
     setLoading(false);
     if (error) {
       toast({ title: 'Error', description: error, variant: 'destructive' });
