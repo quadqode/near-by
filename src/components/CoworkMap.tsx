@@ -104,10 +104,9 @@ export default function CoworkMap() {
     refreshPins();
   }, [refreshPins]);
 
-  // Load places when restoring position from localStorage
+  // Load pins when restoring position from localStorage
   useEffect(() => {
-    if (userPos && places.length === 0) {
-      setPlaces(generateDemoPlaces(userPos[0], userPos[1]));
+    if (userPos) {
       refreshPins();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
