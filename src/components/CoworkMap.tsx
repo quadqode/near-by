@@ -364,8 +364,6 @@ export default function CoworkMap() {
     return <LocationPicker onLocationSet={handleLocationSet} />;
   }
 
-  return (
-    <div className="relative h-screen w-screen overflow-hidden bg-background">
     const activeFilterCount = filterRoles.length + filterTimes.length + filterInterests.length + (userIntents.length < 3 ? 1 : 0);
 
   return (
