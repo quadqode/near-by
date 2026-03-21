@@ -1,13 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { ROLES, TIME_SLOTS, INTERESTS, Role, TimeSlot } from '@/lib/types';
 import { addPin } from '@/lib/pinStore';
-import { MapPin } from 'lucide-react';
+import { MapPin, Loader2 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import LocationAutocomplete from './LocationAutocomplete';
 
 interface Props {
@@ -29,6 +29,34 @@ export default function DropPinDialog({ open, onClose, lat, lng, onPinAdded }: P
   const [customLng, setCustomLng] = useState(lng);
   const [useCustomLocation, setUseCustomLocation] = useState(false);
   const [locationLabel, setLocationLabel] = useState('');
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  // Pre-populate from profile
+  useEffect(() => {
+    if (!user || !open || profileLoaded) return;
+    (async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('collaboration_style, bio')
+        .eq('id', user.id)
+        .single();
+      if (data) {
+        // Map collaboration styles to interests where they overlap
+        const profileStyles = (data.collaboration_style as string[]) || [];
+        const matchingInterests = INTERESTS.filter(i =>
+          profileStyles.some(s => s.toLowerCase().includes(i.toLowerCase()) || i.toLowerCase().includes(s.toLowerCase()))
+        );
+        if (matchingInterests.length > 0) setInterests(matchingInterests);
+        if (data.bio) setMessage(data.bio.slice(0, 120));
+      }
+      setProfileLoaded(true);
+    })();
+  }, [user, open, profileLoaded]);
+
+  // Reset profileLoaded when dialog closes
+  useEffect(() => {
+    if (!open) setProfileLoaded(false);
+  }, [open]);
 
   // If not authenticated, prompt login
   if (!user) {

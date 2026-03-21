@@ -20,6 +20,7 @@ import UsageGuide from './UsageGuide';
 import IntentPicker from './IntentPicker';
 import LocationPicker from './LocationPicker';
 import ExpiryCheckIn, { useExpiryCheckIn } from './ExpiryCheckIn';
+import PostSessionFeedback from './PostSessionFeedback';
 import OfferBanner from './OfferBanner';
 import HiRequestsPanel from './HiRequestsPanel';
 import { Button } from '@/components/ui/button';
@@ -81,6 +82,8 @@ export default function CoworkMap() {
   const [hiPanelOpen, setHiPanelOpen] = useState(false);
   const [hiRequestCount, setHiRequestCount] = useState(0);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [expiredPinId, setExpiredPinId] = useState<string | null>(null);
 
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -532,10 +535,7 @@ export default function CoworkMap() {
         view={view}
         onViewChange={setView}
         onDropPin={() => userPos && setDropDialog({ lat: userPos[0], lng: userPos[1] })}
-        onFiltersOpen={() => {
-          setFilterOpen(v => !v);
-          setIntentPickerOpen(false);
-        }}
+        onHelpOpen={() => setGuideOpen(true)}
         activeFilters={activeFilterCount}
       />
 
@@ -567,7 +567,21 @@ export default function CoworkMap() {
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
       <HiRequestsPanel open={hiPanelOpen} onClose={() => setHiPanelOpen(false)} onRequestCount={setHiRequestCount} />
-      <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
+      <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={() => {
+        handleRemove();
+        // Show feedback after pin removal
+        const raw = localStorage.getItem('cowork-my-pin-id');
+        if (raw) {
+          try {
+            const { id } = JSON.parse(raw);
+            setExpiredPinId(id);
+            setFeedbackOpen(true);
+          } catch {}
+        }
+      }} />
+      {feedbackOpen && expiredPinId && (
+        <PostSessionFeedback open={feedbackOpen} onClose={() => { setFeedbackOpen(false); setExpiredPinId(null); }} pinId={expiredPinId} />
+      )}
     </div>);
 
 }
