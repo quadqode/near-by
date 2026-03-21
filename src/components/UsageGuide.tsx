@@ -1,6 +1,6 @@
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { MapPin, Filter, List, Navigation, MousePointer2, Clock, SlidersHorizontal } from 'lucide-react';
+import { MapPin, Filter, List, Navigation, MousePointer2, Clock, SlidersHorizontal, Smartphone } from 'lucide-react';
 
 interface Props {
   open: boolean;
@@ -36,7 +36,12 @@ const steps = [
   {
     icon: <Clock className="h-5 w-5" />,
     title: 'How it works',
-    items: ['Pins expire after 4 hours automatically', 'Only pins within 4km are visible', 'No personal names — just roles and interests'],
+    items: ['Pins expire after 4 hours automatically', 'Only pins within the radius are visible', 'No personal names — just roles and interests'],
+  },
+  {
+    icon: <Smartphone className="h-5 w-5" />,
+    title: 'Add to home screen',
+    items: ['iPhone — Safari → Share → "Add to Home Screen"', 'Android — Chrome → Menu → "Install app"', 'Works offline-first, no app store needed'],
   },
 ];
 

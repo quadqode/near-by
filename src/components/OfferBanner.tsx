@@ -29,7 +29,7 @@ export default function OfferBanner({ places, onPlaceSelect }: OfferBannerProps)
     <motion.div
       initial={{ y: -30, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="absolute top-3 left-0 right-0 z-[1000] flex justify-center"
+      className="absolute top-[70px] sm:top-[72px] left-0 right-0 z-[900] flex justify-center px-4"
     >
       <button
         onClick={() => onPlaceSelect(current)}
