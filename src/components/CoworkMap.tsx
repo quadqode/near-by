@@ -567,7 +567,21 @@ export default function CoworkMap() {
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
       <HiRequestsPanel open={hiPanelOpen} onClose={() => setHiPanelOpen(false)} onRequestCount={setHiRequestCount} />
-      <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={handleRemove} />
+      <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={() => {
+        handleRemove();
+        // Show feedback after pin removal
+        const raw = localStorage.getItem('cowork-my-pin-id');
+        if (raw) {
+          try {
+            const { id } = JSON.parse(raw);
+            setExpiredPinId(id);
+            setFeedbackOpen(true);
+          } catch {}
+        }
+      }} />
+      {feedbackOpen && expiredPinId && (
+        <PostSessionFeedback open={feedbackOpen} onClose={() => { setFeedbackOpen(false); setExpiredPinId(null); }} pinId={expiredPinId} />
+      )}
     </div>);
 
 }
