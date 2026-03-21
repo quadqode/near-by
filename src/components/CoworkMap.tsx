@@ -608,7 +608,14 @@ export default function CoworkMap() {
 
       {dropDialog && <DropPinDialog open={!!dropDialog} onClose={() => setDropDialog(null)} lat={dropDialog.lat} lng={dropDialog.lng} onPinAdded={handlePinAdded} />}
       <UsageGuide open={guideOpen} onClose={handleGuideClose} />
-      <HiRequestsPanel open={hiPanelOpen} onClose={() => setHiPanelOpen(false)} onRequestCount={setHiRequestCount} />
+      <NotificationPanel
+        open={hiPanelOpen}
+        onClose={() => setHiPanelOpen(false)}
+        onNotificationCount={setHiRequestCount}
+        places={places}
+        onPlaceSelect={(place) => { setSelectedPlace(place); setHiPanelOpen(false); }}
+        onFeedbackOpen={(pinId) => { setExpiredPinId(pinId); setFeedbackOpen(true); setHiPanelOpen(false); }}
+      />
       <ExpiryCheckIn open={showCheckIn} onStillHere={handleStillHere} onRemove={() => {
         handleRemove();
         // Show feedback after pin removal
