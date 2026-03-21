@@ -539,8 +539,16 @@ export default function CoworkMap() {
         hiRequestCount={hiRequestCount}
       />
 
-      {/* Mobile floating FABs for filters & intents — above bottom nav */}
+      {/* Mobile floating FABs for help, intents & filters — above bottom nav */}
       <div className="fixed bottom-20 right-3 z-[1500] flex flex-col gap-2 md:hidden">
+        <Button
+          size="icon"
+          variant="outline"
+          className="bg-card shadow-lg border-border h-11 w-11 rounded-xl"
+          onClick={() => setGuideOpen(true)}
+        >
+          <HelpCircle className="h-4 w-4" />
+        </Button>
         <div className="relative">
           <Button
             size="icon"
