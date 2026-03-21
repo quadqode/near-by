@@ -41,7 +41,7 @@ export default function Auth() {
       return;
     }
     setLoading(true);
-    const fullPhone = phone.trim().startsWith('+') ? phone.trim() : `+91${phone.trim()}`;
+    const fullPhone = `+91${phone.replace(/\s/g, '').trim()}`;
     const { error } = await verifyOtp(fullPhone, otp);
     setLoading(false);
     if (error) {
