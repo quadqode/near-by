@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Map, List, Plus, User, SlidersHorizontal } from 'lucide-react';
+import { Map, List, Plus, User, HelpCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 
@@ -7,11 +7,11 @@ interface Props {
   view: 'map' | 'list';
   onViewChange: (v: 'map' | 'list') => void;
   onDropPin: () => void;
-  onFiltersOpen: () => void;
+  onHelpOpen: () => void;
   activeFilters: number;
 }
 
-export default function BottomNav({ view, onViewChange, onDropPin, onFiltersOpen, activeFilters }: Props) {
+export default function BottomNav({ view, onViewChange, onDropPin, onHelpOpen, activeFilters }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,12 +42,11 @@ export default function BottomNav({ view, onViewChange, onDropPin, onFiltersOpen
       onClick: onDropPin,
     },
     {
-      key: 'filters',
-      icon: SlidersHorizontal,
-      label: 'Filters',
+      key: 'help',
+      icon: HelpCircle,
+      label: 'Help',
       active: false,
-      badge: activeFilters > 0 ? activeFilters : undefined,
-      onClick: onFiltersOpen,
+      onClick: onHelpOpen,
     },
     {
       key: 'profile',
@@ -67,32 +66,25 @@ export default function BottomNav({ view, onViewChange, onDropPin, onFiltersOpen
             onClick={item.onClick}
             className={cn(
               'flex flex-col items-center justify-center gap-0.5 flex-1 h-full transition-colors relative',
-              item.isPrimary
+              (item as any).isPrimary
                 ? ''
                 : item.active
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
             )}
           >
-            {item.isPrimary ? (
+            {(item as any).isPrimary ? (
               <div className="w-12 h-12 -mt-5 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-lg">
                 <item.icon className="h-5 w-5" />
               </div>
             ) : (
-              <>
-                <div className="relative">
-                  <item.icon className="h-5 w-5" />
-                  {item.badge && (
-                    <span className="absolute -top-1.5 -right-2 bg-primary text-primary-foreground text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                      {item.badge}
-                    </span>
-                  )}
-                </div>
-              </>
+              <div className="relative">
+                <item.icon className="h-5 w-5" />
+              </div>
             )}
             <span className={cn(
               'text-[10px] font-medium',
-              item.isPrimary ? 'text-primary font-semibold mt-0.5' : ''
+              (item as any).isPrimary ? 'text-primary font-semibold mt-0.5' : ''
             )}>
               {item.label}
             </span>
