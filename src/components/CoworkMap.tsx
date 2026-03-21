@@ -128,7 +128,10 @@ export default function CoworkMap() {
     }
   }, []);
 
-  // Init map when userPos is set
+  // Keep ref in sync
+  useEffect(() => { userPosRef.current = userPos; }, [userPos]);
+
+  // Init map ONCE when userPos is first available
   useEffect(() => {
     if (!userPos || !mapContainerRef.current || mapRef.current) return;
     const map = new mapboxgl.Map({
@@ -157,19 +160,21 @@ export default function CoworkMap() {
     });
 
     const updateRadius = () => {
+      const currentPos = userPosRef.current;
+      if (!currentPos) return;
       const zoom = map.getZoom();
       const km = Math.round(20000 / 2 ** zoom * 10) / 10;
       const clamped = Math.max(0.3, Math.min(km, 3));
       setVisibleRadius(clamped);
-      // Always keep circle centered on userPos, not map center
-      updateRadiusCircle(map, userPos!, clamped);
+      updateRadiusCircle(map, currentPos, clamped);
     };
 
     map.on('zoomend', updateRadius);
 
     map.on('load', () => {
-      // Add radius circle source + layers
-      const initialCircle = createGeoJSONCircle([userPos[1], userPos[0]], 1.2);
+      const currentPos = userPosRef.current;
+      if (!currentPos) return;
+      const initialCircle = createGeoJSONCircle([currentPos[1], currentPos[0]], 1.2);
       map.addSource('radius-circle', { type: 'geojson', data: initialCircle as any });
       map.addLayer({
         id: 'radius-circle-fill',
@@ -195,9 +200,9 @@ export default function CoworkMap() {
     });
 
     mapRef.current = map;
-    return () => {map.remove();mapRef.current = null;};
+    return () => { map.remove(); mapRef.current = null; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userPos]);
+  }, [!!userPos]);
 
   // When userPos changes, fly to new location and update radius circle
   useEffect(() => {
